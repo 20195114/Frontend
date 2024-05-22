@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Movie.css';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch } from "react-icons/fa"; 
 import { IoClose } from "react-icons/io5";
 import { BsSkipStartBtn } from "react-icons/bs";
@@ -9,53 +9,30 @@ import { IoLogoOctocat } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 
 const Movie = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate();  // navigate 사용
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchActive, setSearchActive] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [movies, setMovies] = useState(location.state ? location.state.movies : []); // movies 상태 추가
-  const [state, setState] = useState({ myWatchedVods: [] });
-  const searchInputRef = useRef(null);
+  const [users, setUsers] = useState([]);  // users 상태 추가
+  const [state, setState] = useState({ myWatchedVods: [] });  // state 상태 추가
+  const searchInputRef = useRef(null);  // useRef 사용
 
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
     setUsers(storedUsers);
-    if (!location.state) {
-      fetchMovies();
-    }
-  }, [location.state]);
+    fetchMovies();
+  }, []);
 
   const fetchMovies = async () => {
     try {
       const response = await axios.post('/api/movies', { category: 'movie' });
-      setMovies(response.data);
+      setState(prevState => ({ ...prevState, myWatchedVods: response.data }));
     } catch (error) {
       console.error('Error fetching movie data:', error);
     }
   };
-
-  // const displayMovies = () => {
-  //   return movies.map((movie, index) => (
-  //     <div key={index} className="movie-item">
-  //       <img src={movie.POSTER_URL || 'default-poster.jpg'} alt={movie.TITLE} />
-  //       <h3>{movie.TITLE}</h3>
-  //     </div>
-  //   ));
-  // };
-
-  // const handlePosterClick = (vod_id) => {
-  //   axios.post('/vod-detail', { vod_id })
-  //     .then(response => {
-  //       navigate(`/MovieDetailPage/${vod_id}`);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error posting VOD ID:', error);
-  //     });
-  // };
 
   const handleSearchInputChange = async (event) => {
     const query = event.target.value;
@@ -64,7 +41,7 @@ const Movie = () => {
     if (query.length > 0) {
       try {
         const response = await axios.get(`/search-vods?query=${query}`);
-        setSearchResults(response.data.slice(0, 5));
+        setSearchResults(response.data.slice(0, 5)); // 검색 결과를 최대 5개까지 제한
       } catch (error) {
         console.error('Error fetching search results:', error);
       }
