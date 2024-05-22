@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch } from "react-icons/fa"; 
@@ -30,22 +30,7 @@ const Main = () => {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const user_name = localStorage.getItem('selectedUserName');
-    const user_id = localStorage.getItem('selectedUserId');
-    const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
-    setUsers(storedUsers);
-
-    if (user_id) {
-      fetchVodData(user_id);
-      checkAndFetchVods(user_id);
-    }
-    if (user_name) {
-      setState(prevState => ({ ...prevState, user_name: user_name }));
-    }
-  }, []);
-
-  const fetchVodData = async (user_id) => {
+  const fetchVodData = useCallback(async (user_id) => {
     try {
       const [
         myWatchedVodsResponse,
@@ -75,20 +60,35 @@ const Main = () => {
     } catch (error) {
       console.error('Error fetching VOD data:', error);
     }
-  };
+  }, []);
 
-  const checkAndFetchVods = async (user_id) => {
+  const checkAndFetchVods = useCallback(async (user_id) => {
     try {
       const linkResponse = await axios.post(`/mainpage/spotify/${user_id}/userinfo`);
       if (linkResponse.data.status) {
-        fetchSpotifyVods(user_id);
+        fetchVodData(user_id);
       } else {
         window.open(linkResponse.data.spotifyLink, '_blank');
       }
     } catch (error) {
       console.error('Error checking Spotify link status:', error);
     }
-  };
+  }, [fetchVodData]);
+
+  useEffect(() => {
+    const user_name = localStorage.getItem('selectedUserName');
+    const user_id = localStorage.getItem('selectedUserId');
+    const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
+    setUsers(storedUsers);
+
+    if (user_id) {
+      fetchVodData(user_id);
+      checkAndFetchVods(user_id);
+    }
+    if (user_name) {
+      setState(prevState => ({ ...prevState, user_name: user_name }));
+    }
+  }, [checkAndFetchVods, fetchVodData]);
 
   const fetchSpotifyVods = async (user_id) => {
     try {
