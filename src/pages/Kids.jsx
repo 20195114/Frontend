@@ -35,25 +35,6 @@ const Kids = () => {
     }
   };
 
-  const displayMovies = () => {
-    return movies.map((movie, index) => (
-      <div key={index} className="movie-item">
-        <img src={movie.POSTER_URL || 'default-poster.jpg'} alt={movie.TITLE} />
-        <h3>{movie.TITLE}</h3>
-      </div>
-    ));
-  };
-
-  const handlePosterClick = (vod_id) => {
-    axios.post('/vod-detail', { vod_id })
-      .then(response => {
-        navigate(`/MovieDetailPage/${vod_id}`);
-      })
-      .catch(error => {
-        console.error('Error posting VOD ID:', error);
-      });
-  };
-
   const handleSearchInputChange = async (event) => {
     const query = event.target.value;
     setSearchQuery(query);
