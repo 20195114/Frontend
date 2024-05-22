@@ -16,10 +16,9 @@ const Kids = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [users, setUsers] = useState([]);  // users 상태 추가
+  const [movies, setMovies] = useState([]);  // movies 상태 추가
   const [state, setState] = useState({ myWatchedVods: [] });  // state 상태 추가
   const searchInputRef = useRef(null);  // useRef 사용
-  const [setMovies] = useState([]);  // movies 상태 추가
-
 
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
@@ -34,6 +33,25 @@ const Kids = () => {
     } catch (error) {
       console.error('Error fetching movie data:', error);
     }
+  };
+
+  const displayMovies = () => {
+    return movies.map((movie, index) => (
+      <div key={index} className="movie-item">
+        <img src={movie.POSTER_URL || 'default-poster.jpg'} alt={movie.TITLE} />
+        <h3>{movie.TITLE}</h3>
+      </div>
+    ));
+  };
+
+  const handlePosterClick = (vod_id) => {
+    axios.post('/vod-detail', { vod_id })
+      .then(response => {
+        navigate(`/MovieDetailPage/${vod_id}`);
+      })
+      .catch(error => {
+        console.error('Error posting VOD ID:', error);
+      });
   };
 
   const handleSearchInputChange = async (event) => {
