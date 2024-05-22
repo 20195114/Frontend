@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "./static/css/main.5700d135.css",
+    "main.js": "./static/js/main.5043432d.js",
+    "static/js/453.7e5396f5.chunk.js": "./static/js/453.7e5396f5.chunk.js",
+    "static/media/LoginBGP.png": "./static/media/LoginBGP.da5bfff343f033be0bb3.png",
+    "index.html": "./index.html",
+    "main.5700d135.css.map": "./static/css/main.5700d135.css.map",
+    "main.5043432d.js.map": "./static/js/main.5043432d.js.map",
+    "453.7e5396f5.chunk.js.map": "./static/js/453.7e5396f5.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5700d135.css",
+    "static/js/main.5043432d.js"
+  ]
+}
