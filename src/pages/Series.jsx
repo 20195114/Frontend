@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import './Series.css';
+import './Movie.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch } from "react-icons/fa"; 
 import { IoClose } from "react-icons/io5";
