@@ -17,7 +17,6 @@ const Movie = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [users, setUsers] = useState([]);
-  const [movies, setMovies] = useState(location.state ? location.state.movies : []); // movies 상태 추가
   const [state, setState] = useState({ myWatchedVods: [] });
   const searchInputRef = useRef(null);
 
