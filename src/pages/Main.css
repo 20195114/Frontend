@@ -1,0 +1,350 @@
+/* 전체 스타일 */
+body {
+  font-family: 'Netflix Sans', Arial, sans-serif;
+  background-color: #141414;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* 헤더 스타일 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 50px; /* 높이 증가 */
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header .logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.header .logo {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-right: 20px;
+  color: #d731b9;
+}
+
+.header .category-container {
+  display: flex;
+  font-size: 1.2rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.header .category-container .category {
+  margin-right: 10px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+
+}
+
+.header .icons-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 30px;
+  position: relative; /* 상대 위치 */
+}
+
+.header .icons-container .li {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-left: 20px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-input {
+  width: 0;
+  padding: 5px;
+  font-size: 1rem;
+  border: none;
+  border-bottom: 1px solid #fff;
+  background-color: transparent;
+  color: #fff;
+  transition: width 0.4s ease-in-out;
+  opacity: 0;
+}
+
+.search-input:focus {
+  outline: none;
+  width: 200px; /* 확장된 크기 */
+  opacity: 1;
+}
+
+.search-icon,
+.close-icon,
+.user-icon,
+.play-icon {
+  cursor: pointer;
+  margin-right: auto;
+  margin-left: auto;
+  font-size: 1.5rem; /* 아이콘 크기 조정 */
+  color: #fff;
+}
+
+/* 고양이 아이콘 크기 조정 */
+.user-icon-small {
+  font-size: 2.5rem; /* 고양이 아이콘 크기 증가 */
+  margin-right: 10px;
+  color: #d731b9;
+}
+
+/* 검색 아이콘 숨기기/보이기 */
+.search-icon {
+  display: block;
+}
+
+.search-active .search-icon {
+  display: none;
+}
+
+.search-active .close-icon {
+  display: block;
+}
+
+.search-results {
+  position: absolute;
+  top: 40px; /* 검색창 아래 */
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #555;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.search-results p {
+  margin: 10px;
+  cursor: pointer;
+}
+
+.search-results p:hover {
+  background-color: #444;
+}
+
+/* 사용자 메뉴 스타일 */
+.user-container {
+  position: relative;
+}
+
+.user-menu {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: #333;
+  color: #fff;
+  width: 250px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.user-menu.active {
+  display: block;
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-menu-item img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.user-menu-item p {
+  margin: 0;
+  color: #fff;
+}
+
+.playlist-container {
+  position: relative;
+}
+
+.playlist-box {
+  display: none;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: #333;
+  color: #fff;
+  width: 250px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.playlist-box.active {
+  display: block;
+}
+
+.playlist-box .playlist-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.playlist-box .playlist-item img {
+  width: 50px;
+  height: 70px;
+  margin-right: 10px;
+}
+
+.playlist-box .playlist-item p {
+  margin: 0;
+}
+
+.playlist-box .more {
+  cursor: pointer;
+  text-align: center;
+  margin-top: 10px;
+  color: #e50914;
+}
+
+/* 트레일러 컨테이너 스타일 */
+.trailer-container {
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+  margin-top: 60px;
+}
+
+.trailer-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 비디오가 잘리지 않고 보여지도록 설정 */
+  background-color: #000; /* 비디오 주변에 검은색 배경 추가 */
+}
+
+.trailer-container .trailer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.trailer-container .trailer-overlay h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.trailer-container .trailer-overlay p {
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+}
+
+.trailer-container .trailer-overlay button {
+  background-color: #e50914;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* VOD 컨테이너 스타일 */
+.vod-container {
+  margin: 20px;
+}
+
+/* VOD 슬라이더 스타일 */
+.vod-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.vod-item {
+  flex: 0 0 auto;
+  margin-right: 10px;
+}
+
+.vod-item img {
+  width: 200px;
+  height: 300px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1200px) {
+  .vod-item img {
+    width: 180px;
+    height: 270px;
+  }
+}
+
+@media (max-width: 992px) {
+  .vod-item img {
+    width: 160px;
+    height: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vod-item img {
+    width: 140px;
+    height: 210px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+  }
+
+  .header .logo-container {
+    margin-bottom: 10px;
+  }
+
+  .header .icons-container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .vod-item img {
+    width: 120px;
+    height: 180px;
+  }
+}

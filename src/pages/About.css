@@ -1,0 +1,168 @@
+/* 전체 스타일 */
+body {
+  font-family: 'Netflix Sans', Arial, sans-serif;
+  background-color: #141414;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.Logo {
+    font-family: 'Netflix Sans', Arial, sans-serif;
+    color: #e5099c;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.user-selection-page {
+  padding: 50px;
+  font-family: 'Netflix Sans', Arial, sans-serif;
+  background-color: #141414;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.user-selection-page h1 {
+  font-size: 32px;
+  margin-bottom: 24px;
+  color: #FFFFFF;
+}
+
+.user-selection-page p {
+  font-size: 18px;
+  margin-bottom: 24px;
+  color: #FFFFFF;
+}
+
+.user-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 100px; /* 수직 및 수평 간격 조정 */
+  /* background-color: #e5099c; */
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.user-card:hover {
+  transform: scale(1.05);
+}
+
+.user-icon {
+  font-size: 200px;
+  color: #e5099c;
+  margin-bottom: 10px;
+  
+}
+
+.user-card p {
+  font-size: 25px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.user-selection-page button {
+  padding: 12px 24px;
+  background-color: #e5099c;
+  color: #080808;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 16px 8px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.user-selection-page button:hover {
+  background-color: #2396c3;
+}
+
+.user-selection-page input[type="text"],
+.user-selection-page select {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #333333;
+  color: #CCCCCC;
+}
+
+.user-selection-page label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #CCCCCC;
+}
+
+/* Style for the signup modal */
+.signup-modal {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-modal-content {
+  background-color: #141414;
+  padding: 40px;
+  border: 1px solid #f4f1f1;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.signup-modal-content h2 {
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: #FFFFFF;
+}
+
+.signup-modal-content .close {
+  color: #CCCCCC;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.signup-modal-content .close:hover,
+.signup-modal-content .close:focus {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+/* Media query for aspect ratio */
+@media (max-aspect-ratio: 16/9) {
+  .user-selection-page {
+    padding: 30px;
+  }
+}
+
+@media (max-aspect-ratio: 4/3) {
+  .user-selection-page {
+    padding: 10px;
+  }
+}

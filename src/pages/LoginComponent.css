@@ -1,0 +1,167 @@
+/* LoginComponent.css */
+
+/* 전체 스타일 */
+body {
+  font-family: 'Netflix Sans', Arial, sans-serif;
+  background-color: rgba(216, 0, 0, 0.6); /* 검은색 블러 효과 줄임 */
+  margin: 0;
+  padding: 0;
+  background-size: cover; /* 배경 이미지가 화면을 덮도록 설정 */
+  background-position: center; /* 배경 이미지가 가운데 정렬되도록 설정 */
+  backdrop-filter: blur(5px); /* 블러 효과 추가 */
+  color: #fff;
+}
+
+.login-container {
+  backdrop-filter: blur(5px); /* 블러 효과 추가 */
+  background-position: center; /* 배경 이미지가 가운데 정렬되도록 설정 */
+  background-size: cover; /* 배경 이미지가 화면을 덮도록 설정 */
+  background-image: url('/Users/stui_.dbin._/NEKARA/nekara/public/LoginBGP.png'); /* VOD 이미지 배경 설정, 파일 경로를 수정하세요 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6); /* 검은색 블러 효과 줄임 */
+  border-radius: 10px;
+}
+
+.login-container h1 {
+  font-size: 32px;
+  margin-bottom: 24px;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-container label {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #FFFFFF;
+}
+
+/* 입력 필드와 버튼을 같은 줄에 배치하는 스타일 */
+.input-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 16px; /* 하단 여백 추가 */
+}
+
+.login-container input[type="password"] {
+  padding: 12px;
+  border: 1px solid #ffffff;
+  border-radius: 4px 0 0 4px;
+  width: calc(100% - 120px); /* 버튼 너비를 제외한 나머지 너비 */
+  box-sizing: border-box;
+  font-size: 16px;
+  background-color: #333333;
+  color: #CCCCCC;
+}
+
+.login-container button {
+  padding: 12px 24px;
+  background-color: #e5099c;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  height: 48px; /* 입력 필드와 동일한 높이로 설정 */
+  flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
+}
+
+.login-container button:hover {
+  background-color: #2396c3;
+}
+
+.login-container button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.login-container div {
+  margin-top: 10px;
+  color: #FF0000;
+  font-size: 14px;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+  .login-container h1 {
+    font-size: 28px;
+  }
+
+  .login-container label {
+    font-size: 16px;
+  }
+
+  .login-container input[type="password"],
+  .login-container button {
+    height: 40px; /* 입력 필드와 버튼 높이 줄임 */
+  }
+
+  .login-container input[type="password"] {
+    font-size: 14px;
+  }
+
+  .login-container button {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container h1 {
+    font-size: 24px;
+  }
+
+  .login-container label {
+    font-size: 14px;
+  }
+
+  .login-container input[type="password"],
+  .login-container button {
+    height: 36px; /* 입력 필드와 버튼 높이 더 줄임 */
+  }
+
+  .login-container input[type="password"] {
+    font-size: 12px;
+  }
+
+  .login-container button {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-container h1 {
+    font-size: 20px;
+  }
+
+  .login-container label {
+    font-size: 12px;
+  }
+
+  .login-container input[type="password"],
+  .login-container button {
+    height: 32px; /* 입력 필드와 버튼 높이 더 줄임 */
+  }
+
+  .login-container input[type="password"] {
+    font-size: 10px;
+  }
+
+  .login-container button {
+    font-size: 10px;
+  }
+}
