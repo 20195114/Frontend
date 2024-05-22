@@ -90,22 +90,6 @@ const Main = () => {
     }
   }, [checkAndFetchVods, fetchVodData]);
 
-  const fetchSpotifyVods = async (user_id) => {
-    try {
-      const response = await axios.get(`/mainpage/spotify/${user_id}`);
-      if (response.data.status) {
-        setState(prevState => ({
-          ...prevState,
-          spotifyVods: response.data.response
-        }));
-      } else {
-        console.error("Failed to fetch Spotify VODs: No data available");
-      }
-    } catch (error) {
-      console.error('Error fetching Spotify VODs:', error);
-    }
-  };
-
   const handlePosterClick = (vod_id) => {
     axios.post('/vod-detail', { vod_id })
       .then(response => {
