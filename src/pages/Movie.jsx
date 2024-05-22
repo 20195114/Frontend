@@ -18,6 +18,8 @@ const Movie = () => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [users, setUsers] = useState([]);
   const [state, setState] = useState({ myWatchedVods: [] });
+  const [setMovies] = useState([]);  // movies 상태 추가
+
   const searchInputRef = useRef(null);
 
   useEffect(() => {

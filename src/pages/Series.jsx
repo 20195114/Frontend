@@ -16,6 +16,7 @@ const Series = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [users, setUsers] = useState([]);  // users 상태 추가
+  const [setMovies] = useState([]);  // movies 상태 추가
   const [state, setState] = useState({ myWatchedVods: [] });  // state 상태 추가
   const searchInputRef = useRef(null);  // useRef 사용
 

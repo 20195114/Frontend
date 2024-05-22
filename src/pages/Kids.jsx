@@ -18,6 +18,8 @@ const Kids = () => {
   const [users, setUsers] = useState([]);  // users 상태 추가
   const [state, setState] = useState({ myWatchedVods: [] });  // state 상태 추가
   const searchInputRef = useRef(null);  // useRef 사용
+  const [setMovies] = useState([]);  // movies 상태 추가
+
 
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
