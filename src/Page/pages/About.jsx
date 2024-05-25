@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
-import "./About.css";
+import "../CSS/About.css";
 import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
 const Background = styled.div`

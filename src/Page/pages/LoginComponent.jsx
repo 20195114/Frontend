@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import './LoginComponent.css';
+import '../CSS/LoginComponent.css';
 
 function LoginComponent() {
   const [loading, setLoading] = useState(false);

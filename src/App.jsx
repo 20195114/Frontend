@@ -1,15 +1,15 @@
 import React from "react";
 import {Routes, Route } from 'react-router-dom';
-import About from './pages/About';
-import LoginComponent from './pages/LoginComponent';
-import Main from "./pages/Main";
-import SearchBar from './pages/SearchBar.tsx';
-import Playlist from './pages/Playlist.jsx';
-import User from './pages/User.jsx';
-import Movie from "./pages/Movie.jsx";
-import Series from "./pages/Series.jsx";
-import Kids from "./pages/Kids.jsx";
-import MovieDetailPage from "./pages/MovieDetailPage.jsx";
+import About from './Page/pages/About.jsx';
+import LoginComponent from './Page/pages/LoginComponent';
+import Main from "./Page/pages/Main";
+import SearchBar from './Page/pages/SearchBar.tsx';
+import Playlist from './Page/pages/Playlist.jsx';
+import User from './Page/pages/User.jsx';
+import Movie from "./Page/pages/Movie.jsx";
+import Series from "./Page/pages/Series.jsx";
+import Kids from "./Page/pages/Kids.jsx";
+import MovieDetailPage from "./Page/pages/MovieDetailPage.jsx";
 
 function App() {
   return (
