@@ -27,6 +27,7 @@
 
 .header .category-container, .icons-container {
   display: flex;
+  align-items: center;
 }
 
 .header .category, .icon-link {
@@ -34,6 +35,15 @@
   color: #fff;
   text-decoration: none; 
   cursor: pointer;
+}
+
+.header .icons-container {
+  margin-left: auto; /* 아이콘들을 오른쪽으로 정렬하지 않고 일정 간격을 두기 위해 수정 */
+  margin-right: 20px;
+}
+
+.header .icon-link, .header .icon {
+  margin-left: 10px; /* 아이콘들 간의 간격을 일정하게 조정 */
 }
 
 .vod-container {
@@ -58,5 +68,5 @@
 }
 
 .movie-item img {
-  width: 100
+  width: 100%;
 }

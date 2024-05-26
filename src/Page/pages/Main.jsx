@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../Component/Header'; // Ensure the path is correct
 import MyWatchedVods from '../Component/MyWatchedVods'; // Ensure the path is correct
@@ -9,80 +8,36 @@ import SearchBasedVods from '../Component/SearchBasedVods'; // Ensure the path i
 import RatingBasedVods from '../Component/RatingBasedVods'; // Ensure the path is correct
 import Spotify from '../Component/Spotify'; // Ensure the path is correct
 import '../CSS/Main.css'; // Ensure the path is correct
+import axios from 'axios';
 
-const spotifyVods = [
+const mockVods = [
   {
-    "TITLE": "Burla al marito", 
-    "VOD_ID": 5, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
+    TITLE: "파묘", 
+    VOD_ID: 1, 
+    POSTER_URL: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/tw0i3kkmOTjDjGFZTLHKhoeXVvA.jpg"
   },
   {
-    "TITLE": "Fregoli al restaurant", 
-    "VOD_ID": 6, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
+    TITLE: "사바하", 
+    VOD_ID: 2, 
+    POSTER_URL: "https://an2-img.amz.wtchn.net/image/v2/l1a-plNEIARDrVlmfjXc_Q.jpg?jwt=ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXhMMjVqTm1nNWJYbHViWGQxTlhwcE4yNDNhbkl3SW4wLjk0MnUxbzBLcU9QTzN4YnJocXh2YklTVVNHLTNLQ1BfRXIxRUI1T2htVVk"
   }, 
   {
-    "TITLE": "A Trip to the Moon", 
-    "VOD_ID": 7, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/9o0v5LLFk51nyTBHZSre6OB37n2.jpg"
-  },
-  {
-    "TITLE": "Burla al marito", 
-    "VOD_ID": 5, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
-  },
-  {
-    "TITLE": "Fregoli al restaurant", 
-    "VOD_ID": 6, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
-  }, 
-  {
-    "TITLE": "A Trip to the Moon", 
-    "VOD_ID": 7, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/9o0v5LLFk51nyTBHZSre6OB37n2.jpg"
-  },
-  {
-    "TITLE": "Burla al marito", 
-    "VOD_ID": 5, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
-  },
-  {
-    "TITLE": "Fregoli al restaurant", 
-    "VOD_ID": 6, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
-  }, 
-  {
-    "TITLE": "A Trip to the Moon", 
-    "VOD_ID": 7, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/9o0v5LLFk51nyTBHZSre6OB37n2.jpg"
-  },
-  {
-    "TITLE": "Burla al marito", 
-    "VOD_ID": 5, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
-  },
-  {
-    "TITLE": "Fregoli al restaurant", 
-    "VOD_ID": 6, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/zwWZJas0QTaOEWYQiV0hKGhMyEB.jpg"
-  }, 
-  {
-    "TITLE": "A Trip to the Moon", 
-    "VOD_ID": 7, 
-    "POSTER_URL": "https://image.tmdb.org/t/p/original/9o0v5LLFk51nyTBHZSre6OB37n2.jpg"
+    TITLE: "검은 사제들", 
+    VOD_ID: 3, 
+    POSTER_URL: "https://an2-img.amz.wtchn.net/image/v2/09NZnwnlQVggGexLePzVFw.jpg?jwt=ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXhMM1J1ZDJkMk9HVnFjV3hxZEd4MWMyMXhlVzV1SW4wLnROR2N0ajJ1RHFOZWF1b0xza3ZsakFMY1lBXzBXekxFYVpwLV9EODNsSFU"
   }
 ];
 
 const Main = () => {
   const [state, setState] = useState({
-    myWatchedVods: spotifyVods,
-    youtubeTrendsVods: spotifyVods,
-    popularVods: spotifyVods,
-    searchBasedVods: spotifyVods,
-    ratingBasedVods: spotifyVods,
-    spotifyVods: spotifyVods,
+    myWatchedVods: mockVods,
+    youtubeTrendsVods: mockVods,
+    popularVods: mockVods,
+    searchBasedVods: mockVods,
+    ratingBasedVods: mockVods,
+    spotifyVods: mockVods,
     isSpotifyLinked: false,
-    user_name: ''
+    user_name: 'User Name'
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -97,30 +52,15 @@ const Main = () => {
 
   const fetchVodData = useCallback(async (user_id) => {
     try {
-      const [
-        myWatchedVodsResponse,
-        youtubeTrendsVodsResponse,
-        popularVodsResponse,
-        searchBasedVodsResponse,
-        ratingBasedVodsResponse,
-        spotifyVodsResponse
-      ] = await Promise.all([
-        axios.get(`/my-watched-vods?userId=${user_id}`),
-        axios.get(`/youtube-trends-vods?userId=${user_id}`),
-        axios.get(`/popular-vods?userId=${user_id}`),
-        axios.get(`/search-based-vods?userId=${user_id}`),
-        axios.get(`/rating-based-vods?userId=${user_id}`),
-        axios.get(`mainpage/spotify/${user_id}`)
-      ]);
-
+      // 모킹된 데이터를 사용하여 상태를 업데이트합니다.
       setState(prevState => ({
         ...prevState,
-        myWatchedVods: myWatchedVodsResponse.data,
-        youtubeTrendsVods: youtubeTrendsVodsResponse.data,
-        popularVods: popularVodsResponse.data,
-        searchBasedVods: searchBasedVodsResponse.data,
-        ratingBasedVods: ratingBasedVodsResponse.data,
-        spotifyVods: spotifyVodsResponse.data
+        myWatchedVods: mockVods,
+        youtubeTrendsVods: mockVods,
+        popularVods: mockVods,
+        searchBasedVods: mockVods,
+        ratingBasedVods: mockVods,
+        spotifyVods: mockVods
       }));
     } catch (error) {
       console.error('Error fetching VOD data:', error);
@@ -129,12 +69,7 @@ const Main = () => {
 
   const checkAndFetchVods = useCallback(async (user_id) => {
     try {
-      const linkResponse = await axios.post(`/mainpage/spotify/${user_id}/userinfo`);
-      if (linkResponse.data.status) {
-        fetchVodData(user_id);
-      } else {
-        window.open(linkResponse.data.spotifyLink, '_blank');
-      }
+      fetchVodData(user_id);
     } catch (error) {
       console.error('Error checking Spotify link status:', error);
     }
@@ -155,21 +90,15 @@ const Main = () => {
     }
   }, [checkAndFetchVods, fetchVodData]);
 
-  const handlePosterClick = (vod_id) => {
-    axios.post('/vod-detail', { vod_id })
-      .then(response => {
-        navigate(`/MovieDetailPage/${vod_id}`);
-      })
-      .catch(error => {
-        console.error('Error posting VOD ID:', error);
-      });
+  const handlePosterClick = () => {
+    navigate(`/movieDetailPage`);
   };
 
   const handleSearchResultClick = (vod_id) => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    navigate(`/MovieDetailPage/${vod_id}`);
+    navigate(`/movies/${vod_id}`);
   };
 
   const handleSearchSubmit = async (event) => {
@@ -264,11 +193,9 @@ const Main = () => {
       <Spotify 
         vods={state.spotifyVods} 
         handlePosterClick={ handlePosterClick} 
-        />
-      </div>
-    );
-  };
-  
-  export default Main;
-  
+      />
+    </div>
+  );
+};
 
+export default Main;
