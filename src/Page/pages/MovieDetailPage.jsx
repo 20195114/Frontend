@@ -9,7 +9,7 @@ const vod_info = {
   genres: "오컬트, 공포",
   disp_rtm: "2:13",
   summary: "미국 LA, 거액의 의뢰를 받은 무당 화림과 봉길은 기이한 병이 대물림되는 집안의 장손을 만난다.,조상의 묫자리가 화근임을 알아챈 화림은 이장을 권하고, 돈 냄새를 맡은 최고의 풍수사 상덕과 장의사 영근이 합류한다. 절대 사람이 묻힐 수 없는 악지에 자리한 기이한 묘. 상덕은 불길한 기운을 느끼고 제안을 거절하지만, 화림의 설득으로 결국 파묘가 시작되고… 나와서는 안될 것이 나왔다.",
-  trailer_url: "/DetailPageVideo.mp4"
+  trailer_url: "https://www.youtube.com/watch?v=rjW9E1BR_30"
 };
 
 const cast = [
@@ -69,84 +69,184 @@ const MovieDetailPage = () => {
   };
 
   return (
-    <div className="movie-detail-container">
-      <Header 
-        state={{}} // 필요한 props를 전달하세요.
-        searchActive={false}
-        setSearchActive={() => {}}
-        searchResults={[]}
-        setSearchResults={() => {}}
-        searchQuery={''}
-        setSearchQuery={() => {}}
-        users={[]}
-        handleSearchInputChange={() => {}}
-        handleSearchSubmit={() => {}}
-        handlePosterClick={() => {}}
-        handleSearchIconClick={() => {}}
-        handleCloseIconClick={() => {}}
-        handleSearchResultClick={() => {}}
-        togglePlaylistVisibility={() => {}}
-        playlistVisible={false}
-        toggleUserMenuVisibility={() => {}}
-        userMenuVisible={false}
-        handleUserChange={() => {}}
-        handleCategoryClick={() => {}}
-        goToMainPage={() => {}}
-        searchInputRef={null}
-      />
-      
-      <div className="movie-content">
-        <img src={movie.posterURL} alt={movie.title} />
-        <div className="movie-details">
-          <h2>{movie.genres}</h2>
-          <p>{movie.summary}</p>
-          <button onClick={togglePlaylist}>
-            {isInPlaylist ? '플레이리스트 삭제' : '플레이리스트 추가'}
-          </button>
-          <div className="playTrailer-container">
-            <video autoPlay loop muted>
-              <source src={movie.trailer_url} type="video/mp4" />
-              예고편
-            </video>
+    <div className="movie-detail-page">
+      <Header />
+      <div className="movie-detail-container">
+        <header>
+          <h1>{movie.title} 디테일페이지</h1>
+        </header>
+
+        <div className="movie-content">
+          <img src={movie.posterURL} alt={movie.title} />
+          <div className="movie-details">
+            <h2>{movie.genres}</h2>
+            <p>{movie.summary}</p>
+            <div className="playTrailer-container">
+              <video autoPlay loop muted>
+                <source src="/DetailPageVideo.mp4" type="video/mp4" />
+                예고편
+              </video>
+            </div>
+            <button onClick={togglePlaylist}>
+              {isInPlaylist ? 'Remove from Playlist' : 'Add to Playlist'}
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="cast-reviews">
-        <div className="cast-container">
-          <h3>출연진</h3>
-          <ul>
-            {castData.map(actor => (
-              <li key={actor.name}>
-                <img src={actor.imageUrl} alt={actor.name} />
-                <p>{actor.name}</p>
+        <div className="cast-reviews-related">
+          <div className="cast-container">
+            <h3>출연진</h3>
+            <ul>
+              {castData.map(actor => (
+                <li key={actor.name}>
+                  <img src={actor.imageUrl} alt={actor.name} />
+                  <p>{actor.name}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="reviews-container">
+            <h3>리뷰</h3>
+            <ul>
+              {reviewData.map(review => (
+                <li key={review.author}>
+                  <p>{review.content}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="related-movies-container">
+            <h3>추천 영화</h3>
+            <ul>
+            {relatedMoviesData.map(movie => (
+              <li Link key={movie.id} to={`/movieDetailPage/${movie.id}`}>
+                <img src={movie.imageUrl} alt={movie.title} />
+                <p>{movie.title}</p>
               </li>
             ))}
-          </ul>
+            </ul>
+          </div>
         </div>
-        <div className="reviews-container">
-          <h3>리뷰</h3>
-          <ul>
-            {reviewData.map(review => (
-              <li key={review.author}>
-                <p>{review.content}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <h3>추천 영화</h3>
-      <div className="related-movies-container">
-        {relatedMoviesData.map(movie => (
-          <Link key={movie.id} to={`/movieDetailPage/${movie.id}`}>
-            <img src={movie.imageUrl} alt={movie.title} />
-            <p>{movie.title}</p>
-          </Link>
-        ))}
       </div>
     </div>
   );
 };
 
 export default MovieDetailPage;
+
+// import React, { useState, useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import axios from 'axios';
+// import Header from '../Component/Header'; // Ensure the path is correct
+// import Reviews from '../Component/Reviews'; // 리뷰 컴포넌트 분리
+// import '../CSS/MovieDetailPage.css';
+
+// const MovieDetailPage = () => {
+//   const { movieId } = useParams();
+//   const [movie, setMovie] = useState(null);
+//   const [castData, setCastData] = useState([]);
+//   const [relatedMoviesData, setRelatedMoviesData] = useState([]);
+//   const [isInPlaylist, setIsInPlaylist] = useState(false);
+
+//   useEffect(() => {
+//     const fetchMovieData = async () => {
+//       try {
+//         const response = await axios.get(`/api/movies/${movieId}`);
+//         setMovie(response.data);
+//         const castResponse = await axios.get(`/api/movies/${movieId}/cast`);
+//         setCastData(castResponse.data);
+//         const relatedResponse = await axios.get(`/api/movies/${movieId}/related`);
+//         setRelatedMoviesData(relatedResponse.data);
+//         const playlistResponse = await axios.get(`/api/playlist/${movieId}`);
+//         setIsInPlaylist(playlistResponse.data.isInPlaylist);
+//       } catch (error) {
+//         console.error('Error fetching movie data:', error);
+//       }
+//     };
+//     fetchMovieData();
+//   }, [movieId]);
+
+//   const togglePlaylist = async () => {
+//     try {
+//       if (isInPlaylist) {
+//         await axios.delete(`/api/playlist/${movieId}`);
+//         setIsInPlaylist(false);
+//       } else {
+//         await axios.post(`/api/playlist`, { movieId });
+//         setIsInPlaylist(true);
+//       }
+//     } catch (error) {
+//       console.error('Error updating playlist:', error);
+//     }
+//   };
+
+//   if (!movie) {
+//     return <div>Loading...</div>;
+//   }
+
+//   return (
+//     <div className="movie-detail-page">
+//       <Header />
+//       <div className="movie-detail-container">
+//         <header>
+//           <h1>{movie.title} 디테일페이지</h1>
+//         </header>
+
+//         <div className="movie-content">
+//           <img src={movie.posterURL} alt={movie.title} />
+//           <div className="movie-details">
+//             <h2>{movie.genres}</h2>
+//             <p>{movie.summary}</p>
+//             <div className="playTrailer-container">
+//               <video autoPlay loop muted>
+//                 <source src={movie.trailer_url} type="video/mp4" />
+//                 예고편
+//               </video>
+//             </div>
+//             <button onClick={togglePlaylist}>
+//               {isInPlaylist ? '플레이리스트 삭제' : '플레이리스트 추가'}
+//             </button>
+//           </div>
+//         </div>
+
+//         <div className="cast-reviews-related">
+//           <div className="cast-container">
+//             <h3>출연진</h3>
+//             <ul>
+//               {castData.map(actor => (
+//                 <li key={actor.name}>
+//                   <img src={actor.imageUrl} alt={actor.name} />
+//                   <p>{actor.name}</p>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+
+//           <Reviews movieId={movieId} />
+
+//           <div className="related-movies-container">
+//             <h3>추천 영화</h3>
+//             <ul>
+//               {relatedMoviesData.map(movie => (
+//                 <li key={movie.id}>
+//                   <img src={movie.imageUrl} alt={movie.title} />
+//                   <p>{movie.title}</p>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default MovieDetailPage;
+
+//통신과 더불어 수정하면 다시 post해야함
+// api 명세서 확인해서 통신 부분 수정해야할듯
+//예고편 부분은 url 상태로 넘어가니까 수정
+// 찜 아이콘 으로 구동하도록 변경
+// header 부분도 아이콘 변경 및 헤더 말고 다른헤더 만들어야할것 같음

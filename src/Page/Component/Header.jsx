@@ -17,6 +17,7 @@ const Header = ({
   users,
   handleSearchInputChange,
   handleSearchSubmit,
+  handlePosterClick,
   handleSearchIconClick,
   handleCloseIconClick,
   handleSearchResultClick,
