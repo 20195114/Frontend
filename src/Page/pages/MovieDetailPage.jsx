@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Header from '../Component/Header'; // Ensure the path is correct
 import '../CSS/MovieDetailPage.css';
 
