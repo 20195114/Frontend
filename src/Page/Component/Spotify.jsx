@@ -26,3 +26,4 @@ const Spotify = ({ vods, handlePosterClick }) => {
 };
 
 export default Spotify;
+// 음 어디서부터 손댈지는 연결을 해봐야 알듯

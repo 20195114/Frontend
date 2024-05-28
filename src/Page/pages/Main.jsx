@@ -199,3 +199,9 @@ const Main = () => {
 };
 
 export default Main;
+
+// Movie, Series, Kids카테고리에서 로고 눌렀을떄 메인페이지로 넘어가도록
+// 코드 수정해야하고 vod_poster 클릭시 DetaiLPage로 넘어갈때
+// url에 Vod_id가 포함되는데 백엔드로는 포스트되대, url 변경없이 잘 넘어가도록 
+// axios api 수정
+// footer 제작해야겠음(보류)

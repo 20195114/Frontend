@@ -10,6 +10,8 @@ import Movie from "./Page/pages/Movie.jsx";
 import Series from "./Page/pages/Series.jsx";
 import Kids from "./Page/pages/Kids.jsx";
 import MovieDetailPage from "./Page/pages/MovieDetailPage.jsx";
+import ReviewPage from "./Page/pages/ReviewPage.jsx";
+
 
 function App() {
   return (
@@ -24,7 +26,9 @@ function App() {
         <Route path="/SearchBar" element={<SearchBar />} />
         <Route path="/Playlist" element={<Playlist />} />
         <Route path="/User" element={<User />} />
-        <Route path="/MovieDetailPage" element={<MovieDetailPage />} />        
+        <Route path="/MovieDetailPage" element={<MovieDetailPage />} /> 
+        <Route path="/ReviewPage" element={<ReviewPage />} />        
+       
       
     </Routes>
   );

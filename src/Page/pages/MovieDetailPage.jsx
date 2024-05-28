@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../Component/Header'; // Ensure the path is correct
+import Reviews from '../Component/Reviews'; // 리뷰 컴포넌트 분리
 import '../CSS/MovieDetailPage.css';
 
 const vod_info = {
@@ -19,14 +20,6 @@ const cast = [
   { name: '이도현', imageUrl: 'https://media.themoviedb.org/t/p/w138_and_h175_face/1iDRxID6mHf8rftDG0kLWzfXvQA.jpg'} 
 ];
 
-const reviews = [
-  { author: 'Wang', content: '재밌었는데 마지막이 아쉽', rating: 4 },
-  { author: '왕왕', content: '그냥 그래용', rating: 3 },
-  { author: '크아용', content: '멍멍', rating: 2 },
-  { author: '세숑이', content: '왈왈', rating: 1 },
-  { author: '메롱이', content: '너무 좋아용', rating: 5 },
-];
-
 const relatedMovies = [
   { id: 1, title: '사바하', imageUrl: 'https://an2-img.amz.wtchn.net/image/v2/l1a-plNEIARDrVlmfjXc_Q.jpg?jwt=ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXhMMjVqTm1nNWJYbHViWGQxTlhwcE4yNDNhbkl3SW4wLjk0MnUxbzBLcU9QTzN4YnJocXh2YklTVVNHLTNLQ1BfRXIxRUI1T2htVVk' },
   { id: 2, title: '검은 사제들', imageUrl: 'https://an2-img.amz.wtchn.net/image/v2/09NZnwnlQVggGexLePzVFw.jpg?jwt=ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXhMM1J1ZDJkMk9HVnFjV3hxZEd4MWMyMXhlVzV1SW4wLnROR2N0ajJ1RHFOZWF1b0xza3ZsakFMY1lBXzBXekxFYVpwLV9EODNsSFU' },
@@ -37,7 +30,6 @@ const MovieDetailPage = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
-  const [reviewData, setReviewData] = useState([]);
   const [relatedMoviesData, setRelatedMoviesData] = useState([]);
   const [isInPlaylist, setIsInPlaylist] = useState(false);
 
@@ -45,7 +37,6 @@ const MovieDetailPage = () => {
     // 실제 API 호출을 대체하는 모킹된 데이터를 사용합니다.
     setMovie(vod_info);
     setCastData(cast);
-    setReviewData(reviews);
     setRelatedMoviesData(relatedMovies);
     setIsInPlaylist(false); // 기본값으로 플레이리스트에 추가되지 않은 상태로 설정
   }, [movieId]);
@@ -106,26 +97,17 @@ const MovieDetailPage = () => {
             </ul>
           </div>
 
-          <div className="reviews-container">
-            <h3>리뷰</h3>
-            <ul>
-              {reviewData.map(review => (
-                <li key={review.author}>
-                  <p>{review.content}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Reviews movieId={movieId} />
 
           <div className="related-movies-container">
             <h3>추천 영화</h3>
             <ul>
-            {relatedMoviesData.map(movie => (
-              <li Link key={movie.id} to={`/movieDetailPage/${movie.id}`}>
-                <img src={movie.imageUrl} alt={movie.title} />
-                <p>{movie.title}</p>
-              </li>
-            ))}
+              {relatedMoviesData.map(movie => (
+                <li key={movie.id}>
+                  <img src={movie.imageUrl} alt={movie.title} />
+                  <p>{movie.title}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -136,11 +118,14 @@ const MovieDetailPage = () => {
 
 export default MovieDetailPage;
 
+
+
 // import React, { useState, useEffect } from 'react';
 // import { useParams } from 'react-router-dom';
 // import axios from 'axios';
-// import Header from '../Component/Header'; // Ensure the path is correct
-// import Reviews from '../Component/Reviews'; // 리뷰 컴포넌트 분리
+// import Header from '../Component/Header';
+// import Reviews from '../Component/Reviews';
+// import logAction from '../Component/logAction';
 // import '../CSS/MovieDetailPage.css';
 
 // const MovieDetailPage = () => {
@@ -149,6 +134,7 @@ export default MovieDetailPage;
 //   const [castData, setCastData] = useState([]);
 //   const [relatedMoviesData, setRelatedMoviesData] = useState([]);
 //   const [isInPlaylist, setIsInPlaylist] = useState(false);
+//   const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
 //   useEffect(() => {
 //     const fetchMovieData = async () => {
@@ -161,8 +147,10 @@ export default MovieDetailPage;
 //         setRelatedMoviesData(relatedResponse.data);
 //         const playlistResponse = await axios.get(`/api/playlist/${movieId}`);
 //         setIsInPlaylist(playlistResponse.data.isInPlaylist);
+//         setLoading(false); // 로딩 완료
 //       } catch (error) {
 //         console.error('Error fetching movie data:', error);
+//         setLoading(false); // 로딩 완료
 //       }
 //     };
 //     fetchMovieData();
@@ -182,8 +170,12 @@ export default MovieDetailPage;
 //     }
 //   };
 
-//   if (!movie) {
+//   if (loading) {
 //     return <div>Loading...</div>;
+//   }
+
+//   if (!movie) {
+//     return <div>Movie not found</div>;
 //   }
 
 //   return (
@@ -200,7 +192,7 @@ export default MovieDetailPage;
 //             <h2>{movie.genres}</h2>
 //             <p>{movie.summary}</p>
 //             <div className="playTrailer-container">
-//               <video autoPlay loop muted>
+//               <video id="trailer" autoPlay loop muted>
 //                 <source src={movie.trailer_url} type="video/mp4" />
 //                 예고편
 //               </video>
@@ -243,10 +235,14 @@ export default MovieDetailPage;
 //   );
 // };
 
-// export default MovieDetailPage;
+// export default logAction(MovieDetailPage);
+
+
+
 
 //통신과 더불어 수정하면 다시 post해야함
 // api 명세서 확인해서 통신 부분 수정해야할듯
 //예고편 부분은 url 상태로 넘어가니까 수정
 // 찜 아이콘 으로 구동하도록 변경
 // header 부분도 아이콘 변경 및 헤더 말고 다른헤더 만들어야할것 같음
+//playbuttom 추가해서 vod play 데이터를 축적할 수 있도록 해야함

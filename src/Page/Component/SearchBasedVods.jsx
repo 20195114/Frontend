@@ -26,3 +26,5 @@ const SearchBasedVods = ({ vods, handlePosterClick }) => {
 };
 
 export default SearchBasedVods;
+// logAction 코드로 검색어 추척도 가능할지 모름 안된다면,
+// 검색어는 별개의 데이터로 운영해야함

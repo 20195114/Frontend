@@ -3,6 +3,11 @@ import { useLocation } from 'react-router-dom';
 import '../CSS/SearchBar.css';
 import axios from 'axios';
 
+interface SearchHistoryEntry {
+  keyword: string;
+  date: Date;
+}
+
 function SearchBar() {
   const location = useLocation();
   const initialResults = location.state?.searchResults || [];
@@ -10,13 +15,13 @@ function SearchBar() {
   const [searchResults, setSearchResults] = useState(initialResults);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [searchHistory, setSearchHistory] = useState([]);
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
 
   useEffect(() => {
     const historyRaw = localStorage.getItem('searchLog');
     if (historyRaw) {
       try {
-        const history = JSON.parse(historyRaw);
+        const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
         setSearchHistory(history);
       } catch (error) {
         console.error('Error parsing searchLog', error);
@@ -50,8 +55,8 @@ function SearchBar() {
     setIsLoading(false);
   };
 
-  const updateSearchHistory = (term) => {
-    const newHistory = [...searchHistory, { keyword: term, date: new Date() }];
+  const updateSearchHistory = (term: string) => {
+    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
     if (newHistory.length > 6) {
       newHistory.shift(); // 리스트가 6개 이상이면 가장 오래된 항목을 삭제
     }
@@ -90,3 +95,7 @@ function SearchBar() {
 }
 
 export default SearchBar;
+
+// api 변경
+// 임의데이터 넣어서 어떻게 표시되는지 확인해 봐야함
+// CSS 수정해야함
