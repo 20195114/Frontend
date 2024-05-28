@@ -44,6 +44,8 @@
 
 .header .icon-link, .header .icon {
   margin-left: 10px; /* 아이콘들 간의 간격을 일정하게 조정 */
+  padding-right: center
+  ;
 }
 
 .vod-container {

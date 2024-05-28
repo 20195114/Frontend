@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import "../CSS/About.css";
 import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
+
 const Background = styled.div`
   background-color: black;
 `;
@@ -32,7 +33,7 @@ function About() {
         console.error("Set-top number is missing."); 
         return; 
       }
-      const response = await axios.post('http://localhost:8000/login', { settop_num: settopnum });
+      const response = await axios.get(`http://15.165.135.7/users/${settopnum}`);
       if (response.status === 200) {
         setUsers(response.data.user_list);
       } else {
@@ -54,17 +55,17 @@ function About() {
   };
 
   const handleSignup = async () => {
-    const  SETTOP_NUM = localStorage.getItem('settop_num');
+    const SETTOP_NUM = localStorage.getItem('settop_num');
     
     const newUser = {
-      SETTOP_NUM:  SETTOP_NUM,
+      SETTOP_NUM: SETTOP_NUM,
       USER_NAME: USER_NAME,
       GENDER: GENDER,
       AGE: AGE
     };
 
     try {
-      const response = await axios.post('http://localhost:8000/signup', newUser);
+      const response = await axios.post('http://15.165.135.7/user', newUser);
       if (response.status === 200) {
         fetchUsers();  
         setIsSignupModalOpen(false);  

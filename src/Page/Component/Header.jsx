@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa"; 
 import { BsSkipStartBtn } from "react-icons/bs";
-import { IoLogoOctocat } from "react-icons/io5";
+import { IoLogoOctocat } from "react-icons/io5"; 
 import Search from './Search'; // Ensure the path is correct
 import '../CSS/Main.css'; // Ensure the path is correct
 
@@ -31,34 +31,9 @@ const Header = ({
   searchInputRef
 }) => {
   const navigate = useNavigate();
-  const [visible, setVisible] = useState(true);
-  const timeoutRef = useRef(null);
-
-  const resetTimeout = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      setVisible(false);
-    }, 10000); // 10초 뒤에 헤더를 숨김
-  };
-
-  useEffect(() => {
-    resetTimeout();
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleMouseEnter = () => {
-    setVisible(true);
-    resetTimeout();
-  };
 
   return (
-    <header className={`header ${visible ? 'visible' : 'hidden'}`} onMouseEnter={handleMouseEnter}>
+    <header className="header">
       <div className="logo-container">
         <h1 className="logo" onClick={goToMainPage}>Hell:D</h1>
         <div className="category-container">
@@ -82,7 +57,7 @@ const Header = ({
           handleSearchResultClick={handleSearchResultClick}
           searchInputRef={searchInputRef}
         />
-        <div className="playlist-container icon-link">
+        <div className="playlist-container">
           <BsSkipStartBtn
             className="play-icon"
             onClick={togglePlaylistVisibility}
@@ -92,7 +67,7 @@ const Header = ({
               {state.myWatchedVods.slice(0, 3).map((vod, index) => (
                 <div key={index} className="playlist-item">
                   <img src={vod.POSTER_URL || 'default-poster.jpg'} alt={vod.TITLE} />
-                  <p>{vod.TITLE}</p>
+                  <p>{vod.TITLE}</p> 
                 </div>
               ))}
               <div className="more" onClick={() => navigate('/Playlist')}>
@@ -101,7 +76,7 @@ const Header = ({
             </div>
           )}
         </div>
-        <div className="user-container icon-link">
+        <div className="user-container">
           <FaUser
             className="user-icon"
             onClick={toggleUserMenuVisibility}
@@ -135,4 +110,4 @@ export default Header;
 
 // 다른 페이지에 컴포넌트 적용했을때 아이콘 조작이 잘 안된는 경우있음 
 // 메인페이지로부터 컴포넌트 분리가 제대로 안됬을 가능성 농후
-// 확인후 독립개체로 다시 분리
+// 확인후 독립개체로 

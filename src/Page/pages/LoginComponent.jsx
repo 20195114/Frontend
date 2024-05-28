@@ -25,35 +25,42 @@ function LoginComponent() {
       return;
     } else {
       try {
-        const body = { settop_num };
-        const response = await axios.post('http://localhost:8000/login', body); // userlist
+        setLoading(true);
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/users/${settop_num}`); // URL에 settop_num 포함
         console.log(response.data);
-        switch (response.request.status) {
+        switch (response.status) {
           case 200:
             console.log("로그인");
-            const user_list = response.data.user_list; // 백엔드에서 받아온 사용자 데이터 -> back에서 보내는 데이터는 {id:['asd','asd']}여서 구조 수정했습니다.
-            localStorage.setItem("user_list", JSON.stringify(response.data.user_list)); // 'user_list' 로컬 스토리지에 저장
-            localStorage.setItem("settop_num", JSON.stringify(settop_num)); // 로컬 스토리지에 셋탑번호 저장
+            const user_list = response.data.user_list; // 백엔드에서 받아온 사용자 데이터
+            localStorage.setItem("user_list", JSON.stringify(user_list)); // 'user_list' 로컬 스토리지에 저장
+            localStorage.setItem("settop_num", settop_num); // 로컬 스토리지에 셋탑번호 저장
             setMsg("");
-            navigate('/About', { state: { user_list, settop_num} });
+            navigate('/About', { state: { user_list, settop_num } });
             break;
           case 400:
-            setMsg("비밀번호가 비어있습니다.");
+            setMsg("셋탑번호가 비어있습니다.");
             break;
           case 401:
-            setMsg("존재하지 않는 비밀번호입니다.");
+            setMsg("존재하지 않는 셋탑번호입니다.");
             break;
           case 402:
-            setMsg("비밀번호가 틀립니다.");
+            setMsg("셋탑번호가 틀립니다.");
             break;
           default:
+            setMsg("알 수 없는 오류가 발생했습니다.");
             break;
         }
       } catch (error) {
         console.error("에러:", error);
+        if (error.response && error.response.status === 404) {
+          setMsg("셋탑번호를 찾을 수 없습니다.");
+        } else {
+          setMsg("서버 에러가 발생했습니다.");
+        }
+      } finally {
+        setLoading(false);
       }
     }
-    setLoading(true);
   };
 
   return (
@@ -68,7 +75,7 @@ function LoginComponent() {
             placeholder="셋탑번호 입력"
             value={settop_num}
             onChange={(e) => {
-              setsettop_num(e.target.value)
+              setsettop_num(e.target.value);
             }}
           />
           <button type="submit" disabled={loading}>
