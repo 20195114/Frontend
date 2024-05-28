@@ -33,7 +33,7 @@ function About() {
         console.error("Set-top number is missing."); 
         return; 
       }
-      const response = await axios.get(`http://15.165.135.7/users/${settopnum}`);
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/users/${settop_num}`);
       if (response.status === 200) {
         setUsers(response.data.user_list);
       } else {
@@ -65,7 +65,7 @@ function About() {
     };
 
     try {
-      const response = await axios.post('http://15.165.135.7/user', newUser);
+      const response = await axios.post('${process.env.REACT_APP_EC2_ADDRESS}/user', newUser);
       if (response.status === 200) {
         fetchUsers();  
         setIsSignupModalOpen(false);  
