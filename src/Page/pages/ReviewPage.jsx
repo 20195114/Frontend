@@ -107,7 +107,6 @@ const ReviewPage = ({ movieId }) => {
     e.preventDefault();
     // 임의 사용자 데이터
     const user_id = 'test_user'; // 실제 사용자 ID를 사용할 때는 여기를 변경해야 합니다.
-    const title = 'test_title'; // 실제 영화 제목을 사용할 때는 여기를 변경해야 합니다.
 
     const newReviewData = {
       author: user_id,
