@@ -42,7 +42,13 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 100px; /* 수직 및 수평 간격 조정 */
-  /* background-color: #e5099c; */
+  justify-items: center; /* 그리드 항목을 가운데 정렬 */
+  align-items: start; /* 그리드 항목을 시작 위치에 정렬 */
+}
+
+#addUserButton {
+  grid-column: span 2; /* 버튼을 그리드의 전체 너비에 걸치도록 설정 */
+  justify-self: center; /* 버튼을 그리드 셀 안에서 가운데 정렬 */
 }
 
 .user-card {

@@ -102,10 +102,10 @@ function About() {
               <p>{user.user_name}</p>
             </div>
           ))}
+          {users.length < 4 && (
+            <button id="addUserButton" onClick={handleAddUser}>사용자 추가</button>
+          )}
         </div>
-        {/* {users.length < 4 && (
-          <button id="addUserButton" onClick={handleAddUser}>사용자 추가</button>
-        )} */}
         {isSignupModalOpen && (
           <div className="signup-modal">
             <div className="signup-modal-content">
