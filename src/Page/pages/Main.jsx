@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../Component/Header'; // Ensure the path is correct
-import MyWatchedVods from '../Component/MyWatchedVods'; // Ensure the path is correct
-import YouTubeTrends from '../Component/YouTubeTrends'; // Ensure the path is correct
-import PopularVods from '../Component/PopularVods'; // Ensure the path is correct
-import SearchBasedVods from '../Component/SearchBasedVods'; // Ensure the path is correct
-import RatingBasedVods from '../Component/RatingBasedVods'; // Ensure the path is correct
-import Spotify from '../Component/Spotify'; // Ensure the path is correct
-import '../CSS/Main.css'; // Ensure the path is correct
+import Header from '../Component/Header'; 
+import MyWatchedVods from '../Component/MyWatchedVods'; 
+import YouTubeTrends from '../Component/YouTubeTrends'; 
+import PopularVods from '../Component/PopularVods'; 
+import SearchBasedVods from '../Component/SearchBasedVods'; 
+import RatingBasedVods from '../Component/RatingBasedVods'; 
+import Spotify from '../Component/Spotify'; 
+import '../CSS/Main.css'; 
 import axios from 'axios';
 
 const mockVods = [
@@ -86,7 +86,7 @@ const Main = () => {
       checkAndFetchVods(user_id);
     }
     if (user_name) {
-      setState(prevState => ({ ...prevState, user_name: user_name }));
+            setState(prevState => ({ ...prevState, user_name: user_name }));
     }
   }, [checkAndFetchVods, fetchVodData]);
 
@@ -200,8 +200,3 @@ const Main = () => {
 
 export default Main;
 
-// Movie, Series, Kids카테고리에서 로고 눌렀을떄 메인페이지로 넘어가도록
-// 코드 수정해야하고 vod_poster 클릭시 DetaiLPage로 넘어갈때
-// url에 Vod_id가 포함되는데 백엔드로는 포스트되대, url 변경없이 잘 넘어가도록 
-// axios api 수정
-// footer 제작해야겠음(보류)

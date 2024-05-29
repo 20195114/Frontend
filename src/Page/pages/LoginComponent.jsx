@@ -78,9 +78,9 @@ function LoginComponent() {
               setsettop_num(e.target.value);
             }}
           />
-          <button type="submit" disabled={loading}>
+           {/* <button type="submit" disabled={loading}>
             시작하기
-          </button>
+          </button> */}
         </div>
         {msg && <div>{msg}</div>} {/* 메시지가 존재할 때만 렌더링 */}
       </form>
@@ -89,4 +89,3 @@ function LoginComponent() {
 }
 
 export default LoginComponent;
-// 다시

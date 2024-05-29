@@ -1,0 +1,71 @@
+/* 검색 스타일 */
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-input {
+  width: 0;
+  padding: 5px;
+  font-size: 1rem;
+  border: none;
+  border-bottom: 1px solid #fff;
+  background-color: transparent;
+  color: #fff;
+  transition: width 0.4s ease-in-out, transform 0.4s ease-in-out;
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.search-container.search-active .search-input {
+  outline: none;
+  width: 200px;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.search-icon,
+.close-icon {
+  cursor: pointer;
+  margin: 0 10px;
+  font-size: 1.5rem;
+  color: #fff;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.search-icon {
+  opacity: 1;
+}
+
+.search-container.search-active .search-icon {
+  opacity: 0;
+}
+
+.search-container.search-active .close-icon {
+  display: block;
+  opacity: 1;
+}
+
+.search-results {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #555;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.search-results p {
+  margin: 10px;
+  cursor: pointer;
+}
+
+.search-results p:hover {
+  background-color: #444;
+}

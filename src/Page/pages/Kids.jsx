@@ -1,39 +1,19 @@
-// import React, { useState } from 'react';
-// import Header from '../Component/Header'; // 경로 수정
-// import '../CSS/Movie.css';
-
-// const Kids = () => {
-//   const [users, setUsers] = useState([]);
-//   const [state, setState] = useState({ myWatchedVods: [] });
-
-//   return (
-//     <div className='body'>
-//       <Header state={state} setState={setState} users={users} setUsers={setUsers} />
-//       <div className="vod-container">
-//         <h2>My Watched Kids Shows</h2>
-//         <div className="kids-list">
-//           {state.myWatchedVods.map((vod, index) => (
-//             <div key={index} className="kids-item">
-//               <img src={vod.POSTER_URL || 'default-poster.jpg'} alt={vod.TITLE} />
-//               <h3>{vod.TITLE}</h3>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Kids;
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../CSS/Movie.css';
 import Header from '../Component/Header'; // 필요에 따라 경로를 조정하세요
+import { useNavigate } from 'react-router-dom';
 
 const Kids = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [state, setState] = useState({ myWatchedVods: [] });
   const [vods, setVods] = useState([]);
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const searchInputRef = useRef(null);
+  const [userMenuVisible, setUserMenuVisible] = useState(false);
+  const [playlistVisible, setPlaylistVisible] = useState(false);
 
   useEffect(() => {
     const fetchedVods = [
@@ -44,11 +24,82 @@ const Kids = () => {
     setVods(fetchedVods);
   }, []);
 
+  const goToMainPage = () => {
+    navigate('/Main');
+  };
+
+  const handleCategoryClick = (e) => {
+    const category = e.target.textContent;
+    navigate(`/${category}`);
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    if (e.key === 'Enter') {
+      // Add search functionality here
+      navigate('/SearchBar', { state: { query: searchQuery } });
+    }
+  };
+
+  const handleSearchIconClick = () => {
+    setSearchActive(true);
+    searchInputRef.current.focus();
+  };
+
+  const handleCloseIconClick = () => {
+    setSearchActive(false);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  const handleSearchResultClick = (vod_id) => {
+    navigate(`/MovieDetail/${vod_id}`);
+  };
+
+  const toggleUserMenuVisibility = () => {
+    setUserMenuVisible(!userMenuVisible);
+  };
+
+  const togglePlaylistVisibility = () => {
+    setPlaylistVisible(!playlistVisible);
+  };
+
+  const handleUserChange = (user_id, user_name) => {
+    // Add functionality for user change
+  };
+
   return (
     <div className='body'>
-      <Header state={state} setState={setState} users={users} setUsers={setUsers} />
+      <Header 
+        state={state} 
+        setState={setState} 
+        users={users} 
+        setUsers={setUsers}
+        searchActive={searchActive}
+        setSearchActive={setSearchActive}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchResults={searchResults}
+        setSearchResults={setSearchResults}
+        searchInputRef={searchInputRef}
+        handleSearchInputChange={handleSearchInputChange}
+        handleSearchSubmit={handleSearchSubmit}
+        handleSearchIconClick={handleSearchIconClick}
+        handleCloseIconClick={handleCloseIconClick}
+        handleSearchResultClick={handleSearchResultClick}
+        toggleUserMenuVisibility={toggleUserMenuVisibility}
+        userMenuVisible={userMenuVisible}
+        togglePlaylistVisibility={togglePlaylistVisibility}
+        playlistVisible={playlistVisible}
+        handleUserChange={handleUserChange}
+        handleCategoryClick={handleCategoryClick}
+        goToMainPage={goToMainPage}
+      />
       <div className='vod-container'>
-        <h2>추천 영화</h2>
+        <h2>키즈</h2>
         <div className='movie-list'>
           {vods.map((vod) => (
             <div key={vod.id} className='movie-item'>

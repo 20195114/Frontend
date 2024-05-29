@@ -54,6 +54,7 @@ body {
   align-items: center;
   width: 100%;
   margin-bottom: 16px; /* 하단 여백 추가 */
+  justify-content: center; /* 중앙 정렬 */
 }
 
 .login-container input[type="password"] {
@@ -61,6 +62,7 @@ body {
   border: 1px solid #ffffff;
   border-radius: 4px 0 0 4px;
   width: calc(100% - 120px); /* 버튼 너비를 제외한 나머지 너비 */
+  max-width: 280px; /* 최대 너비 설정 */
   box-sizing: border-box;
   font-size: 16px;
   background-color: #333333;
@@ -69,7 +71,7 @@ body {
 
 .login-container button {
   padding: 12px 24px;
-  background-color: #e5099c;
+  background-color: #c92045;
   color: #FFFFFF;
   border: none;
   border-radius: 0 4px 4px 0;

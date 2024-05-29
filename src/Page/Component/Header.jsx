@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser } from "react-icons/fa"; 
-import { BsSkipStartBtn } from "react-icons/bs";
-import { IoLogoOctocat } from "react-icons/io5"; 
-import Search from './Search'; // Ensure the path is correct
-import '../CSS/Main.css'; // Ensure the path is correct
+import Search from './Search'; 
+import Like from './Like'; 
+import MyMenu from './MyMenu'; 
+import '../CSS/Header.css'; 
 
 const Header = ({
   state,
@@ -17,7 +16,6 @@ const Header = ({
   users,
   handleSearchInputChange,
   handleSearchSubmit,
-  handlePosterClick,
   handleSearchIconClick,
   handleCloseIconClick,
   handleSearchResultClick,
@@ -36,11 +34,11 @@ const Header = ({
     <header className="header">
       <div className="logo-container">
         <h1 className="logo" onClick={goToMainPage}>Hell:D</h1>
-        <div className="category-container">
-          <Link to="/Movie" className="category" onClick={handleCategoryClick}>영화</Link>
-          <Link to="/Series" className="category">시리즈</Link>
-          <Link to="/Kids" className="category">키즈</Link>
-        </div>
+      </div>
+      <div className="category-container">
+        <Link to="/Movie" className="category" onClick={handleCategoryClick}>영화</Link>
+        <Link to="/Series" className="category" onClick={handleCategoryClick}>시리즈</Link>
+        <Link to="/Kids" className="category" onClick={handleCategoryClick}>키즈</Link>
       </div>
       <div className="icons-container">
         <Search
@@ -57,57 +55,21 @@ const Header = ({
           handleSearchResultClick={handleSearchResultClick}
           searchInputRef={searchInputRef}
         />
-        <div className="playlist-container">
-          <BsSkipStartBtn
-            className="play-icon"
-            onClick={togglePlaylistVisibility}
-          />
-          {playlistVisible && (
-            <div className="playlist-box active">
-              {state.myWatchedVods.slice(0, 3).map((vod, index) => (
-                <div key={index} className="playlist-item">
-                  <img src={vod.POSTER_URL || 'default-poster.jpg'} alt={vod.TITLE} />
-                  <p>{vod.TITLE}</p> 
-                </div>
-              ))}
-              <div className="more" onClick={() => navigate('/Playlist')}>
-                더보기
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="user-container">
-          <FaUser
-            className="user-icon"
-            onClick={toggleUserMenuVisibility}
-          />
-          {userMenuVisible && (
-            <div className="user-menu active">
-              {users.map(user => (
-                <div key={user.user_id} className="user-menu-item" onClick={() => handleUserChange(user.user_id, user.user_name)}>
-                  <IoLogoOctocat className="user-icon-small" />
-                  <p>{user.user_name}</p>
-                </div>
-              ))}
-              <div className="user-menu-item" onClick={() => navigate('/User')}>
-                <p>마이페이지</p>
-              </div>
-              <div className="user-menu-item" onClick={() => navigate('/review')}>
-                <p>내가 쓴 리뷰 및 별점</p>
-              </div>
-              <div className="user-menu-item" onClick={() => navigate('/LoginComponent')}>
-                <p>로그아웃</p>
-              </div>
-            </div>
-          )}
-        </div>
+        <Like
+          state={state}
+          playlistVisible={playlistVisible}
+          togglePlaylistVisibility={togglePlaylistVisibility}
+          navigate={navigate}
+        />
+        <MyMenu
+          users={users}
+          userMenuVisible={userMenuVisible}
+          toggleUserMenuVisibility={toggleUserMenuVisibility}
+          handleUserChange={handleUserChange}
+        />
       </div>
     </header>
   );
 };
 
 export default Header;
-
-// 다른 페이지에 컴포넌트 적용했을때 아이콘 조작이 잘 안된는 경우있음 
-// 메인페이지로부터 컴포넌트 분리가 제대로 안됬을 가능성 농후
-// 확인후 독립개체로 

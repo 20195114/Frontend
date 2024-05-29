@@ -13,6 +13,7 @@ import MovieDetailPage from "./Page/pages/MovieDetailPage.jsx";
 import ReviewPage from "./Page/pages/ReviewPage.jsx";
 
 
+
 function App() {
   return (
     <Routes>

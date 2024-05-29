@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FaSearch } from 'react-icons/fa'; 
 import { IoClose } from 'react-icons/io5'; 
 import { useNavigate } from 'react-router-dom'; 
-import '../CSS/Main.css'; 
+import '../CSS/Search.css'; // Ensure the path is correct
 
 const Search = ({
   searchActive,
@@ -14,6 +14,7 @@ const Search = ({
   searchInputRef
 }) => {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
 
   const mockSearchResults = {
     vod_list: [
@@ -23,7 +24,7 @@ const Search = ({
     ]
   };
 
-  const handleSearchInputChangeInternal = async (event) => {
+  const handleSearchInputChange = async (event) => {
     const query = event.target.value;
     setSearchQuery(query);
 
@@ -40,7 +41,7 @@ const Search = ({
     }
   };
 
-  const handleSearchSubmitInternal = async (event) => {
+  const handleSearchSubmit = async (event) => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         // 실제 axios 요청 대신 모킹된 데이터를 사용
@@ -52,38 +53,37 @@ const Search = ({
     }
   };
 
-  const handleSearchIconClickInternal = () => {
+  const handleSearchIconClick = () => {
     setSearchActive(true);
+    containerRef.current.classList.add('search-active');
     searchInputRef.current.focus();
   };
 
-  const handleCloseIconClickInternal = () => {
+  const handleCloseIconClick = () => {
     setSearchActive(false);
+    containerRef.current.classList.remove('search-active');
     setSearchQuery('');
     setSearchResults([]);
   };
 
   return (
-    <div className="search-container">
+    <div className="search-container" ref={containerRef}>
       <FaSearch
         className="search-icon"
-        onClick={handleSearchIconClickInternal}
-        style={{ display: searchActive ? 'none' : 'block' }}
+        onClick={handleSearchIconClick}
       />
       <input
         type="text"
         className="search-input"
         value={searchQuery}
-        onChange={handleSearchInputChangeInternal}
-        onKeyDown={handleSearchSubmitInternal}
+        onChange={handleSearchInputChange}
+        onKeyDown={handleSearchSubmit}
         ref={searchInputRef}
         placeholder="제목, 배우, 장르 검색"
-        style={{ opacity: searchActive ? 1 : 0 }}
       />
       <IoClose 
         className="close-icon"
-        onClick={handleCloseIconClickInternal}
-        style={{ display: searchActive ? 'block' : 'none' }}
+        onClick={handleCloseIconClick}
       />
       {searchActive && searchResults.length > 0 && (
         <div className="search-results">
