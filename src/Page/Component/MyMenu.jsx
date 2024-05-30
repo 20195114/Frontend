@@ -29,7 +29,7 @@ const MyMenu = ({
           <div className="user-menu-item" onClick={() => navigate('/User')}>
             <p>마이페이지</p>
           </div>
-          <div className="user-menu-item" onClick={() => navigate('/review')}>
+          <div className="user-menu-item" onClick={() => navigate('/ReviewPage')}>
             <p>내가 쓴 리뷰 및 별점</p>
           </div>
           <div className="user-menu-item" onClick={() => navigate('/LoginComponent')}>

@@ -1,0 +1,218 @@
+/* Review.css */
+
+.reviews-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #000000; /* 배경색 수정 */
+}
+
+.reviews-container h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #f7f1f1; /* 텍스트 색상 수정 */
+  text-align: center;
+}
+
+.reviews-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #1c1c1c; /* 리뷰 항목 배경색 */
+  border-radius: 10px; /* 둥근 모서리 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+}
+
+.review-poster {
+  width: 100px; /* 포스터 크기 수정 */
+  height: 150px;
+  border-radius: 10px; /* 둥근 모서리 */
+  margin-right: 20px;
+}
+
+.review-content {
+  flex: 1;
+  color: #f7f1f1; /* 텍스트 색상 수정 */
+}
+
+.review-content p {
+  margin: 5px 0;
+}
+
+.review-content strong {
+  color: #f7f1f1; /* 텍스트 색상 수정 */
+}
+
+.star-rating {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.star {
+  font-size: 2rem;
+  color: lightgray;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: gold;
+}
+
+form {
+  margin-top: 20px;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  font-size: 1rem;
+  color: #f7f1f1; /* 텍스트 색상 수정 */
+  margin-bottom: 5px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* 리뷰 항목 스타일 */
+.review-date {
+  color: #999;
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.review-actions button {
+  background: none;
+  border: none;
+  color: #f7f1f1;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.review-actions button:hover {
+  color: #ff6666; /* 버튼 호버 색상 */
+}
+
+/* 모달 창 스타일 */
+.review-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: #1c1c1c;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  color: #f7f1f1;
+}
+
+.review-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.review-modal h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.review-modal-content {
+  display: flex;
+  align-items: center;
+}
+
+.modal-review-poster {
+  width: 100px;
+  height: 150px;
+  border-radius: 10px;
+  margin-right: 20px;
+}
+
+.modal-review-info {
+  flex: 1;
+}
+
+.modal-review-info label {
+  color: #f7f1f1;
+}
+
+.modal-review-info input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #333;
+  color: #f7f1f1;
+}
+
+.modal-review-info .star-rating .star {
+  font-size: 2rem;
+  color: lightgray;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-review-info .star-rating .star.filled {
+  color: gold;
+}
+
+.modal-review-info button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #ff6666;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-review-info button:hover {
+  background-color: #e55b5b;
+}

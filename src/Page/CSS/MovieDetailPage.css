@@ -1,12 +1,11 @@
 .movie-detail-page {
-  background-color: #000;
-  color: #fff;
-  padding: 20px;
+  padding-top: 0; /* 헤더와의 겹침 방지 */
 }
 
 .movie-detail-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  padding-top: 60px; /* 컨테이너 아래로 약간의 공간 추가 */
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .movie-header {
@@ -16,45 +15,49 @@
 }
 
 .movie-poster {
-  width: 300px;
+  width: 200px;
   height: auto;
+  border-radius: 10px;
   margin-right: 20px;
 }
 
 .movie-info {
-  flex: 1;
+  max-width: 800px;
+  position: relative;
 }
 
 .movie-info h1 {
-  font-size: 2em;
+  font-size: 2rem;
   margin-bottom: 10px;
 }
 
 .movie-info p {
-  margin: 5px 0;
+  margin-bottom: 10px;
 }
 
-.movie-info button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #ff4500;
+.playlist-button {
+  position: absolute;
+  top: 10px; /* 버튼 위치를 아래로 이동 */
+  right: -20px; /* 버튼 위치를 오른쪽으로 이동 */
+  background: none;
   border: none;
-  color: #fff;
+  font-size: 1.5rem; /* 버튼 크기를 작게 조정 */
   cursor: pointer;
+  width: 30px; /* 버튼 가로길이 */
+  height: 30px; /* 버튼 세로길이 */
 }
+
 
 .movie-sections {
-  display: flex;
-  justify-content: space-between;
+  margin-top: 20px;
 }
 
-.cast-section, .related-movies-section {
-  flex: 1;
-  margin-right: 20px;
+.cast-section, .review-section, .related-movies-section {
+  margin-bottom: 20px;
 }
 
 .cast-section ul, .related-movies-section ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
 }
 
@@ -62,12 +65,9 @@
   margin-bottom: 10px;
 }
 
-.cast-section img, .related-movies-section img {
+.related-movies-section img {
   width: 100px;
   height: auto;
-  display: block;
-}
-
-.cast-section h3, .related-movies-section h3 {
-  margin-bottom: 10px;
+  border-radius: 5px;
+  margin-right: 10px;
 }

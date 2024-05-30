@@ -1,98 +1,27 @@
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const ReviewPage = ({ movieId }) => {
-//   const [reviewData, setReviewData] = useState([]);
-//   const [newReview, setNewReview] = useState({ rating: '', comment: '' });
-
-//   useEffect(() => {
-//     const fetchReviewData = async () => {
-//       try {
-//         const response = await axios.get(`/api/movies/${movieId}/reviews`);
-//         setReviewData(response.data);
-//       } catch (error) {
-//         console.error('Error fetching review data:', error);
-//       }
-//     };
-//     fetchReviewData();
-//   }, [movieId]);
-
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setNewReview({ ...newReview, [name]: value });
-//   };
-
-//   const submitReview = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const user_id = 'example_user_id'; // 사용자의 ID를 실제로 넣어야 합니다
-//       const title = 'example_title'; // 영화의 제목을 실제로 넣어야 합니다
-//       const response = await axios.post(`/review/user_id=${user_id}/vod_id=${movieId}/title=${title}`, newReview);
-//       if (response.data.response === "FINISH INSERT REVIEW") {
-//         // 성공적으로 리뷰가 등록되면 리뷰 데이터를 다시 불러옵니다
-//         const updatedResponse = await axios.get(`/api/movies/${movieId}/reviews`);
-//         setReviewData(updatedResponse.data);
-//         setNewReview({ rating: '', comment: '' }); // 폼을 초기화합니다
-//       }
-//     } catch (error) {
-//       console.error('Error submitting review:', error);
-//     }
-//   };
-
-//   return (
-//     <div className="reviews-container">
-//       <h3>리뷰</h3>
-//       <ul>
-//         {reviewData.map(review => (
-//           <li key={review.author}>
-//             <p>{review.content}</p>
-//             <p>Rating: {review.rating}</p>
-//           </li>
-//         ))}
-//       </ul>
-//       <form onSubmit={submitReview}>
-//         <div>
-//           <label>Rating: </label>
-//           <input
-//             type="text"
-//             name="rating"
-//             value={newReview.rating}
-//             onChange={handleInputChange}
-//           />
-//         </div>
-//         <div>
-//           <label>Comment: </label>
-//           <input
-//             type="text"
-//             name="comment"
-//             value={newReview.comment}
-//             onChange={handleInputChange}
-//           />
-//         </div>
-//         <button type="submit">Submit Review</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default ReviewPage;
-
 import React, { useEffect, useState } from 'react';
-import '../CSS/Review.css'; // 별점 스타일링을 위한 CSS 파일
+import axios from 'axios';
+import Modal from 'react-modal';
+import '../CSS/ReviewPage.css';
 
-const ReviewPage = ({ movieId }) => {
+const ReviewPage = () => {
   const [reviewData, setReviewData] = useState([]);
-  const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
+  const [newReview, setNewReview] = useState({ movieId: '', rating: 0, comment: '' });
+  const [editReview, setEditReview] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const userId = 'example_user_id'; // 실제 사용자 ID를 사용하세요
 
   useEffect(() => {
-    // 임의의 초기 리뷰 데이터
-    const initialReviews = [
-      { author: 'User1', content: 'Great movie!', rating: 5 },
-      { author: 'User2', content: 'Not bad.', rating: 3 },
-      { author: 'User3', content: 'Could be better.', rating: 2 },
-    ];
-    setReviewData(initialReviews);
-  }, [movieId]);
+    const fetchUserReviews = async () => {
+      try {
+        const response = await axios.get(`/api/user/${userId}/reviews`);
+        setReviewData(response.data);
+      } catch (error) {
+        console.error('Error fetching user reviews:', error);
+      }
+    };
+
+    fetchUserReviews();
+  }, [userId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,35 +32,78 @@ const ReviewPage = ({ movieId }) => {
     setNewReview({ ...newReview, rating });
   };
 
-  const submitReview = (e) => {
+  const handleEditStarClick = (rating) => {
+    setEditReview({ ...editReview, rating });
+  };
+
+  const openModal = (review) => {
+    setEditReview(review);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setEditReview(null);
+    setIsModalOpen(false);
+  };
+
+  const submitReview = async (e) => {
     e.preventDefault();
-    // 임의 사용자 데이터
-    const user_id = 'test_user'; // 실제 사용자 ID를 사용할 때는 여기를 변경해야 합니다.
+    try {
+      const response = await axios.post(`/api/review/user_id=${userId}/vod_id=${newReview.movieId}`, newReview);
+      if (response.data.response === "FINISH INSERT REVIEW") {
+        const updatedResponse = await axios.get(`/api/user/${userId}/reviews`);
+        setReviewData(updatedResponse.data);
+        setNewReview({ movieId: '', rating: 0, comment: '' }); // 폼을 초기화합니다
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+    }
+  };
 
-    const newReviewData = {
-      author: user_id,
-      content: newReview.comment,
-      rating: newReview.rating,
-    };
-
-    // 새로운 리뷰 데이터를 기존 리뷰 데이터에 추가
-    setReviewData([...reviewData, newReviewData]);
-    setNewReview({ rating: 0, comment: '' }); // 폼을 초기화
+  const updateReview = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(`/api/review/${editReview.id}`, editReview);
+      if (response.data.response === "FINISH UPDATE REVIEW") {
+        const updatedResponse = await axios.get(`/api/user/${userId}/reviews`);
+        setReviewData(updatedResponse.data);
+        closeModal();
+      }
+    } catch (error) {
+      console.error('Error updating review:', error);
+    }
   };
 
   return (
     <div className="reviews-container">
-      <h3>리뷰</h3>
+      <h3>내가 쓴 리뷰</h3>
       <ul>
         {reviewData.map((review, index) => (
-          <li key={index}>
-            <p>{review.content}</p>
-            <p>Rating: {review.rating}</p>
-            <p>Author: {review.author}</p>
+          <li key={index} className="review-item">
+            <img src={review.moviePoster} alt={review.movieTitle} className="review-poster" />
+            <div className="review-content">
+              <p><strong>제목:</strong> {review.movieTitle}</p>
+              <p><strong>리뷰:</strong> {review.content}</p>
+              <p><strong>별점:</strong> {Array(review.rating).fill('★').join(' ')}</p>
+              <p className="review-date">({review.date})</p>
+              <div className="review-actions">
+                <button onClick={() => openModal(review)}>수정</button>
+                <button>삭제</button>
+              </div>
+            </div>
           </li>
         ))}
       </ul>
       <form onSubmit={submitReview}>
+        <div>
+          <label>영화 ID: </label>
+          <input
+            type="text"
+            name="movieId"
+            value={newReview.movieId}
+            onChange={handleInputChange}
+          />
+        </div>
         <div>
           <label>Rating: </label>
           <div className="star-rating">
@@ -157,6 +129,44 @@ const ReviewPage = ({ movieId }) => {
         </div>
         <button type="submit">Submit Review</button>
       </form>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="리뷰 수정"
+        className="review-modal"
+        overlayClassName="review-modal-overlay"
+      >
+        <h2>리뷰 수정</h2>
+        {editReview && (
+          <form onSubmit={updateReview}>
+            <div className="review-modal-content">
+              <img src={editReview.moviePoster} alt={editReview.movieTitle} className="modal-review-poster" />
+              <div className="modal-review-info">
+                <label>리뷰: </label>
+                <input
+                  type="text"
+                  name="content"
+                  value={editReview.content}
+                  onChange={(e) => setEditReview({ ...editReview, content: e.target.value })}
+                />
+                <div className="star-rating">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={`star ${editReview.rating >= star ? 'filled' : ''}`}
+                      onClick={() => handleEditStarClick(star)}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <button type="submit">저장</button>
+              </div>
+            </div>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 };

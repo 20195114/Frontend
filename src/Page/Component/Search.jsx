@@ -3,7 +3,7 @@ import { FaSearch } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5'; 
 import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import '../CSS/Search.css'; // Ensure the path is correct
+import '../CSS/Search.css'; 
 
 const Search = ({
   searchActive,
@@ -12,6 +12,7 @@ const Search = ({
   setSearchQuery,
   searchResults,
   setSearchResults,
+  handleSearchResultClick,
   searchInputRef
 }) => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Search = ({
     if (query.length > 0) {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search`, { params: { query } });
-        setSearchResults(response.data.vod_list.slice(0, 5)); // 검색 결과를 최대 5개까지 제한
+        setSearchResults(response.data.vod_list.slice(0, 5));
       } catch (error) {
         console.error('Error fetching search results:', error);
       }
@@ -79,7 +80,7 @@ const Search = ({
       {searchActive && searchResults.length > 0 && (
         <div className="search-results">
           {searchResults.map((result, index) => (
-            <p key={index} onClick={() => navigate(`/MovieDetailPage/${result.vod_id}`)}>
+            <p key={index} onClick={() => handleSearchResultClick(result.vod_id)}>
               {result.vod_title}
             </p>
           ))}

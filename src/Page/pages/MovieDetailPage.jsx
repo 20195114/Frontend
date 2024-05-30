@@ -32,10 +32,8 @@ const MovieDetailPage = () => {
           rating: movieData.MOVIE_RATING,
         });
 
-        // Assume the cast is a string and needs to be split into an array
         setCastData(movieData.CAST.split(',').map(actor => ({ name: actor.trim() })));
 
-        // Assume related movies data is retrieved by another endpoint if available
         const relatedResponse = await axios.get(`/api/movies/${vod_id}/related`);
         setRelatedMoviesData(relatedResponse.data);
 
@@ -87,8 +85,8 @@ const MovieDetailPage = () => {
             <p>런닝타임: {movie.duration}분</p>
             <p>관람등급: 만 {movie.rating}세 이상</p>
             <p>{movie.summary}</p>
-            <button onClick={togglePlaylist}>
-              {isInPlaylist ? '플레이리스트 삭제' : '플레이리스트 추가'}
+            <button onClick={togglePlaylist} className="playlist-button">
+              {isInPlaylist ? '❤️' : '🤍'}
             </button>
           </div>
         </div>
@@ -105,7 +103,10 @@ const MovieDetailPage = () => {
             </ul>
           </div>
 
-          <Reviews movieId={vod_id} />
+          <div className="review-section">
+            <h3>리뷰</h3>
+            <Reviews movieId={vod_id} />
+          </div>
 
           <div className="related-movies-section">
             <h3>추천 영화</h3>
