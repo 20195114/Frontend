@@ -10,32 +10,14 @@ import Spotify from '../Component/Spotify';
 import '../CSS/Main.css'; 
 import axios from 'axios';
 
-const mockVods = [
-  {
-    TITLE: "파묘", 
-    VOD_ID: 1, 
-    POSTER_URL: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/tw0i3kkmOTjDjGFZTLHKhoeXVvA.jpg"
-  },
-  {
-    TITLE: "사바하", 
-    VOD_ID: 2, 
-    POSTER_URL: "https://an2-img.amz.wtchn.net/image/v2/l1a-plNEIARDrVlmfjXc_Q.jpg?jwt=ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXhMMjVqTm1nNWJYbHViWGQxTlhwcE4yNDNhbkl3SW4wLjk0MnUxbzBLcU9QTzN4YnJocXh2YklTVVNHLTNLQ1BfRXIxRUI1T2htVVk"
-  }, 
-  {
-    TITLE: "검은 사제들", 
-    VOD_ID: 3, 
-    POSTER_URL: "https://an2-img.amz.wtchn.net/image/v2/09NZnwnlQVggGexLePzVFw.jpg?jwt=ZXlKaGJHY2lPaUpJVXpJMU5pSjkuZXlKdmNIUnpJanBiSW1SZk5Ea3dlRGN3TUhFNE1DSmRMQ0p3SWpvaUwzWXhMM1J1ZDJkMk9HVnFjV3hxZEd4MWMyMXhlVzV1SW4wLnROR2N0ajJ1RHFOZWF1b0xza3ZsakFMY1lBXzBXekxFYVpwLV9EODNsSFU"
-  }
-];
-
 const Main = () => {
   const [state, setState] = useState({
-    myWatchedVods: mockVods,
-    youtubeTrendsVods: mockVods,
-    popularVods: mockVods,
-    searchBasedVods: mockVods,
-    ratingBasedVods: mockVods,
-    spotifyVods: mockVods,
+    myWatchedVods: [],
+    youtubeTrendsVods: [],
+    popularVods: [],
+    searchBasedVods: [],
+    ratingBasedVods: [],
+    spotifyVods: [],
     isSpotifyLinked: false,
     user_name: 'User Name'
   });
@@ -50,30 +32,60 @@ const Main = () => {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const fetchVodData = useCallback(async (user_id) => {
+  const fetchMyWatchedVods = useCallback(async (user_id) => {
     try {
-      // 모킹된 데이터를 사용하여 상태를 업데이트합니다.
-      setState(prevState => ({
-        ...prevState,
-        myWatchedVods: mockVods,
-        youtubeTrendsVods: mockVods,
-        popularVods: mockVods,
-        searchBasedVods: mockVods,
-        ratingBasedVods: mockVods,
-        spotifyVods: mockVods
-      }));
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/watch/${user_id}`);
+      setState(prevState => ({ ...prevState, myWatchedVods: response.data }));
     } catch (error) {
-      console.error('Error fetching VOD data:', error);
+      console.error('Error fetching my watched VODs:', error);
     }
   }, []);
 
-  const checkAndFetchVods = useCallback(async (user_id) => {
+  const fetchYouTubeTrends = useCallback(async (user_id) => {
     try {
-      fetchVodData(user_id);
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/youtube/${user_id}`);
+      setState(prevState => ({ ...prevState, youtubeTrendsVods: response.data }));
     } catch (error) {
-      console.error('Error checking Spotify link status:', error);
+      console.error('Error fetching YouTube trends:', error);
     }
-  }, [fetchVodData]);
+  }, []);
+
+  const fetchPopularVods = useCallback(async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/popular`);
+      setState(prevState => ({ ...prevState, popularVods: response.data }));
+    } catch (error) {
+      console.error('Error fetching popular VODs:', error);
+    }
+  }, []);
+
+  const fetchSearchBasedVods = useCallback(async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/search`);
+      setState(prevState => ({ ...prevState, searchBasedVods: response.data }));
+    } catch (error) {
+      console.error('Error fetching search based VODs:', error);
+    }
+  }, []);
+
+  const fetchRatingBasedVods = useCallback(async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/rating`);
+      setState(prevState => ({ ...prevState, ratingBasedVods: response.data }));
+    } catch (error) {
+      console.error('Error fetching rating based VODs:', error);
+    }
+  }, []);
+
+  const fetchSpotifyVods = useCallback(async (user_id) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/spotify/${user_id}`);
+      console.log(response)
+      setState(prevState => ({ ...prevState, spotifyVods: response.data }));
+    } catch (error) {
+      console.error('Error fetching Spotify VODs:', error);
+    }
+  }, []);
 
   useEffect(() => {
     const user_name = localStorage.getItem('selectedUserName');
@@ -82,29 +94,34 @@ const Main = () => {
     setUsers(storedUsers);
 
     if (user_id) {
-      fetchVodData(user_id);
-      checkAndFetchVods(user_id);
+      fetchMyWatchedVods(user_id);
+      fetchYouTubeTrends(user_id);
+      fetchPopularVods();
+      fetchSearchBasedVods();
+      fetchRatingBasedVods();
+      fetchSpotifyVods(user_id);
     }
     if (user_name) {
-            setState(prevState => ({ ...prevState, user_name: user_name }));
+      setState(prevState => ({ ...prevState, user_name }));
     }
-  }, [checkAndFetchVods, fetchVodData]);
+  }, [fetchMyWatchedVods, fetchYouTubeTrends, fetchPopularVods, fetchSearchBasedVods, fetchRatingBasedVods, fetchSpotifyVods]);
 
-  const handlePosterClick = () => {
-    navigate(`/movieDetailPage`);
+  const handlePosterClick = (vod_id) => {
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
 
   const handleSearchResultClick = (vod_id) => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    navigate(`/movies/${vod_id}`);
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
 
   const handleSearchSubmit = async (event) => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
-        const response = await axios.post('/search-vods', { query: searchQuery });
+        
+        const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
         navigate('/SearchBar', { state: { searchResults: response.data } });
       } catch (error) {
         console.error('Error searching VODs:', error);
@@ -123,8 +140,14 @@ const Main = () => {
   const handleUserChange = (user_id, user_name) => {
     localStorage.setItem('selectedUserId', user_id);
     localStorage.setItem('selectedUserName', user_name);
-    setState(prevState => ({ ...prevState, user_name: user_name }));
+    setState(prevState => ({ ...prevState, user_name }));
     setUserMenuVisible(false);
+    fetchMyWatchedVods(user_id);
+    fetchYouTubeTrends(user_id);
+    fetchPopularVods();
+    fetchSearchBasedVods();
+    fetchRatingBasedVods();
+    fetchSpotifyVods(user_id);
     navigate('/Main');
   };
 
@@ -194,9 +217,9 @@ const Main = () => {
         vods={state.spotifyVods} 
         handlePosterClick={ handlePosterClick} 
       />
+
     </div>
   );
 };
 
 export default Main;
-

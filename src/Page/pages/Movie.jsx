@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../CSS/Movie.css';
 import Header from '../Component/Header'; // 필요에 따라 경로를 조정하세요
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Movie = () => {
   const navigate = useNavigate();
@@ -16,12 +17,16 @@ const Movie = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
   useEffect(() => {
-    const fetchedVods = [
-      { id: 1, poster: 'path_to_poster1.jpg', title: '파묘' },
-      { id: 2, poster: 'path_to_poster2.jpg', title: '사바하' },
-      { id: 3, poster: 'path_to_poster3.jpg', title: '검은 사제들' },
-    ];
-    setVods(fetchedVods);
+    const fetchVods = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/vods`); // 실제 API 주소로 변경
+        setVods(response.data);
+      } catch (error) {
+        console.error('Failed to fetch VODs:', error);
+      }
+    };
+
+    fetchVods();
   }, []);
 
   const goToMainPage = () => {
@@ -40,7 +45,7 @@ const Movie = () => {
   const handleSearchSubmit = (e) => {
     if (e.key === 'Enter') {
       // Add search functionality here
-      navigate('/SearchResults', { state: { query: searchQuery } });
+      navigate('/SearchBar', { state: { query: searchQuery } });
     }
   };
 

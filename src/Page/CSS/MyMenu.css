@@ -2,14 +2,28 @@
 .user-container {
     position: relative;
   }
+
+  .user-icon-men {
+    color: #4A90E2; /* 아이콘 색상 */
+    font-size: 24px; /* 아이콘 크기 */
+    cursor: pointer; /* 커서 스타일 */
+    transition: transform 0.2s ease-in-out; /* 변환 애니메이션 */
   
+    /* 여기에 원하는 추가 스타일을 추가하세요 */
+  }
+  
+  .user-icon-men:hover {
+    transform: scale(2); /* 아이콘 크기 확대 */
+    color: #357ABD; /* 호버 시 아이콘 색상 변경 */
+  }
+
   .user-menu {
     display: none;
     position: absolute;
-    top: 30px;
+    top: 20px;
     right: 0;
     background-color: #333;
-    color: #fff;
+    color: #ffffff;
     width: 250px;
     border: 1px solid #555;
     border-radius: 5px;

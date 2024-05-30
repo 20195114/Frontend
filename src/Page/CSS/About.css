@@ -8,11 +8,11 @@ body {
 }
 
 .Logo {
-    font-family: 'Netflix Sans', Arial, sans-serif;
-    color: #e5099c;
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 3px;
+  font-family: 'Netflix Sans', Arial, sans-serif;
+  color: #e5099c;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .user-selection-page {
@@ -63,17 +63,16 @@ body {
   transform: scale(1.05);
 }
 
-.user-icon {
-  font-size: 200px;
-  color: #e5099c;
+.user-icon-cat{
+  font-size: 100px;
+  color: #ea0dab;
   margin-bottom: 10px;
-  
 }
 
 .user-card p {
-  font-size: 25px;
+  font-size: 30px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #f5f0f2;
 }
 
 .user-selection-page button {

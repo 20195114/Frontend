@@ -59,6 +59,20 @@ body {
   cursor: pointer;
 }
 
+.my-watched-vods-container {
+  padding: 10px;
+  background-color: #000000;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(232, 227, 227, 0.1);
+}
+
+/* 제목 스타일 */
+.my-watched-vods-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #f7f1f1;
+}
+
 /* VOD 컨테이너 스타일 */
 .vod-container {
   margin: 10px 10px; /* 상하 간격 조정 */
@@ -82,7 +96,7 @@ body {
   margin: 0 auto;
   width: 120px;
   height: 180px;
-  border-radius: 8px;
+  border-radius: 30px;
   cursor: pointer;
 }
 

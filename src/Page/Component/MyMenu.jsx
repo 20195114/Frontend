@@ -15,7 +15,7 @@ const MyMenu = ({
   return (
     <div className="user-container">
       <FaUser
-        className="user-icon"
+        className="user-icon-men"
         onClick={toggleUserMenuVisibility}
       />
       {userMenuVisible && (

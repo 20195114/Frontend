@@ -32,7 +32,7 @@ const Like = ({
         <div className="playlist-box active">
           {state.myWatchedVods.slice(0, 3).map((vod, index) => (
             <div key={index} className="playlist-item" onClick={() => handlePlaylistPosterClick(vod.VOD_ID)}>
-              <img src={vod.POSTER_URL || 'default-poster.jpg'} alt={vod.TITLE} />
+              <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} />
               <p>{vod.TITLE}</p> 
             </div>
           ))}
