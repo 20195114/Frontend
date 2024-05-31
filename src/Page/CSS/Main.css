@@ -41,7 +41,7 @@ body {
 
 .trailer-container .trailer-overlay h1 {
   font-size: 4rem;
-  margin-bottom: 20px;
+  /* margin-bottom: 10px; */
 }
 
 /* 섹션 컨테이너 스타일 */
@@ -66,20 +66,24 @@ body {
   margin-bottom: 10px; /* 제목과 포스터 사이의 간격 조정 */
   color: #f7f1f1;
   padding-left: 10px; /* 좌측 패딩 추가 */
+
 }
 
 /* VOD 컨테이너 스타일 */
 .vod-container {
-  margin: 0 20px; /* 좌우 마진 조정 */
+  margin: 0; /* 좌우 마진 조정 */
+  display: inline;
+
 }
 
 /* VOD 슬라이더 스타일 */
 .vod-slider {
   display: flex;
-  gap: 10px; /* 포스터 간의 간격 추가 */
+  gap: 20px; /* 포스터 간의 간격 추가 */
   overflow-x: auto;
   scroll-behavior: smooth;
   padding-left: 10px; /* 좌측 패딩 추가 */
+  margin: 0;
 }
 
 .vod-slider::-webkit-scrollbar {
@@ -102,11 +106,11 @@ body {
   width: 180px; /* 포스터 크기 조정 */
   height: 270px; /* 포스터 크기 조정 */
   cursor: pointer;
-  border-radius: 5px; /* 포스터에 둥근 모서리 추가 */
+  /* border-radius: 5px; 포스터에 둥근 모서리 추가 */
 }
 
 .vod-item p {
-  margin-top: 10px; /* 포스터와 제목 사이의 간격 조정 */
+  margin-top: 20px; /* 포스터와 제목 사이의 간격 조정 */
   color: #f7f1f1;
   font-size: 14px;
   text-align: center;
