@@ -217,7 +217,6 @@ const Main = () => {
         vods={state.spotifyVods} 
         handlePosterClick={ handlePosterClick} 
       />
-
     </div>
   );
 };

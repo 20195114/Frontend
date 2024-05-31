@@ -17,6 +17,14 @@
   align-items: center;
 }
 
+/* .logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #d731b9;
+  cursor: pointer;
+
+} */
+
 .logo {
   font-size: 2rem;
   font-weight: bold;

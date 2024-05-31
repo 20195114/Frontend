@@ -44,88 +44,99 @@ body {
   margin-bottom: 20px;
 }
 
-.trailer-container .trailer-overlay p {
-  font-size: 1.5rem;
-  margin-bottom: 40px;
-}
-
-.trailer-container .trailer-overlay button {
-  background-color: #e50914;
-  color: #fff;
-  border: none;
-  padding: 15px 30px;
-  font-size: 1.2rem;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.my-watched-vods-container {
-  padding: 10px;
-  background-color: #000000;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(232, 227, 227, 0.1);
-  
+/* 섹션 컨테이너 스타일 */
+.my-watched-vods-container,
+.youtube-trends-container,
+.popular-vods-container,
+.search-based-vods-container,
+.rating-based-vods-container,
+.spotify-container {
+  padding: 10px 0; /* 패딩을 조정하여 섹션 간 간격 조정 */
+  background-color: #141414;
 }
 
 /* 제목 스타일 */
-.my-watched-vods-container h2 {
+.my-watched-vods-container h2,
+.youtube-trends-container h2,
+.popular-vods-container h2,
+.search-based-vods-container h2,
+.rating-based-vods-container h2,
+.spotify-container h2 {
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 10px; /* 제목과 포스터 사이의 간격 조정 */
   color: #f7f1f1;
+  padding-left: 10px; /* 좌측 패딩 추가 */
 }
 
 /* VOD 컨테이너 스타일 */
 .vod-container {
-  margin: 10px 10px; /* 상하 간격 조정 */
+  margin: 0 20px; /* 좌우 마진 조정 */
 }
 
 /* VOD 슬라이더 스타일 */
 .vod-slider {
   display: flex;
+  gap: 10px; /* 포스터 간의 간격 추가 */
   overflow-x: auto;
   scroll-behavior: smooth;
+  padding-left: 10px; /* 좌측 패딩 추가 */
+}
+
+.vod-slider::-webkit-scrollbar {
+  display: none; /* 슬라이드 바 숨기기 */
+}
+
+.vod-slider {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .vod-item {
   flex: 0 0 auto;
-  margin-right: 15px;
   text-align: center;
 }
 
 .vod-item img {
   display: block;
   margin: 0 auto;
-  width: 120px;
-  height: 180px;
-  border-radius: 30px;
+  width: 180px; /* 포스터 크기 조정 */
+  height: 270px; /* 포스터 크기 조정 */
   cursor: pointer;
+  border-radius: 5px; /* 포스터에 둥근 모서리 추가 */
+}
+
+.vod-item p {
+  margin-top: 10px; /* 포스터와 제목 사이의 간격 조정 */
+  color: #f7f1f1;
+  font-size: 14px;
+  text-align: center;
 }
 
 /* 반응형 스타일 */
 @media (max-width: 1200px) {
-  .vod-item img {
-    width: 180px;
-    height: 270px;
-  }
-}
-
-@media (max-width: 992px) {
   .vod-item img {
     width: 160px;
     height: 240px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .vod-item img {
     width: 140px;
     height: 210px;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .vod-item img {
     width: 120px;
     height: 180px;
+  }
+}
+
+@media (max-width: 576px) {
+  .vod-item img {
+    width: 100px;
+    height: 150px;
   }
 }
