@@ -36,8 +36,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: 400px;
+  width: 300px;
 }
 
 .login-container label {
@@ -59,17 +58,20 @@ body {
   padding: 12px;
   border: 1px solid #ffffff;
   border-radius: 4px 0 0 4px;
-  width: calc(100% - 80px); /* 버튼 너비를 제외한 나머지 너비 조정 */
+  width: calc(100% - 90px); /* 버튼 너비를 제외한 나머지 너비 조정 */
   max-width: 400px; /* 최대 너비 설정 */
   box-sizing: border-box;
   font-size: 16px;
   background-color: #333333;
   color: #CCCCCC;
+  height: 48px; /* 버튼 높이와 맞추기 위해 높이 설정 */
 }
 
-.body.login-container button {
-  padding-top: 100%;
-  padding: 12px 24px;
+.login-container button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   background-color: #c92045;
   color: #FFFFFF;
   border: none;
@@ -78,6 +80,7 @@ body {
   font-size: 16px;
   font-weight: bold;
   transition: background-color 0.3s;
+  width: 80px; /* 버튼 너비 설정 */
   height: 48px; /* 입력 필드와 동일한 높이로 설정 */
   flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
 }
@@ -107,17 +110,16 @@ body {
     font-size: 16px;
   }
 
-  .login-container input[type="password"],
-  .login-container button {
-    height: 40px; /* 입력 필드와 버튼 높이 줄임 */
-  }
-
   .login-container input[type="password"] {
+    padding: 10px;
     font-size: 14px;
+    height: 40px;
   }
 
   .login-container button {
     font-size: 14px;
+    height: 40px;
+    width: 70px;
   }
 }
 
@@ -130,17 +132,16 @@ body {
     font-size: 14px;
   }
 
-  .login-container input[type="password"],
-  .login-container button {
-    height: 36px; /* 입력 필드와 버튼 높이 더 줄임 */
-  }
-
   .login-container input[type="password"] {
+    padding: 8px;
     font-size: 12px;
+    height: 36px;
   }
 
   .login-container button {
     font-size: 12px;
+    height: 36px;
+    width: 60px;
   }
 }
 
@@ -153,16 +154,15 @@ body {
     font-size: 12px;
   }
 
-  .login-container input[type="password"],
-  .login-container button {
-    height: 32px; /* 입력 필드와 버튼 높이 더 줄임 */
-  }
-
   .login-container input[type="password"] {
+    padding: 6px;
     font-size: 10px;
+    height: 32px;
   }
 
   .login-container button {
     font-size: 10px;
+    height: 32px;
+    width: 50px;
   }
 }

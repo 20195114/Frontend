@@ -28,43 +28,29 @@ function LoginComponent() {
         setLoading(true);
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settop_num}`);
         console.log(response.data);
-        if (response.status === 200) {
-          const user_list = response.data; // 응답 데이터가 바로 배열임
-          localStorage.setItem("user_list", JSON.stringify(user_list));
-          localStorage.setItem("settop_num", settop_num);
-          setMsg("");
-          setSettopNum(""); // Clear the input field
-          navigate('/About', { state: { user_list, settop_num } });
-        } else {
-          handleResponseError(response.status);
-        }
+
+        if (response.status === 200 && Array.isArray(response.data)) {
+          const user_list = response.data;
+          if (user_list.length > 0) {
+            localStorage.setItem("user_list", JSON.stringify(user_list));
+            localStorage.setItem("settop_num", settop_num);
+            setMsg("");
+            setSettopNum(""); // 입력 필드 지우기
+            navigate('/About', { state: { user_list, settop_num } });
+          } else {
+            setMsg("셋탑번호가 틀립니다.");
+          }
+        } 
       } catch (error) {
         console.error("에러:", error);
-        if (error.response && error.response.status === 404) {
-          setMsg("셋탑번호를 찾을 수 없습니다.");
+        if (error.response && error.response.status === 400) {
+          setMsg("셋탑번호가 틀립니다.");
         } else {
           setMsg("서버 에러가 발생했습니다.");
         }
       } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const handleResponseError = (status) => {
-    switch (status) {
-      case 400:
-        setMsg("셋탑번호가 비어있습니다.");
-        break;
-      case 401:
-        setMsg("존재하지 않는 셋탑번호입니다.");
-        break;
-      case 402:
-        setMsg("셋탑번호가 틀립니다.");
-        break;
-      default:
-        setMsg("알 수 없는 오류가 발생했습니다.");
-        break;
     }
   };
 
@@ -85,9 +71,9 @@ function LoginComponent() {
                 setSettopNum(e.target.value);
               }}
             />
-            {/* <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading}>
               시작하기
-            </button> */}
+            </button>
           </div>
           {msg && <div className="msg">{msg}</div>}
         </form>
