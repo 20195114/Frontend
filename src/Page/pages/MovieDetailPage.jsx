@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Modal from 'react-modal';
+import YouTube from 'react-youtube'; // react-youtube 추가
 import Header from '../Component/Header';
 import Reviews from '../Component/Reviews';
 import '../CSS/MovieDetailPage.css';
@@ -82,6 +83,12 @@ const MovieDetailPage = () => {
     setIsModalOpen(false);
   };
 
+  const getYouTubeId = (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -89,6 +96,8 @@ const MovieDetailPage = () => {
   if (!movie) {
     return <div>Movie not found</div>;
   }
+
+  const videoId = getYouTubeId(movie.trailerURL);
 
   return (
     <div className="movie-detail-page">
@@ -120,7 +129,7 @@ const MovieDetailPage = () => {
             <ul className="cast-list">
               {castData.map((actor, index) => (
                 <li key={index} className="cast-item">
-                  <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" />
+                  {actor.PROFILE && <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" />}
                   <p>{actor.ACTOR_NAME || actor}</p>
                 </li>
               ))}
@@ -155,15 +164,11 @@ const MovieDetailPage = () => {
       >
         <button onClick={closeModal} className="close-button">Close</button>
         <div className="video-container">
-          <iframe
-            width="100%"
-            height="100%"
-            src={movie.trailerURL}
-            title="Trailer"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+          {videoId ? (
+            <YouTube videoId={videoId} opts={{ width: '100%', height: '100%' }} />
+          ) : (
+            <p>예고편을 불러올 수 없습니다.</p>
+          )}
         </div>
       </Modal>
     </div>
