@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import { IoLogoOctocat } from "react-icons/io5";
-import axios from 'axios';
 import '../CSS/User.css';
 
 const MyMenu = ({
