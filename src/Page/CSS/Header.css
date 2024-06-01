@@ -1,20 +1,35 @@
+/* 전체 스타일 */
+body {
+  font-family: 'Netflix Sans', Arial, sans-serif;
+  background-color: #141414;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* 헤더 스타일 */
 .header {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   width: 100%;
-  height: 60px;
+  height: 100px;
   background-color: #333;
   color: rgb(246, 236, 241);
   padding: 5px 10px;
-  position: sticky;
+  position: fixed; /* Fixed로 변경하여 화면 상단에 고정 */
   top: 0;
   z-index: 1000;
+  box-sizing: border-box; /* padding이 width에 포함되도록 설정 */
 }
 
 .logo-container {
   display: flex;
   align-items: center;
+  margin-right: 30px;
+  width: auto; /* width를 auto로 설정 */
 }
 
 .logo {
@@ -49,40 +64,43 @@
 .icon {
   font-size: 1.5rem;
   color: #fff;
-  margin-left: 20px;
+  margin-left: 10px;
   cursor: pointer;
   text-decoration: none;
   display: flex;
   align-items: center;
+  margin-right: 10px;
 }
 
 .icon svg {
   width: 24px;
   height: 24px;
 }
-
+.more{
+  font-size: 15px;
+}
 /* 반응형 스타일 */
 @media (max-width: 768px) {
   .header {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: auto;
+    padding: 10px 0;
   }
 
   .logo-container {
-    grid-column: 1 / -1;
     justify-content: center;
+    margin-bottom: 10px;
   }
 
   .category-container {
-    grid-column: 1 / -1;
     justify-content: center;
-    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   .icons-container {
     justify-content: center;
-    margin-top: 10px;
   }
 
   .icon {
@@ -94,28 +112,22 @@
   .header {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     height: auto;
   }
 
   .logo-container {
     width: 100%;
     justify-content: center;
-    margin-bottom: 10px;
   }
 
   .category-container {
     width: 100%;
     justify-content: center;
-    margin-bottom: 10px;
   }
 
   .icons-container {
     width: 100%;
     justify-content: center;
-  }
-
-  .icon {
-    margin-left: 10px;
   }
 }
