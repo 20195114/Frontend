@@ -1,19 +1,22 @@
 .search-container {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .search-icon {
   font-size: 1.5rem;
   cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.search-container.search-active .search-icon {
+  transform: translateX(-20px); /* 이동 거리를 조정 */
 }
 
 .search-input {
   display: none;
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 200px;
+  width: 0;
   padding: 5px 10px;
   font-size: 1rem;
   background-color: #333;
@@ -21,16 +24,21 @@
   border: 1px solid #555;
   border-radius: 5px;
   z-index: 1000;
+  transition: width 0.3s ease, display 0s 0.3s;
 }
 
 .search-container.search-active .search-input {
   display: block;
+  width: 200px;
+  transition: width 0.3s ease;
 }
 
 .close-icon {
   display: none;
   font-size: 1.5rem;
   cursor: pointer;
+  margin-left: 10px;
+  transition: opacity 0.3s ease;
 }
 
 .search-container.search-active .close-icon {

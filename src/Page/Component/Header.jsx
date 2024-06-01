@@ -28,7 +28,7 @@ const Header = ({
   const navigate = useNavigate();
 
   const goToMainPage = () => {
-    navigate('/');
+    navigate('/Main');
   };
 
   return (
