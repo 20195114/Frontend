@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import YouTube from 'react-youtube'; // react-youtube 추가
 import Header from '../Component/Header';
@@ -8,6 +8,7 @@ import '../CSS/MovieDetailPage.css';
 
 const MovieDetailPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const vod_id = location.state?.vod_id;
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
@@ -89,7 +90,7 @@ const MovieDetailPage = () => {
 
   return (
     <div className="movie-detail-page">
-      <Header />
+      <Header goToMainPage={() => navigate('/Main')} />
       <div className="movie-detail-container">
         <div className="movie-header">
           <img src={movie.posterURL} alt={movie.title} className="movie-poster" />

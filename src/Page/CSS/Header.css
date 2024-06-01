@@ -2,8 +2,8 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  width: 100px;
-  height: 20px;
+  width: 100%;
+  height: 60px;
   background-color: #333;
   color: rgb(246, 236, 241);
   padding: 5px 10px;
@@ -16,14 +16,6 @@
   display: flex;
   align-items: center;
 }
-
-/* .logo {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #d731b9;
-  cursor: pointer;
-
-} */
 
 .logo {
   font-size: 2rem;
@@ -70,21 +62,60 @@
 }
 
 /* 반응형 스타일 */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .header {
-    flex-direction: column;
-    align-items: flex-start;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    height: auto;
   }
 
   .logo-container {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .category-container {
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .icons-container {
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .icon {
+    margin-left: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+  }
+
+  .logo-container {
+    width: 100%;
+    justify-content: center;
     margin-bottom: 10px;
   }
 
   .category-container {
+    width: 100%;
+    justify-content: center;
     margin-bottom: 10px;
   }
 
   .icons-container {
-    justify-content: flex-start;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .icon {
+    margin-left: 10px;
   }
 }

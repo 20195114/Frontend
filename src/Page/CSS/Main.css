@@ -143,4 +143,8 @@ body {
     width: 100px;
     height: 150px;
   }
+
+  .trailer-container {
+    margin-top: 135px;
+  }
 }

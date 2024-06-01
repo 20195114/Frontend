@@ -23,10 +23,13 @@ const Header = ({
   userMenuVisible,
   handleUserChange,
   handleCategoryClick,
-  goToMainPage,
   searchInputRef
 }) => {
   const navigate = useNavigate();
+
+  const goToMainPage = () => {
+    navigate('/');
+  };
 
   return (
     <header className="header">

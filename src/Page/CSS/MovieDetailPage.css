@@ -143,6 +143,10 @@
   .related-movies-section ul {
     justify-content: center;
   }
+
+  .movie-detail-container {
+    padding-top: 80px; /* Increase padding to avoid overlap */
+  }
 }
 
 @media (max-width: 768px) {
@@ -172,6 +176,10 @@
   .related-movies-section ul {
     justify-content: center;
   }
+
+  .movie-detail-container {
+    padding-top: 150px; /* Increase padding to avoid overlap */
+  }
 }
 
 @media (max-width: 480px) {
@@ -193,5 +201,9 @@
 
   .related-movies-section img {
     width: 80px;
+  }
+
+  .movie-detail-container {
+    padding-top: 150px; /* Increase padding to avoid overlap */
   }
 }
