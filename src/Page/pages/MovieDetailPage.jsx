@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import Modal from 'react-modal';
 import YouTube from 'react-youtube'; // react-youtube 추가
 import Header from '../Component/Header';
 import Reviews from '../Component/Reviews';
 import '../CSS/MovieDetailPage.css';
-
-Modal.setAppElement('#root');
 
 const MovieDetailPage = () => {
   const location = useLocation();
@@ -17,7 +14,6 @@ const MovieDetailPage = () => {
   const [relatedMoviesData, setRelatedMoviesData] = useState([]);
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!vod_id) {
@@ -75,14 +71,6 @@ const MovieDetailPage = () => {
     }
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   const getYouTubeId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -115,15 +103,19 @@ const MovieDetailPage = () => {
             <button onClick={togglePlaylist} className="playlist-button">
               {isInPlaylist ? '❤️' : '🤍'}
             </button>
-            {movie.trailerURL && (
-              <button onClick={openModal} className="trailer-button">
-                예고편 보기
-              </button>
-            )}
           </div>
         </div>
 
         <div className="movie-sections">
+          <div className="trailer-section">
+            <h3>예고편</h3>
+            {videoId ? (
+              <YouTube videoId={videoId} opts={{ width: '100%', height: '390px' }} />
+            ) : (
+              <p>예고편을 불러올 수 없습니다.</p>
+            )}
+          </div>
+
           <div className="cast-section">
             <h3>출연진</h3>
             <ul className="cast-list">
@@ -154,23 +146,6 @@ const MovieDetailPage = () => {
           </div>
         </div>
       </div>
-
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Trailer Modal"
-        className="modal"
-        overlayClassName="overlay"
-      >
-        <button onClick={closeModal} className="close-button">Close</button>
-        <div className="video-container">
-          {videoId ? (
-            <YouTube videoId={videoId} opts={{ width: '100%', height: '100%' }} />
-          ) : (
-            <p>예고편을 불러올 수 없습니다.</p>
-          )}
-        </div>
-      </Modal>
     </div>
   );
 };
