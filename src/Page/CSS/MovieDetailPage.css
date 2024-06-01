@@ -1,9 +1,9 @@
 .movie-detail-page {
-  padding-top: 0; /* 헤더와의 겹침 방지 */
+  padding-top: 0;
 }
 
 .movie-detail-container {
-  padding-top: 60px; /* 컨테이너 아래로 약간의 공간 추가 */
+  padding-top: 60px;
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -37,16 +37,30 @@
 
 .playlist-button {
   position: absolute;
-  top: 10px; /* 버튼 위치를 아래로 이동 */
-  right: -20px; /* 버튼 위치를 오른쪽으로 이동 */
+  top: 10px;
+  right: -20px;
   background: none;
   border: none;
-  font-size: 1.5rem; /* 버튼 크기를 작게 조정 */
+  font-size: 1.5rem;
   cursor: pointer;
-  width: 30px; /* 버튼 가로길이 */
-  height: 30px; /* 버튼 세로길이 */
+  width: 30px;
+  height: 30px;
 }
 
+.trailer-button {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.trailer-button:hover {
+  background-color: #0056b3;
+}
 
 .movie-sections {
   margin-top: 20px;
@@ -56,12 +70,49 @@
   margin-bottom: 20px;
 }
 
-.cast-section ul, .related-movies-section ul {
+.cast-section h3, .review-section h3, .related-movies-section h3 {
+  margin-bottom: 10px;
+}
+
+.cast-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cast-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  width: 100px;
+}
+
+.cast-img {
+  width: 80px;
+  height: auto;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+
+.review-section ul {
   list-style: none;
   padding: 0;
 }
 
-.cast-section li, .related-movies-section li {
+.review-section li {
+  margin-bottom: 10px;
+}
+
+.related-movies-section ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.related-movies-section li {
+  margin-right: 10px;
   margin-bottom: 10px;
 }
 
@@ -69,5 +120,135 @@
   width: 100px;
   height: auto;
   border-radius: 5px;
-  margin-right: 10px;
+}
+
+/* 모달 스타일 */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .movie-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .movie-info {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .playlist-button {
+    position: static;
+    margin-top: 10px;
+  }
+
+  .trailer-button {
+    margin-top: 10px;
+  }
+
+  .cast-list {
+    justify-content: center;
+  }
+
+  .related-movies-section ul {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .movie-info {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .playlist-button {
+    position: static;
+    margin-top: 10px;
+  }
+
+  .trailer-button {
+    margin-top: 10px;
+  }
+
+  .cast-list {
+    justify-content: center;
+  }
+
+  .related-movies-section ul {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .movie-poster {
+    width: 150px;
+  }
+
+  .movie-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .cast-item {
+    width: 80px;
+  }
+
+  .cast-img {
+    width: 60px;
+  }
+
+  .related-movies-section img {
+    width: 80px;
+  }
 }

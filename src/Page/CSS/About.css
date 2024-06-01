@@ -40,8 +40,7 @@ body {
 
 .user-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 100px; /* 수직 및 수평 간격 조정 */
+  gap: 40px; /* 수직 및 수평 간격 조정 */
   justify-items: center; /* 그리드 항목을 가운데 정렬 */
   align-items: start; /* 그리드 항목을 시작 위치에 정렬 */
 }
@@ -63,7 +62,7 @@ body {
   transform: scale(1.05);
 }
 
-.user-icon-cat{
+.user-icon-cat {
   font-size: 100px;
   color: #ea0dab;
   margin-bottom: 10px;
@@ -169,5 +168,24 @@ body {
 @media (max-aspect-ratio: 4/3) {
   .user-selection-page {
     padding: 10px;
+  }
+}
+
+/* Responsive grid layout */
+@media (max-width: 768px) {
+  .user-grid {
+    grid-template-columns: repeat(2, 1fr); /* 작은 화면에서는 두 열로 표시 */
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .user-grid {
+    grid-template-columns: repeat(3, 1fr); /* 중간 화면에서는 세 열로 표시 */
+  }
+}
+
+@media (min-width: 1025px) {
+  .user-grid {
+    grid-template-columns: repeat(4, 1fr); /* 큰 화면에서는 네 열로 표시 */
   }
 }

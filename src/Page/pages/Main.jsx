@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../Component/Header'; 
-import MyWatchedVods from '../Component/MyWatchedVods'; 
-import YouTubeTrends from '../Component/YouTubeTrends'; 
-import PopularVods from '../Component/PopularVods'; 
-import SearchBasedVods from '../Component/SearchBasedVods'; 
-import RatingBasedVods from '../Component/RatingBasedVods'; 
-import Spotify from '../Component/Spotify'; 
-import '../CSS/Main.css'; 
+import Header from '../Component/Header';
+import MyWatchedVods from '../Component/MyWatchedVods';
+import YouTubeTrends from '../Component/YouTubeTrends';
+import PopularVods from '../Component/PopularVods';
+import SearchBasedVods from '../Component/SearchBasedVods';
+import RatingBasedVods from '../Component/RatingBasedVods';
+import Spotify from '../Component/Spotify';
+import '../CSS/Main.css';
 import axios from 'axios';
 
 const Main = () => {
@@ -80,7 +80,6 @@ const Main = () => {
   const fetchSpotifyVods = useCallback(async (user_id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/spotify/${user_id}`);
-      console.log(response)
       setState(prevState => ({ ...prevState, spotifyVods: response.data }));
     } catch (error) {
       console.error('Error fetching Spotify VODs:', error);
@@ -95,7 +94,7 @@ const Main = () => {
 
     if (user_id) {
       fetchMyWatchedVods(user_id);
-      fetchYouTubeTrends(user_id);
+      fetchYouTubeTrends(      user_id);
       fetchPopularVods();
       fetchSearchBasedVods();
       fetchRatingBasedVods();
@@ -120,7 +119,6 @@ const Main = () => {
   const handleSearchSubmit = async (event) => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
-        
         const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
         navigate('/SearchBar', { state: { searchResults: response.data } });
       } catch (error) {
@@ -172,9 +170,6 @@ const Main = () => {
         users={users}
         handleSearchInputChange={() => {}}
         handleSearchSubmit={handleSearchSubmit}
-        handlePosterClick={handlePosterClick}
-        handleSearchIconClick={() => setSearchActive(true)}
-        handleCloseIconClick={() => setSearchActive(false)}
         handleSearchResultClick={handleSearchResultClick}
         togglePlaylistVisibility={togglePlaylistVisibility}
         playlistVisible={playlistVisible}
@@ -222,3 +217,4 @@ const Main = () => {
 };
 
 export default Main;
+
