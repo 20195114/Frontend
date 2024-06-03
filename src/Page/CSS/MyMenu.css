@@ -3,35 +3,18 @@
   position: relative;
 }
 
-.user-icon-men {
-  color: #4A90E2; /* 아이콘 색상 */
-  font-size: 24px; /* 아이콘 크기 */
-  cursor: pointer; /* 커서 스타일 */
-  transition: transform 0.2s ease-in-out; /* 변환 애니메이션 */
-}
-
-.user-icon-men:hover {
-  transform: scale(2); /* 아이콘 크기 확대 */
-  color: #357ABD; /* 호버 시 아이콘 색상 변경 */
-}
-
-.user-icon-small {
-  font-size: 15px;
-}
-
 .user-menu {
   display: none;
   position: absolute;
-  top: 20px;
+  top: 30px;
   right: 0;
   background-color: #333;
-  color: #eee8e8;
+  color: #fff;
   width: 250px;
   border: 1px solid #555;
   border-radius: 5px;
   z-index: 1000;
   padding: 10px;
-  box-sizing: border-box; /* padding이 width에 포함되도록 설정 */
 }
 
 .user-menu.active {
@@ -53,39 +36,37 @@
 
 .user-menu-item p {
   margin: 0;
-  color: #f2ecec;
-  font-size: 8px; /* 기본 글씨 크기를 줄임 */
+  color: #fff;
 }
+
+.user-icon-small {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.user-name {
+  margin-left: 10px; /* 추가된 부분 */
+}
+
 
 /* 반응형 스타일 */
-@media (max-width: 768px) {
-  .user-menu {
-    width: 250px; /* 박스 크기 유지 */
-    padding: 8px; /* 패딩 조정 */
-  }
-
-  .user-menu-item img {
-    width: 35px; /* 이미지 크기 조정 */
-    height: 35px; /* 이미지 크기 조정 */
-  }
-
-  .user-menu-item p {
-    font-size: 10px; /* 글씨 크기 조정 */
-  }
-}
-
 @media (max-width: 576px) {
   .user-menu {
-    width: 220px; /* 박스 크기 조정 */
-    padding: 8px; /* 패딩 조정 */
+    width: 100%;
+    right: 0;
   }
 
-  .user-menu-item img {
-    width: 30px; /* 이미지 크기 조정 */
-    height: 30px; /* 이미지 크기 조정 */
-  }
-
-  .user-menu-item p {
-    font-size: 8px; /* 글씨 크기 조정 */
+  .user-menu {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: #333;
+    color: #fff;
+    width: 200px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    z-index: 1000;
+    padding: 10px;
   }
 }

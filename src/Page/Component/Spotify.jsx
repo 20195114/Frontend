@@ -1,7 +1,8 @@
 import React from 'react';
-import '../CSS/Main.css'; // Ensure the path to your CSS file is correct
+import PropTypes from 'prop-types';
+import '../CSS/Main.css'; // CSS 파일 경로가 올바른지 확인하세요
 
-const Spotify = ({ vods, handlePosterClick }) => {
+const Spotify = ({ vods = [], handlePosterClick }) => {
   const displayVods = (vods) => {
     return (
       <div className="vod-slider">
@@ -25,5 +26,15 @@ const Spotify = ({ vods, handlePosterClick }) => {
   );
 };
 
+Spotify.propTypes = {
+  vods: PropTypes.arrayOf(
+    PropTypes.shape({
+      VOD_ID: PropTypes.number.isRequired,
+      POSTER: PropTypes.string,
+      TITLE: PropTypes.string.isRequired,
+    })
+  ),
+  handlePosterClick: PropTypes.func.isRequired,
+};
+
 export default Spotify;
-// 음 어디서부터 손댈지는 연결을 해봐야 알듯

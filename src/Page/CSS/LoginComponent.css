@@ -120,6 +120,8 @@ body {
     font-size: 14px;
     height: 40px;
     width: 70px;
+    margin: 0;
+
   }
 }
 
@@ -142,6 +144,8 @@ body {
     font-size: 12px;
     height: 36px;
     width: 60px;
+    margin: 0;
+
   }
 }
 
@@ -164,5 +168,6 @@ body {
     font-size: 10px;
     height: 32px;
     width: 50px;
+    margin: 0;
   }
 }

@@ -44,3 +44,21 @@
   margin-top: 10px;
   color: #e50914;
 }
+@media (max-width: 768px) {
+
+}
+@media (max-width: 576px) {
+  .playlist-box {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: #333;
+    color: #fff;
+    width: 160px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    z-index: 1000;
+    padding: 10px;
+  }
+}

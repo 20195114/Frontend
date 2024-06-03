@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import YouTube from 'react-youtube'; // react-youtube 추가
+import YouTube from 'react-youtube';
 import Header from '../Component/Header';
 import Reviews from '../Component/Reviews';
+import { FaRegPlayCircle, FaRegHeart, FaHeart } from 'react-icons/fa';
 import '../CSS/MovieDetailPage.css';
 
 const MovieDetailPage = () => {
@@ -95,21 +96,24 @@ const MovieDetailPage = () => {
         <div className="movie-header">
           <img src={movie.posterURL} alt={movie.title} className="movie-poster" />
           <div className="movie-info">
-            <h1>{movie.title}</h1>
+            <h1>
+              {movie.title}
+              <FaRegPlayCircle className="play-button" />
+            </h1>
             <p>개봉일: {movie.releaseDate}</p>
             <p>장르: {movie.genres}</p>
             <p>런닝타임: {movie.duration}분</p>
             <p>관람등급: {movie.rating}</p>
             <p>{movie.summary}</p>
             <button onClick={togglePlaylist} className="playlist-button">
-              {isInPlaylist ? '❤️' : '🤍'}
+              {isInPlaylist ? <FaHeart className="heart-icon" /> : <FaRegHeart className="heart-icon" />}
             </button>
           </div>
         </div>
 
         <div className="movie-sections">
           <div className="trailer-section">
-            <h3>예고편</h3>
+          <h3>예고편</h3>
             {videoId ? (
               <YouTube videoId={videoId} opts={{ width: '100%', height: '390px' }} />
             ) : (
@@ -137,7 +141,7 @@ const MovieDetailPage = () => {
           <div className="related-movies-section">
             <h3>추천 영화</h3>
             <ul>
-              {relatedMoviesData.map(movie => (
+              {relatedMoviesData.map((movie) => (
                 <li key={movie.id}>
                   <img src={movie.imageUrl} alt={movie.title} />
                   <p>{movie.title}</p>

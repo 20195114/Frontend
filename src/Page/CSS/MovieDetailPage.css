@@ -29,6 +29,8 @@
 .movie-info h1 {
   font-size: 2rem;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .movie-info p {
@@ -43,8 +45,8 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
 }
 
 .trailer-section {
@@ -115,6 +117,10 @@
   border-radius: 5px;
 }
 
+.play-button {
+  margin-left: 10px;
+}
+
 /* Responsive Styles */
 @media (max-width: 1200px) {
   .movie-header {
@@ -130,6 +136,12 @@
   .playlist-button {
     position: static;
     margin-top: 10px;
+  }
+
+  .play-button,
+  .playlist-button {
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .trailer-button {
@@ -163,6 +175,12 @@
   .playlist-button {
     position: static;
     margin-top: 10px;
+  }
+
+  .play-button,
+  .playlist-button {
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .trailer-button {

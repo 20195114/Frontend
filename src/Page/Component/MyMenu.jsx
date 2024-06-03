@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import { IoLogoOctocat } from "react-icons/io5";
-import '../CSS/User.css';
+import '../CSS/MyMenu.css';
 
 const MyMenu = ({
   userMenuVisible,

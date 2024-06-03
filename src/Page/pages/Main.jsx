@@ -44,7 +44,24 @@ const Main = () => {
     setLoading(prevState => ({ ...prevState, [key]: true }));
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}${user_id ? `/${user_id}` : ''}`);
-      setState(prevState => ({ ...prevState, [key]: response.data }));
+      
+      if (key === 'spotifyVods') {
+        if (response.data.status === false) {
+          const spotifyAuthUrl = response.data.authUrl;
+          const newWindow = window.open(spotifyAuthUrl, '_blank', 'width=500,height=600');
+
+          const interval = setInterval(() => {
+            if (newWindow.closed) {
+              clearInterval(interval);
+              window.location.reload();
+            }
+          }, 1000);
+        } else {
+          setState(prevState => ({ ...prevState, [key]: response.data.vods }));
+        }
+      } else {
+        setState(prevState => ({ ...prevState, [key]: response.data }));
+      }
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
     } finally {
@@ -188,4 +205,3 @@ const Main = () => {
 };
 
 export default Main;
-
