@@ -66,7 +66,7 @@ function About() {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/user`, newUser);
+      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user`, newUser);
       if (response.status === 200) {
         fetchUsers();
         setIsSignupModalOpen(false);
