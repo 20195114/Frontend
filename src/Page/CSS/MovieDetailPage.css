@@ -92,11 +92,55 @@
 
 .review-section ul {
   list-style: none;
-  padding: 0;
+  padding: 10px;
 }
 
 .review-section li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+}
+
+.review-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 30%;
+  margin-right: 20px;
+}
+
+.review-content {
+  flex-grow: 1;
+}
+
+.review-comment {
   margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.review-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 10px;
+}
+
+.review-username {
+  font-weight: bold;
+}
+
+.review-date {
+  text-align: right;
+  margin-left: 10px;
+}
+
+.review-rating {
+  color: red;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-left: 10px;
 }
 
 .related-movies-section ul {

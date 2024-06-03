@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { FaSearch } from 'react-icons/fa'; 
-import { IoClose } from 'react-icons/io5'; 
-import { useNavigate } from 'react-router-dom'; 
+import { FaSearch } from 'react-icons/fa';
+import { IoClose } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../CSS/Search.css'; 
+import '../CSS/Search.css';
 
 const Search = ({
   searchActive,
@@ -19,12 +19,12 @@ const Search = ({
   const containerRef = useRef(null);
 
   const handleSearchInputChange = async (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
+    const keyword = event.target.value;
+    setSearchQuery(keyword);
 
-    if (query.length > 0) {
+    if (keyword.length > 0) {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search`, { params: { query } });
+        const response = await axios.get(`${process.env.REACT_APP_CUD_ADDRESS}/search/${encodeURIComponent(keyword)}`);
         setSearchResults(response.data.vod_list.slice(0, 5));
       } catch (error) {
         console.error('Error fetching search results:', error);
@@ -35,9 +35,10 @@ const Search = ({
   };
 
   const handleSearchSubmit = async (event) => {
-    if (event.key === 'Enter' && searchQuery.trim() !== '') {
+    const keyword = searchQuery.trim();
+    if (event.key === 'Enter' && keyword !== '') {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search`, { params: { query: searchQuery } });
+        const response = await axios.get(`${process.env.REACT_APP_CUD_ADDRESS}/search/${encodeURIComponent(keyword)}`);
         navigate('/SearchBar', { state: { searchResults: response.data.vod_list } });
       } catch (error) {
         console.error('Error searching VODs:', error);
@@ -73,7 +74,7 @@ const Search = ({
         ref={searchInputRef}
         placeholder="제목, 배우, 장르 검색"
       />
-      <IoClose 
+      <IoClose
         className="close-icon"
         onClick={handleCloseIconClick}
       />

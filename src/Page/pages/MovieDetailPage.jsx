@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import YouTube from 'react-youtube';
 import Header from '../Component/Header';
-import Reviews from '../Component/Reviews';
 import { FaRegPlayCircle, FaRegHeart, FaHeart } from 'react-icons/fa';
 import '../CSS/MovieDetailPage.css';
 
@@ -14,6 +13,7 @@ const MovieDetailPage = () => {
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
   const [relatedMoviesData, setRelatedMoviesData] = useState([]);
+  const [reviewData, setReviewData] = useState([]);
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -29,19 +29,19 @@ const MovieDetailPage = () => {
         const movieData = response.data;
 
         setMovie({
-          id: movieData.MOVIE_ID || movieData.SERIES_ID || movieData.K_SERIES_ID,
+          id: movieData.MOVIE_ID,
           title: movieData.TITLE,
           genres: movieData.GENRE,
-          summary: movieData.MOVIE_OVERVIEW || movieData.SERIES_OVERVIEW,
+          summary: movieData.MOVIE_OVERVIEW,
           posterURL: movieData.POSTER,
           trailerURL: movieData.TRAILER,
           releaseDate: movieData.RELEASE_DATE,
           duration: movieData.RTM,
-          rating: movieData.MOVIE_RATING || movieData.SERIES_RATING,
+          rating: movieData.MOVIE_RATING,
         });
 
-        const cast = movieData.ACTOR || movieData.CAST.split(',').map(actor => ({ ACTOR_NAME: actor.trim() }));
-        setCastData(cast);
+        setCastData(movieData.ACTOR);
+        setReviewData(movieData.review);
 
         const relatedResponse = await axios.get(`/api/movies/${vod_id}/related`);
         setRelatedMoviesData(relatedResponse.data);
@@ -74,9 +74,20 @@ const MovieDetailPage = () => {
   };
 
   const getYouTubeId = (url) => {
+    if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  const handleMovieClick = async (movieId) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${movieId}`);
+      const movieData = response.data;
+      navigate('/MovieDetail', { state: { vod_id: movieId } });
+    } catch (error) {
+      console.error('Error navigating to movie detail:', error);
+    }
   };
 
   if (loading) {
@@ -113,7 +124,7 @@ const MovieDetailPage = () => {
 
         <div className="movie-sections">
           <div className="trailer-section">
-          <h3>예고편</h3>
+            <h3>예고편</h3>
             {videoId ? (
               <YouTube videoId={videoId} opts={{ width: '100%', height: '390px' }} />
             ) : (
@@ -127,7 +138,7 @@ const MovieDetailPage = () => {
               {castData.map((actor, index) => (
                 <li key={index} className="cast-item">
                   {actor.PROFILE && <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" />}
-                  <p>{actor.ACTOR_NAME || actor}</p>
+                  <p>{actor.ACTOR_NAME}</p>
                 </li>
               ))}
             </ul>
@@ -135,14 +146,23 @@ const MovieDetailPage = () => {
 
           <div className="review-section">
             <h3>리뷰</h3>
-            <Reviews movieId={vod_id} />
+            <ul className="review-list">
+              {reviewData.map((review, index) => (
+                <li key={index} className="review-item">
+                  <p><strong>ID:</strong> {review.USER_NAME}</p>
+                  <p><strong>리뷰:</strong> {review.COMMENT}</p>
+                  <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
+                  <p className="review-date">({review.date})</p>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="related-movies-section">
             <h3>추천 영화</h3>
             <ul>
               {relatedMoviesData.map((movie) => (
-                <li key={movie.id}>
+                <li key={movie.id} onClick={() => handleMovieClick(movie.id)}>
                   <img src={movie.imageUrl} alt={movie.title} />
                   <p>{movie.title}</p>
                 </li>
