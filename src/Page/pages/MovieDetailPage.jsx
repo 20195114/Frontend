@@ -4,6 +4,8 @@ import axios from 'axios';
 import YouTube from 'react-youtube';
 import Header from '../Component/Header';
 import { FaRegPlayCircle, FaRegHeart, FaHeart } from 'react-icons/fa';
+import { FaRegStar } from "react-icons/fa";
+import Modal from 'react-modal';
 import '../CSS/MovieDetailPage.css';
 
 const MovieDetailPage = () => {
@@ -16,6 +18,9 @@ const MovieDetailPage = () => {
   const [reviewData, setReviewData] = useState([]);
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reviewText, setReviewText] = useState('');
+  const [reviewRating, setReviewRating] = useState(0);
 
   useEffect(() => {
     if (!vod_id) {
@@ -89,6 +94,19 @@ const MovieDetailPage = () => {
     }
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleReviewSave = async () => {
+    // 여기에 리뷰 저장 로직을 추가하세요.
+    closeModal();
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -108,7 +126,7 @@ const MovieDetailPage = () => {
           <div className="movie-info">
             <h1>
               {movie.title}
-              <FaRegPlayCircle className="play-button" />
+              <FaRegPlayCircle className="play-button" onClick={openModal} />
             </h1>
             <p>개봉일: {movie.releaseDate}</p>
             <p>장르: {movie.genres}</p>
@@ -170,6 +188,31 @@ const MovieDetailPage = () => {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={isModalOpen} onRequestClose={closeModal} className="modal" overlayClassName="modal-overlay">
+        <div className="modal-content">
+          <img src={movie.posterURL} alt={movie.title} className="modal-poster" />
+          <textarea
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            placeholder="리뷰를 남겨주세요."
+            className="modal-textarea"
+          />
+          <div className="modal-rating">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <FaRegStar
+                key={star}
+                className={`modal-star ${star <= reviewRating ? 'selected' : ''}`}
+                onClick={() => setReviewRating(star)}
+              />
+            ))}
+          </div>
+          <div className="modal-buttons">
+            <button onClick={closeModal} className="modal-button cancel">나중에</button>
+            <button onClick={handleReviewSave} className="modal-button save">저장</button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
