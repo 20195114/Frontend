@@ -8,7 +8,6 @@ function User() {
     const [editMode, setEditMode] = useState(false);
 
     const nameInputRef = useRef(null);
-    const genderInputRef = useRef(null);
     const ageInputRef = useRef(null);
 
     useEffect(() => {
