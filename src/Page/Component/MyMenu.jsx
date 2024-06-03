@@ -28,23 +28,24 @@ const MyMenu = ({
       <FaUser
         className="user-icon-men"
         onClick={toggleUserMenuVisibility}
+        aria-label="Toggle user menu"
       />
       {userMenuVisible && (
         <div className="user-menu active">
           {users.map(user => (
-            <div key={user.user_id} className="user-menu-item" onClick={() => handleUserClick(user.user_id, user.user_name)}>
+            <div key={user.USER_ID} className="user-menu-item" onClick={() => handleUserClick(user.USER_ID, user.USER_NAME)}>
               <IoLogoOctocat className="user-icon-small" />
-              <p>{user.user_name}</p>
+              <p>{user.USER_NAME}</p>
             </div>
           ))}
           <div className="user-menu-item" onClick={() => navigate('/User')}>
-            <div style={{fontSize:'20px'}}>마이페이지</div>
+            <div style={{fontSize: '20px'}}>마이페이지</div>
           </div>
           <div className="user-menu-item" onClick={() => navigate('/ReviewPage')}>
-          <div style={{fontSize:'20px'}}>내가 쓴 리뷰 및 별점</div>
+            <div style={{fontSize: '20px'}}>내가 쓴 리뷰 및 별점</div>
           </div>
           <div className="user-menu-item" onClick={() => navigate('/LoginComponent')}>
-          <div style={{fontSize:'20px'}}>로그아웃</div>
+            <div style={{fontSize: '20px'}}>로그아웃</div>
           </div>
         </div>
       )}

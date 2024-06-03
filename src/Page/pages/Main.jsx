@@ -28,63 +28,38 @@ const Main = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState({
+    myWatchedVods: false,
+    youtubeTrendsVods: false,
+    popularVods: false,
+    searchBasedVods: false,
+    ratingBasedVods: false,
+    spotifyVods: false,
+  });
 
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const fetchMyWatchedVods = useCallback(async (user_id) => {
+  const fetchData = useCallback(async (url, key, user_id = null) => {
+    setLoading(prevState => ({ ...prevState, [key]: true }));
     try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/watch/${user_id}`);
-      setState(prevState => ({ ...prevState, myWatchedVods: response.data }));
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}${user_id ? `/${user_id}` : ''}`);
+      setState(prevState => ({ ...prevState, [key]: response.data }));
     } catch (error) {
-      console.error('Error fetching my watched VODs:', error);
+      console.error(`Error fetching ${key}:`, error);
+    } finally {
+      setLoading(prevState => ({ ...prevState, [key]: false }));
     }
   }, []);
 
-  const fetchYouTubeTrends = useCallback(async (user_id) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/youtube/${user_id}`);
-      setState(prevState => ({ ...prevState, youtubeTrendsVods: response.data }));
-    } catch (error) {
-      console.error('Error fetching YouTube trends:', error);
-    }
-  }, []);
-
-  const fetchPopularVods = useCallback(async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/popular`);
-      setState(prevState => ({ ...prevState, popularVods: response.data }));
-    } catch (error) {
-      console.error('Error fetching popular VODs:', error);
-    }
-  }, []);
-
-  const fetchSearchBasedVods = useCallback(async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/search`);
-      setState(prevState => ({ ...prevState, searchBasedVods: response.data }));
-    } catch (error) {
-      console.error('Error fetching search based VODs:', error);
-    }
-  }, []);
-
-  const fetchRatingBasedVods = useCallback(async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/rating`);
-      setState(prevState => ({ ...prevState, ratingBasedVods: response.data }));
-    } catch (error) {
-      console.error('Error fetching rating based VODs:', error);
-    }
-  }, []);
-
-  const fetchSpotifyVods = useCallback(async (user_id) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/vodlist/spotify/${user_id}`);
-      setState(prevState => ({ ...prevState, spotifyVods: response.data }));
-    } catch (error) {
-      console.error('Error fetching Spotify VODs:', error);
-    }
-  }, []);
+  const loadUserData = useCallback((user_id) => {
+    fetchData('/mainpage/vodlist/watch', 'myWatchedVods', user_id);
+    fetchData('/mainpage/vodlist/youtube', 'youtubeTrendsVods', user_id);
+    fetchData('/mainpage/vodlist/popular', 'popularVods');
+    fetchData('/mainpage/vodlist/search', 'searchBasedVods');
+    fetchData('/mainpage/vodlist/rating', 'ratingBasedVods');
+    fetchData('/mainpage/vodlist/spotify', 'spotifyVods', user_id);
+  }, [fetchData]);
 
   useEffect(() => {
     const user_name = localStorage.getItem('selectedUserName');
@@ -93,17 +68,12 @@ const Main = () => {
     setUsers(storedUsers);
 
     if (user_id) {
-      fetchMyWatchedVods(user_id);
-      fetchYouTubeTrends(      user_id);
-      fetchPopularVods();
-      fetchSearchBasedVods();
-      fetchRatingBasedVods();
-      fetchSpotifyVods(user_id);
+      loadUserData(user_id);
     }
     if (user_name) {
       setState(prevState => ({ ...prevState, user_name }));
     }
-  }, [fetchMyWatchedVods, fetchYouTubeTrends, fetchPopularVods, fetchSearchBasedVods, fetchRatingBasedVods, fetchSpotifyVods]);
+  }, [loadUserData]);
 
   const handlePosterClick = (vod_id) => {
     navigate(`/MovieDetailPage`, { state: { vod_id } });
@@ -140,12 +110,7 @@ const Main = () => {
     localStorage.setItem('selectedUserName', user_name);
     setState(prevState => ({ ...prevState, user_name }));
     setUserMenuVisible(false);
-    fetchMyWatchedVods(user_id);
-    fetchYouTubeTrends(user_id);
-    fetchPopularVods();
-    fetchSearchBasedVods();
-    fetchRatingBasedVods();
-    fetchSpotifyVods(user_id);
+    loadUserData(user_id);
     navigate('/Main');
   };
 
@@ -191,26 +156,32 @@ const Main = () => {
         vods={state.myWatchedVods} 
         handlePosterClick={handlePosterClick} 
         user_name={state.user_name} 
+        loading={loading.myWatchedVods}
       />
       <YouTubeTrends 
         vods={state.youtubeTrendsVods} 
         handlePosterClick={handlePosterClick} 
+        loading={loading.youtubeTrendsVods}
       />
       <PopularVods 
         vods={state.popularVods} 
         handlePosterClick={handlePosterClick} 
+        loading={loading.popularVods}
       />
       <SearchBasedVods 
         vods={state.searchBasedVods} 
         handlePosterClick={handlePosterClick} 
+        loading={loading.searchBasedVods}
       />
       <RatingBasedVods 
         vods={state.ratingBasedVods} 
         handlePosterClick={handlePosterClick} 
+        loading={loading.ratingBasedVods}
       />
       <Spotify 
         vods={state.spotifyVods} 
-        handlePosterClick={ handlePosterClick} 
+        handlePosterClick={handlePosterClick} 
+        loading={loading.spotifyVods}
       />
     </div>
   );

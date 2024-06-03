@@ -38,12 +38,36 @@
     margin: 0;
     color: #fff;
   }
+
+  .user-icon-small {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+  
+  .user-name {
+    margin-left: 10px; /* 추가된 부분 */
+  }
+  
   
   /* 반응형 스타일 */
   @media (max-width: 576px) {
     .user-menu {
       width: 100%;
       right: 0;
+    }
+
+    .user-menu {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 0;
+      background-color: #333;
+      color: #fff;
+      width: 200px;
+      border: 1px solid #555;
+      border-radius: 5px;
+      z-index: 1000;
+      padding: 10px;
     }
   }
   
