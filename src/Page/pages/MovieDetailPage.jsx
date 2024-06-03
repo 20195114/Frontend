@@ -82,8 +82,7 @@ const MovieDetailPage = () => {
 
   const handleMovieClick = async (movieId) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${movieId}`);
-      const movieData = response.data;
+      await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${movieId}`);
       navigate('/MovieDetail', { state: { vod_id: movieId } });
     } catch (error) {
       console.error('Error navigating to movie detail:', error);
