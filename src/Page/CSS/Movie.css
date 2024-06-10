@@ -1,17 +1,19 @@
-.body {
+/* 전체 스타일 */
+.movie-page {
   font-family: 'Netflix Sans', Arial, sans-serif;
   background-color: #141414;
   color: #fff;
   margin: 0;
-  padding-top: 80px;
-  overflow-x: hidden; 
+  padding: 0;
+  overflow-x: hidden;
+  padding-top: 80px; /* 헤더와 겹치지 않도록 상단 여백 추가 */
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 10px 20px; /* 패딩 추가 */
   background-color: rgba(20, 20, 20, 0.7);
   position: fixed;
   top: 0;
@@ -33,54 +35,139 @@
 .header .category, .icon-link {
   margin-right: 20px;
   color: #fff;
-  text-decoration: none; 
+  text-decoration: none;
   cursor: pointer;
 }
 
 .header .icons-container {
-  margin-left: auto; /* 아이콘들을 오른쪽으로 정렬하지 않고 일정 간격을 두기 위해 수정 */
+  margin-left: auto;
   margin-right: 20px;
 }
 
 .header .icon-link, .header .icon {
-  margin-left: 10px; /* 아이콘들 간의 간격을 일정하게 조정 */
-  padding-right: center
-  ;
+  margin-left: 10px;
 }
 
+/* VOD 카테고리 컨테이너 */
 .vod-container {
   padding: 20px;
-  margin-top: 100px; 
+  margin-top: 120px; /* 전체 컨테이너 상단 여백 추가 */
 }
 
 .vod-container h2 {
   margin-bottom: 20px;
 }
 
-.movie-list {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); 
-  grid-gap: 20px; 
+.vod-category {
+  padding: 20px 0;
+  background-color: #141414;
 }
 
-.movie-item {
+.vod-category h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  color: #f7f1f1;
+  padding-left: 10px;
+}
+
+.vod-slider {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-left: 10px;
+  margin: 0;
 }
 
-.movie-item img {
-  width: 100%;
+.vod-slider::-webkit-scrollbar {
+  display: none;
 }
 
+.vod-slider {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.vod-item {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.vod-item img {
+  display: block;
+  margin: 0 auto;
+  width: 180px; /* 기본 포스터 너비 */
+  height: 270px; /* 기본 포스터 높이 */
+  cursor: pointer;
+  transition: transform 0.3s ease; /* 호버 효과 */
+}
+
+.vod-item img:hover {
+  transform: scale(1.05); /* 호버 시 확대 효과 */
+}
+
+.vod-item p {
+  margin-top: 20px;
+  color: #f7f1f1;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 반응형 스타일 */
 @media (max-width: 1200px) {
-  .body{
-    padding-top: 80px;
+  .vod-item img {
+    width: 160px; /* 포스터 너비 */
+    height: 240px; /* 포스터 높이 */
+  }
+}
+
+@media (max-width: 992px) {
+  .vod-item img {
+    width: 140px; /* 포스터 너비 */
+    height: 210px; /* 포스터 높이 */
+  }
+  .vod-container {
+    margin-top: 140px; /* 상단 여백 조정 */
   }
 }
 
 @media (max-width: 768px) {
-  .body{
-    padding-top: 175px;
+  .movie-page {
+    font-family: 'Netflix Sans', Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    padding-top: 160px; /* 헤더와 겹치지 않도록 상단 여백 추가 */
+  }
+  .vod-item img {
+    width: 120px; /* 포스터 너비 */
+    height: 180px; /* 포스터 높이 */
+  }
+  .vod-container {
+    margin-top: 160px; /* 전체 컨테이너 상단 여백 추가 */
+  }
+}
+
+@media (max-width: 576px) {
+  .movie-page {
+    font-family: 'Netflix Sans', Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+    margin: 0;
+    padding-top: 160px; /* 상단 여백 조정 */
+    overflow-x: hidden;
+  }
+  .vod-item img {
+    width: 100px; /* 포스터 너비 */
+    height: 150px; /* 포스터 높이 */
+  }
+  .vod-container {
+    margin-top: 200px; /* 전체 컨테이너 상단 여백 추가 */
+  }
+  .vod-category {
+    padding: 20px 0;
+    background-color: #141414;
   }
 }

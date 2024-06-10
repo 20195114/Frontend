@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../CSS/Movie.css';
-import Header from '../Component/Header'; // 필요에 따라 경로를 조정하세요
+import Header from '../Component/Header'; // 실제 경로로 변경하세요
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import VODCategory from '../Component/VODCategory'; // 새로운 카테고리 컴포넌트
 
 const Movie = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
   const [state, setState] = useState({ myWatchedVods: [] });
-  const [vods, setVods] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [vodsByCategory, setVodsByCategory] = useState({
+    SF: [],
+    Education: [],
+    Family: [],
+    Horror: [],
+    Drama: [],
+    Romance: [],
+    Action: [],
+    Animation: [],
+  });
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -17,26 +27,28 @@ const Movie = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
   useEffect(() => {
-    const fetchVods = async () => {
+    const fetchVods = async (category, endpoint) => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/vods`); // 실제 API 주소로 변경
-        setVods(response.data);
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${endpoint}`);
+        setVodsByCategory(prevState => ({
+          ...prevState,
+          [category]: response.data
+        }));
       } catch (error) {
-        console.error('Failed to fetch VODs:', error);
+        console.error(`Failed to fetch VODs for ${category}:`, error);
       }
     };
 
-    fetchVods();
+    // 각 카테고리에 대해 데이터 가져오기
+    fetchVods('SF', '/mainpage/movie/SF-fantasy');
+    fetchVods('Education', '/mainpage/movie/Liberal-Arts-Others');
+    fetchVods('Family', '/mainpage/movie/family');
+    fetchVods('Horror', '/mainpage/movie/horror');
+    fetchVods('Drama', '/mainpage/movie/drama');
+    fetchVods('Romance', '/mainpage/movie/romance');
+    fetchVods('Action', '/mainpage/movie/action');
+    fetchVods('Animation', '/mainpage/movie/animations');
   }, []);
-
-  const goToMainPage = () => {
-    navigate('/Main');
-  };
-
-  const handleCategoryClick = (e) => {
-    const category = e.target.textContent;
-    navigate(`/${category}`);
-  };
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -44,40 +56,20 @@ const Movie = () => {
 
   const handleSearchSubmit = (e) => {
     if (e.key === 'Enter') {
-      // Add search functionality here
       navigate('/SearchBar', { state: { query: searchQuery } });
     }
   };
 
-  const handleSearchIconClick = () => {
-    setSearchActive(true);
-    searchInputRef.current.focus();
-  };
-
-  const handleCloseIconClick = () => {
-    setSearchActive(false);
-    setSearchQuery('');
-    setSearchResults([]);
-  };
-
   const handleSearchResultClick = (vod_id) => {
-    navigate(`/MovieDetail/${vod_id}`);
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
 
-  const toggleUserMenuVisibility = () => {
-    setUserMenuVisible(!userMenuVisible);
-  };
-
-  const togglePlaylistVisibility = () => {
-    setPlaylistVisible(!playlistVisible);
-  };
-
-  const handleUserChange = (user_id, user_name) => {
-    // Add functionality for user change
+  const goToMainPage = () => {
+    navigate('/Main');
   };
 
   return (
-    <div className='body'>
+    <div className='movie-page'>
       <Header 
         state={state} 
         setState={setState} 
@@ -92,27 +84,24 @@ const Movie = () => {
         searchInputRef={searchInputRef}
         handleSearchInputChange={handleSearchInputChange}
         handleSearchSubmit={handleSearchSubmit}
-        handleSearchIconClick={handleSearchIconClick}
-        handleCloseIconClick={handleCloseIconClick}
         handleSearchResultClick={handleSearchResultClick}
-        toggleUserMenuVisibility={toggleUserMenuVisibility}
+        toggleUserMenuVisibility={() => setUserMenuVisible(!userMenuVisible)}
         userMenuVisible={userMenuVisible}
-        togglePlaylistVisibility={togglePlaylistVisibility}
+        togglePlaylistVisibility={() => setPlaylistVisible(!playlistVisible)}
         playlistVisible={playlistVisible}
-        handleUserChange={handleUserChange}
-        handleCategoryClick={handleCategoryClick}
+        handleCategoryClick={(e) => navigate(`/${e.target.textContent}`)}
         goToMainPage={goToMainPage}
       />
+
       <div className='vod-container'>
-        <h2>추천 영화</h2>
-        <div className='movie-list'>
-          {vods.map((vod) => (
-            <div key={vod.id} className='movie-item'>
-              <img src={vod.poster} alt={vod.title} />
-              <p>{vod.title}</p>
-            </div>
-          ))}
-        </div>
+        <VODCategory title="SF/판타지" vods={vodsByCategory.SF} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="기타/교양" vods={vodsByCategory.Education} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="가족" vods={vodsByCategory.Family} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="공포" vods={vodsByCategory.Horror} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="드라마" vods={vodsByCategory.Drama} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="로맨스" vods={vodsByCategory.Romance} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="액션" vods={vodsByCategory.Action} handlePosterClick={handleSearchResultClick} />
+        <VODCategory title="애니메이션" vods={vodsByCategory.Animation} handlePosterClick={handleSearchResultClick} />
       </div>
     </div>
   );

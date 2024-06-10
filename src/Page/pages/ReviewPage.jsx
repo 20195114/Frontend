@@ -8,12 +8,12 @@ const ReviewPage = () => {
   const [newReview, setNewReview] = useState({ movieId: '', rating: 0, comment: '' });
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const userId = 'example_user_id'; // 실제 사용자 ID를 사용하세요
+  const user_id = 'example_user_id'; // Replace with actual user ID
 
   useEffect(() => {
     const fetchUserReviews = async () => {
       try {
-        const response = await axios.get(`/api/user/${userId}/reviews`);
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(response.data);
       } catch (error) {
         console.error('Error fetching user reviews:', error);
@@ -21,16 +21,8 @@ const ReviewPage = () => {
     };
 
     fetchUserReviews();
-  }, [userId]);
+  }, [user_id]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewReview({ ...newReview, [name]: value });
-  };
-
-  const handleStarClick = (rating) => {
-    setNewReview({ ...newReview, rating });
-  };
 
   const handleEditStarClick = (rating) => {
     setEditReview({ ...editReview, rating });
@@ -49,11 +41,11 @@ const ReviewPage = () => {
   const submitReview = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`/api/review/user_id=${userId}/vod_id=${newReview.movieId}`, newReview);
+      const response = await axios.post(`${process.env.REACT_APP_EUD_ADDRESS}/review/${user_id}`, newReview);
       if (response.data.response === "FINISH INSERT REVIEW") {
-        const updatedResponse = await axios.get(`/api/user/${userId}/reviews`);
+        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
-        setNewReview({ movieId: '', rating: 0, comment: '' }); // 폼을 초기화합니다
+        setNewReview({ movieId: '', rating: 0, comment: '' }); // Reset form
       }
     } catch (error) {
       console.error('Error submitting review:', error);
@@ -63,9 +55,9 @@ const ReviewPage = () => {
   const updateReview = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`/api/review/${editReview.id}`, editReview);
+      const response = await axios.put(`${process.env.REACT_APP_EUD_ADDRESS}/review/${user_id}`, editReview);
       if (response.data.response === "FINISH UPDATE REVIEW") {
-        const updatedResponse = await axios.get(`/api/user/${userId}/reviews`);
+        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
         closeModal();
       }
@@ -94,41 +86,6 @@ const ReviewPage = () => {
           </li>
         ))}
       </ul>
-      <form onSubmit={submitReview}>
-        <div>
-          <label>영화 ID: </label>
-          <input
-            type="text"
-            name="movieId"
-            value={newReview.movieId}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label>Rating: </label>
-          <div className="star-rating">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={`star ${newReview.rating >= star ? 'filled' : ''}`}
-                onClick={() => handleStarClick(star)}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-        </div>
-        <div>
-          <label>Comment: </label>
-          <input
-            type="text"
-            name="comment"
-            value={newReview.comment}
-            onChange={handleInputChange}
-          />
-        </div>
-        <button type="submit">Submit Review</button>
-      </form>
 
       <Modal
         isOpen={isModalOpen}

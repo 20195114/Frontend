@@ -72,12 +72,12 @@ const Main = () => {
   }, []);
 
   const loadUserData = useCallback((user_id) => {
-    fetchData('/mainpage/vodlist/watch', 'myWatchedVods', user_id);
-    fetchData('/mainpage/vodlist/youtube', 'youtubeTrendsVods', user_id);
-    fetchData('/mainpage/vodlist/popular', 'popularVods');
-    fetchData('/mainpage/vodlist/search', 'searchBasedVods');
-    fetchData('/mainpage/vodlist/rating', 'ratingBasedVods');
-    fetchData('/mainpage/vodlist/spotify', 'spotifyVods', user_id);
+    fetchData('/mainpage/home/watch', 'myWatchedVods', user_id);
+    fetchData('/mainpage/home/youtube', 'youtubeTrendsVods', user_id);
+    fetchData('/mainpage/home/popular', 'popularVods');
+    fetchData('/mainpage/home/search', 'searchBasedVods');
+    fetchData('/mainpage/home/rating', 'ratingBasedVods');
+    fetchData('/mainpage/home/spotify', 'spotifyVods', user_id);
   }, [fetchData]);
 
   useEffect(() => {

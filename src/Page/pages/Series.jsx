@@ -1,68 +1,85 @@
-import React, { useState, useEffect, useRef } from 'react';
-import '../CSS/Movie.css';
-import Header from '../Component/Header'; // 필요에 따라 경로를 조정하세요
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../Component/Header';
+import VODCategory from '../Component/VODCategory';
+import '../CSS/Movie.css';
 
 const Series = () => {
-  const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [state, setState] = useState({ myWatchedVods: [] });
-  const [vods, setVods] = useState([]);
+  const [state, setState] = useState({
+    actionFantasy: [],
+    familyComedy: [],
+    drama: [],
+    reality: [],
+  });
+
+  const [loading, setLoading] = useState({
+    actionFantasy: false,
+    familyComedy: false,
+    drama: false,
+    reality: false,
+  });
+
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const searchInputRef = useRef(null);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchVods = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/series`); // 실제 API 주소로 변경
-        setVods(response.data);
-      } catch (error) {
-        console.error('Failed to fetch VODs:', error);
-      }
-    };
-
-    fetchVods();
+  const fetchData = useCallback(async (url, key) => {
+    setLoading(prevState => ({ ...prevState, [key]: true }));
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}`);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setState(prevState => ({ ...prevState, [key]: data }));
+    } catch (error) {
+      console.error(`Error fetching ${key}:`, error);
+      setState(prevState => ({ ...prevState, [key]: [] }));
+    } finally {
+      setLoading(prevState => ({ ...prevState, [key]: false }));
+    }
   }, []);
 
-  const goToMainPage = () => {
-    navigate('/Main');
-  };
+  useEffect(() => {
+    fetchData('/mainpage/series/action-fantasy', 'actionFantasy');
+    fetchData('/mainpage/series/family_comedy', 'familyComedy');
+    fetchData('/mainpage/series/drama', 'drama');
+    fetchData('/mainpage/series/reality', 'reality');
+  }, [fetchData]);
 
-  const handleCategoryClick = (e) => {
-    const category = e.target.textContent;
-    navigate(`/${category}`);
+  const handlePosterClick = (vod_id) => {
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
-    if (e.key === 'Enter') {
-      // Add search functionality here
-      navigate('/SearchBar', { state: { query: searchQuery } });
+  const handleSearchSubmit = async (e) => {
+    if (e.key === 'Enter' && searchQuery.trim() !== '') {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
+        const results = Array.isArray(response.data) ? response.data : [];
+        setSearchResults(results);
+        navigate('/SearchBar', { state: { searchResults: results } });
+      } catch (error) {
+        console.error('Error searching VODs:', error);
+      }
     }
   };
 
-  const handleSearchIconClick = () => {
-    setSearchActive(true);
-    searchInputRef.current.focus();
-  };
+  // const handleSearchIconClick = () => {
+  //   setSearchActive(true);
+  //   searchInputRef.current.focus();
+  // };
 
-  const handleCloseIconClick = () => {
-    setSearchActive(false);
-    setSearchQuery('');
-    setSearchResults([]);
-  };
-
-  const handleSearchResultClick = (vod_id) => {
-    navigate(`/MovieDetail/${vod_id}`);
-  };
+  // const handleCloseIconClick = () => {
+  //   setSearchActive(false);
+  //   setSearchQuery('');
+  //   setSearchResults([]);
+  // };
 
   const toggleUserMenuVisibility = () => {
     setUserMenuVisible(!userMenuVisible);
@@ -72,17 +89,22 @@ const Series = () => {
     setPlaylistVisible(!playlistVisible);
   };
 
-  const handleUserChange = (user_id, user_name) => {
-    // Add functionality for user change
+  const handleCategoryClick = (e) => {
+    const category = e.target.textContent;
+    navigate(`/${category}`);
+  };
+
+  const goToMainPage = () => {
+    navigate('/Main');
   };
 
   return (
-    <div className='body'>
+    <div className='movie-page'>
       <Header 
         state={state} 
         setState={setState} 
-        users={users} 
-        setUsers={setUsers}
+        users={[]} 
+        setUsers={() => {}} 
         searchActive={searchActive}
         setSearchActive={setSearchActive}
         searchQuery={searchQuery}
@@ -92,27 +114,36 @@ const Series = () => {
         searchInputRef={searchInputRef}
         handleSearchInputChange={handleSearchInputChange}
         handleSearchSubmit={handleSearchSubmit}
-        handleSearchIconClick={handleSearchIconClick}
-        handleCloseIconClick={handleCloseIconClick}
-        handleSearchResultClick={handleSearchResultClick}
+        handleSearchResultClick={handlePosterClick}
         toggleUserMenuVisibility={toggleUserMenuVisibility}
         userMenuVisible={userMenuVisible}
         togglePlaylistVisibility={togglePlaylistVisibility}
         playlistVisible={playlistVisible}
-        handleUserChange={handleUserChange}
         handleCategoryClick={handleCategoryClick}
         goToMainPage={goToMainPage}
       />
+
       <div className='vod-container'>
-        <h2>추천 시리즈</h2>
-        <div className='movie-list'>
-          {vods.map((vod) => (
-            <div key={vod.id} className='movie-item'>
-              <img src={vod.poster} alt={vod.title} />
-              <p>{vod.title}</p>
-            </div>
-          ))}
-        </div>
+        {loading.actionFantasy ? (
+          <p>Loading 액션/판타지 VODs...</p>
+        ) : (
+          <VODCategory title="액션/판타지" vods={state.actionFantasy || []} handlePosterClick={handlePosterClick} />
+        )}
+        {loading.familyComedy ? (
+          <p>Loading 가족/코미디 VODs...</p>
+        ) : (
+          <VODCategory title="가족/코미디" vods={state.familyComedy || []} handlePosterClick={handlePosterClick} />
+        )}
+        {loading.drama ? (
+          <p>Loading 드라마 VODs...</p>
+        ) : (
+          <VODCategory title="드라마" vods={state.drama || []} handlePosterClick={handlePosterClick} />
+        )}
+        {loading.reality ? (
+          <p>Loading 예능(리얼리티) VODs...</p>
+        ) : (
+          <VODCategory title="예능(리얼리티)" vods={state.reality || []} handlePosterClick={handlePosterClick} />
+        )}
       </div>
     </div>
   );

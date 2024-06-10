@@ -1,0 +1,83 @@
+vod-category {
+  padding: 10px 0; /* 카테고리 간격 */
+  background-color: #801b1b;
+}
+
+.vod-category h2 {
+  font-size: 24px; /* 제목 크기 */
+  margin-bottom: 10px; /* 제목 아래 여백 */
+  color: #f7f1f1; /* 제목 색상 */
+  padding-left: 10px; /* 제목 왼쪽 여백 */
+}
+
+.vod-slider {
+  display: flex;
+  gap: 20px; /* 항목 간격 */
+  overflow-x: auto; /* 가로 스크롤 */
+  scroll-behavior: smooth; /* 부드러운 스크롤 */
+  padding-left: 10px; /* 왼쪽 패딩 */
+  margin: 0;
+}
+
+.vod-slider::-webkit-scrollbar {
+  display: none; /* 스크롤바 숨기기 */
+}
+
+.vod-slider {
+  -ms-overflow-style: none; /* IE, Edge용 */
+  scrollbar-width: none; /* Firefox용 */
+}
+
+.vod-item {
+  flex: 0 0 auto; /* 항목 크기 고정 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+.vod-item img {
+  display: block;
+  margin: 0 auto;
+  width: 180px; /* 기본 포스터 너비 */
+  height: 270px; /* 기본 포스터 높이 */
+  cursor: pointer;
+  transition: transform 0.3s ease; /* 호버 효과 */
+}
+
+.vod-item img:hover {
+  transform: scale(1.05); /* 호버 시 확대 효과 */
+}
+
+.vod-item p {
+  margin-top: 20px; /* 텍스트 위쪽 여백 */
+  color: #f7f1f1; /* 텍스트 색상 */
+  font-size: 14px; /* 텍스트 크기 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+/* 반응형 스타일 */
+@media (max-width: 1200px) {
+  .vod-item img {
+    width: 160px; /* 포스터 너비 */
+    height: 240px; /* 포스터 높이 */
+  }
+}
+
+@media (max-width: 992px) {
+  .vod-item img {
+    width: 140px; /* 포스터 너비 */
+    height: 210px; /* 포스터 높이 */
+  }
+}
+
+@media (max-width: 768px) {
+  .vod-item img {
+    width: 120px; /* 포스터 너비 */
+    height: 180px; /* 포스터 높이 */
+  }
+}
+
+@media (max-width: 576px) {
+  .vod-item img {
+    width: 100px; /* 포스터 너비 */
+    height: 150px; /* 포스터 높이 */
+  }
+}

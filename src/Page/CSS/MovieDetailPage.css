@@ -1,9 +1,9 @@
 .movie-detail-page {
-  padding-top: 50px;
+  padding-top: 10px;
 }
 
 .movie-detail-container {
-  padding-top: 60px;
+  padding-top: 30px;
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -11,7 +11,7 @@
 .movie-header {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .movie-poster {
@@ -137,7 +137,7 @@
 }
 
 .review-rating {
-  color: red;
+  color: red; /* 기존 색상 유지 */
   font-weight: bold;
   font-size: 1.2rem;
   margin-left: 10px;
@@ -163,18 +163,6 @@
 
 .play-button {
   margin-left: 10px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .modal-overlay {
@@ -233,13 +221,13 @@
 
 .modal-star {
   font-size: 1.5rem;
-  color: #ccc;
+  color: #ccc; /* 변경된 부분: 기본 별 색상 */
   cursor: pointer;
   margin: 0 5px;
 }
 
 .modal-star.selected {
-  color: gold;
+  color: gold; /* 변경된 부분: 선택된 별 색상 */
 }
 
 .modal-buttons {
@@ -268,9 +256,8 @@
   color: #fff;
 }
 
-
-
-/* Responsive Styles */
+/* 반응형 스타일 */
+/* 반응형 스타일 */
 @media (max-width: 1200px) {
   .movie-header {
     flex-direction: column;
@@ -306,11 +293,19 @@
   }
 
   .movie-detail-container {
-    padding-top: 80px; /* Increase padding to avoid overlap */
+    padding-top: 50px; /* 수정된 부분: 중첩 방지를 위해 패딩 증가 */
   }
 }
 
 @media (max-width: 768px) {
+  .movie-detail-page {
+    padding-top: 10px;
+  }
+  .movie-detail-container {
+    padding-top: 70px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
   .movie-header {
     flex-direction: column;
     align-items: center;
@@ -343,15 +338,19 @@
   .related-movies-section ul {
     justify-content: center;
   }
-
-  .movie-detail-container {
-    padding-top: 150px; /* Increase padding to avoid overlap */
-  }
 }
 
 @media (max-width: 480px) {
+  .movie-detail-page {
+    padding-top: 0px;
+  }
+  .movie-detail-container {
+    padding-top: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
   .movie-poster {
-    width: 150px;
+    width: 150px; /* 변경된 부분: 영화 포스터 크기 조정 */
   }
 
   .movie-info h1 {
@@ -368,9 +367,5 @@
 
   .related-movies-section img {
     width: 80px;
-  }
-
-  .movie-detail-container {
-    padding-top: 150px; /* Increase padding to avoid overlap */
   }
 }
