@@ -11,7 +11,9 @@ const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const vod_id = location.state?.vod_id;
-  const [movie, setMovie] = useState(null); // 초기 상태를 null로 설정
+  const user_id = 'example_user_id'; // 실제 사용자 ID로 교체해야 합니다.
+
+  const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
   const [relatedMoviesData, setRelatedMoviesData] = useState([]);
   const [reviewData, setReviewData] = useState([]);
@@ -23,7 +25,7 @@ const MovieDetailPage = () => {
 
   useEffect(() => {
     if (!vod_id) {
-      setLoading(false); // VOD ID가 없는 경우 로딩 중지
+      setLoading(false);
       return;
     }
 
@@ -32,9 +34,7 @@ const MovieDetailPage = () => {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}`);
         const movieData = response.data;
 
-        // 데이터 형식에 따라 설정
         if (movieData.MOVIE_ID) {
-          // 영화 데이터 처리
           setMovie({
             id: movieData.MOVIE_ID,
             title: movieData.TITLE,
@@ -49,7 +49,6 @@ const MovieDetailPage = () => {
           setCastData(movieData.ACTOR || []);
           setReviewData(movieData.review || []);
         } else if (movieData.SERIES_ID) {
-          // 시리즈 데이터 처리
           setMovie({
             id: movieData.SERIES_ID,
             title: movieData.TITLE,
@@ -64,7 +63,6 @@ const MovieDetailPage = () => {
           setCastData((movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name })));
           setReviewData(movieData.review || []);
         } else if (movieData.K_SERIES_ID) {
-          // 키즈 데이터 처리
           setMovie({
             id: movieData.K_SERIES_ID,
             title: movieData.TITLE,
@@ -80,51 +78,52 @@ const MovieDetailPage = () => {
           setReviewData(movieData.review || []);
         }
 
-        // 관련 영화 데이터 가져오기
         const relatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}/related`);
         setRelatedMoviesData(Array.isArray(relatedResponse.data) ? relatedResponse.data : []);
 
-        // 플레이리스트 정보 가져오기
-        const playlistResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/api/playlist/${vod_id}`);
-        setIsInPlaylist(playlistResponse.data.isInPlaylist);
+        // 사용자 찜 상태 확인
+        const playlistResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
+        const likedVods = playlistResponse.data;
+        setIsInPlaylist(likedVods.some(vod => vod.VOD_ID === vod_id));
+
+        // 리뷰 데이터 가져오기
+        const reviewResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
+        const reviews = reviewResponse.data.filter(review => review.VOD_ID === vod_id);
+        setReviewData(reviews);
 
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching movie data:', error);
+        console.error('영화 데이터를 가져오는 중 오류 발생:', error);
         setLoading(false);
       }
     };
 
     fetchMovieData();
-  }, [vod_id]);
+  }, [vod_id, user_id]);
 
   const togglePlaylist = async () => {
     try {
       if (isInPlaylist) {
-        await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/api/playlist/${vod_id}`);
+        await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, { data: { VOD_ID: vod_id } });
         setIsInPlaylist(false);
       } else {
-        await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/api/playlist`, { vod_id });
+        await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, { VOD_ID: vod_id });
         setIsInPlaylist(true);
       }
     } catch (error) {
-      console.error('Error updating playlist:', error);
+      console.error('플레이리스트 상태를 업데이트하는 중 오류 발생:', error);
     }
   };
 
   const getYouTubeId = (url) => {
-    if (!url) return null; // URL이 없을 경우 null 반환
+    if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null; // 유튜브 ID를 안전하게 추출
+    return match && match[2].length === 11 ? match[2] : null;
   };
 
-  const handleMovieClick = async (movieId) => {
-    try {
-      navigate('/MovieDetailPage', { state: { vod_id: movieId } }); // 페이지 이동 후 VOD ID 전달
-    } catch (error) {
-      console.error('Error navigating to movie detail:', error);
-    }
+  const handleMovieClick = (movieId) => {
+    navigate('/MovieDetailPage', { state: { vod_id: movieId } });
   };
 
   const openModal = () => {
@@ -147,21 +146,20 @@ const MovieDetailPage = () => {
         comment: reviewText,
         rating: reviewRating,
       });
-      // 리뷰 데이터를 업데이트하여 화면에 반영
       setReviewData([...reviewData, { USER_NAME: '익명', COMMENT: reviewText, RATING: reviewRating, date: new Date().toLocaleDateString() }]);
       closeModal();
     } catch (error) {
-      console.error('Error saving review:', error);
+      console.error('리뷰 저장 중 오류 발생:', error);
       alert('리뷰 저장에 실패했습니다.');
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; // 로딩 중일 때 메시지 표시
+    return <div>Loading...</div>;
   }
 
   if (!movie) {
-    return <div>Movie not found</div>; // 영화 데이터가 없을 경우 메시지 표시
+    return <div>Movie not found</div>;
   }
 
   const videoId = getYouTubeId(movie.trailerURL);
@@ -215,10 +213,10 @@ const MovieDetailPage = () => {
             <ul className="review-list">
               {reviewData.map((review, index) => (
                 <li key={index} className="review-item">
-                                    <p><strong>ID:</strong> {review.USER_NAME}</p>
+                  <p><strong>ID:</strong> {review.USER_NAME}</p>
                   <p><strong>리뷰:</strong> {review.COMMENT}</p>
                   <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
-                  <p className="review-date">({review.date})</p>
+                  <p className="review-date">({review.REVIEW_WDATE})</p>
                 </li>
               ))}
             </ul>
@@ -267,4 +265,3 @@ const MovieDetailPage = () => {
 };
 
 export default MovieDetailPage;
-

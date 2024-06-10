@@ -28,7 +28,7 @@ body {
 .logo-container {
   display: flex;
   align-items: center;
-  margin-right: 30px;
+  margin-right: 10px;
   width: auto; /* width를 auto로 설정 */
 }
 

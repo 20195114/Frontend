@@ -1,16 +1,16 @@
-/* Review.css */
+/* ReviewPage.css */
 
 .reviews-container {
   max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #000000; /* 배경색 수정 */
+  background-color: #000; /* Background color */
+  color: #f7f1f1; /* Text color */
 }
 
 .reviews-container h3 {
   margin-bottom: 20px;
   font-size: 1.5rem;
-  color: #f7f1f1; /* 텍스트 색상 수정 */
   text-align: center;
 }
 
@@ -24,34 +24,28 @@
   align-items: flex-start;
   margin-bottom: 20px;
   padding: 20px;
-  background-color: #1c1c1c; /* 리뷰 항목 배경색 */
-  border-radius: 10px; /* 둥근 모서리 */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+  background-color: #1c1c1c; /* Review item background color */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Shadow effect */
 }
 
 .review-poster {
-  width: 100px; /* 포스터 크기 수정 */
+  width: 100px; /* Poster size */
   height: 150px;
-  border-radius: 10px; /* 둥근 모서리 */
+  border-radius: 10px; /* Rounded corners */
   margin-right: 20px;
 }
 
 .review-content {
   flex: 1;
-  color: #f7f1f1; /* 텍스트 색상 수정 */
 }
 
 .review-content p {
   margin: 5px 0;
 }
 
-.review-content strong {
-  color: #f7f1f1; /* 텍스트 색상 수정 */
-}
-
 .star-rating {
   display: flex;
-  flex-direction: row;
   align-items: center;
 }
 
@@ -66,47 +60,6 @@
   color: gold;
 }
 
-form {
-  margin-top: 20px;
-}
-
-form div {
-  margin-bottom: 10px;
-}
-
-label {
-  display: block;
-  font-size: 1rem;
-  color: #f7f1f1; /* 텍스트 색상 수정 */
-  margin-bottom: 5px;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* 리뷰 항목 스타일 */
 .review-date {
   color: #999;
   font-size: 0.875rem;
@@ -128,10 +81,10 @@ button:hover {
 }
 
 .review-actions button:hover {
-  color: #ff6666; /* 버튼 호버 색상 */
+  color: #ff6666;
 }
 
-/* 모달 창 스타일 */
+/* Modal styles */
 .review-modal {
   position: fixed;
   top: 50%;

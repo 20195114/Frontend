@@ -1,0 +1,186 @@
+/* 공통 스타일 */
+.playlist-page {
+    font-family: 'Netflix Sans', Arial, sans-serif;
+    background-color: #141414; /* Dark background color */
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    padding-top: 40px; /* Space to avoid overlap with Header */
+  }
+  
+  .vod-container {
+    padding: 20px;
+    margin-top: 50px;
+    box-sizing: border-box; /* Prevent overflow */
+  }
+  
+  .vod-container h2 {
+    margin-bottom: 20px;
+    margin-top: 50px;
+    text-align: center;
+    font-size: 2rem; /* Large title font size */
+  }
+  
+  .sort-options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .sort-option {
+    background-color: #333; /* Dark button background */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sort-option:hover {
+    background-color: #555; /* Slightly lighter on hover */
+  }
+  
+  .sort-option.active {
+    background-color: #e50914; /* Netflix red for active sort option */
+  }
+  
+  .movie-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    justify-content: center; /* Center align VOD items */
+    padding: 0 20px;
+    box-sizing: border-box; /* Prevent overflow */
+  }
+  
+  .movie-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .movie-item img {
+    width: 180px;
+    height: 270px;
+    border-radius: 5px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+  }
+  
+  .movie-item img:hover {
+    transform: scale(1.05); /* Scale up on hover */
+  }
+  
+  .movie-item p {
+    text-align: center;
+    font-size: 1rem;
+    margin: 5px 0;
+  }
+  
+  /* 삭제 버튼 */
+  .delete-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    display: none; /* Hidden by default */
+  }
+  
+  .movie-item:hover .delete-button {
+    display: block;
+  }
+  
+  .edit-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff; /* Blue background */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  /* 반응형 스타일 */
+  
+  /* For large tablets and smaller desktops */
+  @media (max-width: 1200px) {
+    .movie-item img {
+      width: 160px;
+      height: 240px;
+    }
+  }
+  
+  /* For medium tablets and larger mobile devices */
+  @media (max-width: 992px) {
+    .movie-item img {
+      width: 140px;
+      height: 210px;
+    }
+  
+    .vod-container h2 {
+      font-size: 1.75rem;
+    }
+  }
+  
+  /* For small tablets and large mobile devices */
+  @media (max-width: 768px) {
+    .playlist-page {
+      padding-top: 120px; /* Increase padding to avoid Header overlap */
+    }
+  
+    .movie-item img {
+      width: 120px;
+      height: 180px;
+    }
+  
+    .edit-button {
+      padding: 8px 16px;
+      font-size: 0.875rem;
+    }
+  
+    .vod-container h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  /* For small mobile devices */
+  @media (max-width: 576px) {
+    .playlist-page {
+      padding-top: 120px; /* Ensure enough space for Header */
+    }
+  
+    .movie-item img {
+      width: 100px;
+      height: 150px;
+    }
+  
+    .vod-container h2 {
+      font-size: 1.25rem;
+    }
+  
+    .sort-options {
+      flex-direction: column;
+    }
+  
+    .sort-option {
+      margin: 10px 0;
+      padding: 10px;
+    }
+  }
+  

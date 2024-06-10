@@ -5,7 +5,6 @@ import '../CSS/ReviewPage.css';
 
 const ReviewPage = () => {
   const [reviewData, setReviewData] = useState([]);
-  const [newReview, setNewReview] = useState({ movieId: '', rating: 0, comment: '' });
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user_id = 'example_user_id'; // Replace with actual user ID
@@ -23,9 +22,8 @@ const ReviewPage = () => {
     fetchUserReviews();
   }, [user_id]);
 
-
   const handleEditStarClick = (rating) => {
-    setEditReview({ ...editReview, rating });
+    setEditReview({ ...editReview, RATING: rating });
   };
 
   const openModal = (review) => {
@@ -38,24 +36,10 @@ const ReviewPage = () => {
     setIsModalOpen(false);
   };
 
-  const submitReview = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_EUD_ADDRESS}/review/${user_id}`, newReview);
-      if (response.data.response === "FINISH INSERT REVIEW") {
-        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
-        setReviewData(updatedResponse.data);
-        setNewReview({ movieId: '', rating: 0, comment: '' }); // Reset form
-      }
-    } catch (error) {
-      console.error('Error submitting review:', error);
-    }
-  };
-
   const updateReview = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`${process.env.REACT_APP_EUD_ADDRESS}/review/${user_id}`, editReview);
+      const response = await axios.put(`${process.env.REACT_APP_EUD_ADDRESS}/review/${editReview.REVIEW_ID}`, editReview);
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
@@ -66,21 +50,33 @@ const ReviewPage = () => {
     }
   };
 
+  const deleteReview = async (reviewId) => {
+    try {
+      const response = await axios.delete(`${process.env.REACT_APP_EUD_ADDRESS}/review/${reviewId}`);
+      if (response.data.response === "FINISH DELETE REVIEW") {
+        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
+        setReviewData(updatedResponse.data);
+      }
+    } catch (error) {
+      console.error('Error deleting review:', error);
+    }
+  };
+
   return (
     <div className="reviews-container">
       <h3>내가 쓴 리뷰</h3>
       <ul>
-        {reviewData.map((review, index) => (
-          <li key={index} className="review-item">
-            <img src={review.moviePoster} alt={review.movieTitle} className="review-poster" />
+        {reviewData.map((review) => (
+          <li key={review.REVIEW_ID} className="review-item">
+            <img src={review.POSTER} alt={review.TITLE} className="review-poster" />
             <div className="review-content">
-              <p><strong>제목:</strong> {review.movieTitle}</p>
-              <p><strong>리뷰:</strong> {review.content}</p>
-              <p><strong>별점:</strong> {Array(review.rating).fill('★').join(' ')}</p>
-              <p className="review-date">({review.date})</p>
+              <p><strong>제목:</strong> {review.TITLE}</p>
+              <p><strong>리뷰:</strong> {review.COMMENT}</p>
+              <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
+              <p className="review-date">({review.REVIEW_WDATE})</p>
               <div className="review-actions">
                 <button onClick={() => openModal(review)}>수정</button>
-                <button>삭제</button>
+                <button onClick={() => deleteReview(review.REVIEW_ID)}>삭제</button>
               </div>
             </div>
           </li>
@@ -98,20 +94,20 @@ const ReviewPage = () => {
         {editReview && (
           <form onSubmit={updateReview}>
             <div className="review-modal-content">
-              <img src={editReview.moviePoster} alt={editReview.movieTitle} className="modal-review-poster" />
+              <img src={editReview.POSTER} alt={editReview.TITLE} className="modal-review-poster" />
               <div className="modal-review-info">
                 <label>리뷰: </label>
                 <input
                   type="text"
-                  name="content"
-                  value={editReview.content}
-                  onChange={(e) => setEditReview({ ...editReview, content: e.target.value })}
+                  name="COMMENT"
+                  value={editReview.COMMENT}
+                  onChange={(e) => setEditReview({ ...editReview, COMMENT: e.target.value })}
                 />
                 <div className="star-rating">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span
                       key={star}
-                      className={`star ${editReview.rating >= star ? 'filled' : ''}`}
+                      className={`star ${editReview.RATING >= star ? 'filled' : ''}`}
                       onClick={() => handleEditStarClick(star)}
                     >
                       ★

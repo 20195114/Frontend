@@ -14,10 +14,11 @@ body {
   position: relative;
   height: 70vh;
   overflow: hidden;
-  margin-top: 15px;
+  margin-top: 0px;
 }
 
 .trailer-container video {
+  margin-top: 100px;
   position: absolute;
   top: 0;
   left: 0;
@@ -132,7 +133,7 @@ body {
     height: 210px;
   }
   .trailer-container {
-    margin-top: 18px; /* 추가된 부분 */
+    margin-top: 0px; /* 추가된 부분 */
   }
 }
 
@@ -143,7 +144,7 @@ body {
   }
 
   .trailer-container {
-    margin-top: 0; /* 추가된 부분 */
+    margin-top: 0px; /* 추가된 부분 */
   }
 }
 
@@ -154,6 +155,6 @@ body {
   }
 
   .trailer-container {
-    margin-top: 40px;
+    margin-top: 0px;
   }
 }
