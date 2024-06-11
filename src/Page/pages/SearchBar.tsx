@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
-import '../CSS/SearchBar.css';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '../CSS/SearchBar.css';
 
 interface SearchResult {
   VOD_ID: string;
@@ -16,6 +16,7 @@ interface SearchHistoryEntry {
 
 function SearchBar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const initialResults: SearchResult[] = location.state?.searchResults || [];
   const initialQuery: string = location.state?.searchQuery || '';
   const [searchTerm, setSearchTerm] = useState(initialQuery);
@@ -24,17 +25,30 @@ function SearchBar() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
 
-  // updateSearchHistory 함수의 메모이제이션
-  const updateSearchHistory = useCallback((term: string) => {
-    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
-    if (newHistory.length > 6) {
-      newHistory.shift(); // 리스트가 6개 이상이면 가장 오래된 항목을 삭제
+  const fetchHistory = useCallback(() => {
+    const historyRaw = localStorage.getItem('searchLog');
+    if (historyRaw) {
+      try {
+        const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
+        setSearchHistory(history);
+      } catch (error) {
+        console.error('searchLog 파싱 중 오류 발생', error);
+        setSearchHistory([]);
+      }
     }
-    localStorage.setItem('searchLog', JSON.stringify(newHistory));
-    setSearchHistory(newHistory);
-  }, [searchHistory]); // searchHistory를 종속성 배열에 추가
+  }, []);
 
-  // sendSearchDataToBackend 함수의 메모이제이션
+  useEffect(() => {
+    fetchHistory();
+    if (searchTerm) {
+      sendSearchDataToBackend();
+    }
+  }, [fetchHistory, searchTerm]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
   const sendSearchDataToBackend = useCallback(async () => {
     if (!searchTerm) return;
 
@@ -49,33 +63,32 @@ function SearchBar() {
         setErrorMessage('검색어에 맞는 VOD가 없습니다.');
         setSearchResults([]);
       }
-      updateSearchHistory(searchTerm); // updateSearchHistory 호출
+      updateSearchHistory(searchTerm);
     } catch (error) {
       console.error('검색 중 문제 발생:', error);
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
-  }, [searchTerm, updateSearchHistory]); // searchTerm과 updateSearchHistory를 종속성 배열에 추가
+  }, [searchTerm]);
 
-  // useEffect에서 sendSearchDataToBackend와 searchTerm을 종속성 배열에 추가
-  useEffect(() => {
-    const historyRaw = localStorage.getItem('searchLog');
-    if (historyRaw) {
-      try {
-        const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
-        setSearchHistory(history);
-      } catch (error) {
-        console.error('searchLog 파싱 중 오류 발생', error);
-        setSearchHistory([]);
-      }
+  const updateSearchHistory = useCallback((term: string) => {
+    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
+    if (newHistory.length > 6) {
+      newHistory.shift();
     }
-    if (searchTerm) {
-      sendSearchDataToBackend(); // searchTerm과 sendSearchDataToBackend에 의존
-    }
-  }, [searchTerm, sendSearchDataToBackend]); // 종속성 배열에 추가
+    localStorage.setItem('searchLog', JSON.stringify(newHistory));
+    setSearchHistory(newHistory);
+  }, [searchHistory]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+  const handleSearchResultClick = async (vod_id: string) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}`);
+      const vodData = response.data;
+      console.log('VOD 데이터:', vodData);
+      navigate('/MovieDetailPage', { state: { vod_id: vod_id } });
+    } catch (error) {
+      console.error('VOD 데이터 가져오기 중 오류:', error);
+    }
   };
 
   return (
@@ -95,7 +108,11 @@ function SearchBar() {
         <ul>
           {searchResults.map((item) => (
             <li key={item.VOD_ID}>
-              <img src={item.POSTER} alt={item.TITLE} />
+              <img
+                src={item.POSTER}
+                alt={item.TITLE}
+                onClick={() => handleSearchResultClick(item.VOD_ID)}
+              />
               <div>
                 <h3>{item.TITLE}</h3>
               </div>

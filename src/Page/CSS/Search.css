@@ -33,6 +33,31 @@
   transition: width 0.3s ease;
 }
 
+/* 반응형으로 검색 입력 필드 크기 조정 */
+@media (max-width: 1200px) {
+  .search-container.search-active .search-input {
+    width: 180px;
+  }
+}
+
+@media (max-width: 992px) {
+  .search-container.search-active .search-input {
+    width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-container.search-active .search-input {
+    width: 140px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-container.search-active .search-input {
+    width: 30px;
+  }
+}
+
 .close-icon {
   display: none;
   font-size: 1.5rem;

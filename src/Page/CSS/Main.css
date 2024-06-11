@@ -1,7 +1,7 @@
 /* 전체 스타일 */
 body {
   font-family: 'Netflix Sans', Arial, sans-serif;
-  background-color: #0a0a0a;
+  background-color: #030303;
   color: #fff;
   margin: 0;
   padding: 0;
@@ -55,7 +55,7 @@ body {
 .rating-based-vods-container,
 .spotify-container {
   padding: 10px 0; /* 패딩을 조정하여 섹션 간 간격 조정 */
-  background-color: #0a0a0a;
+  background-color: #000000;
 }
 
 /* 제목 스타일 */

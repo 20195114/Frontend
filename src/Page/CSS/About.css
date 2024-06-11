@@ -68,7 +68,8 @@ body {
 
 .user-icon-cat {
   font-size: 100px;
-  color: #ea0dab;
+  color: #a50532;
+
   margin-bottom: 10px;
 }
 
@@ -80,7 +81,7 @@ body {
 
 .user-selection-page button {
   padding: 12px 24px;
-  background-color: #e5099c;
+  background-color: #a50532;
   color: #080808;
   border: none;
   border-radius: 4px;
