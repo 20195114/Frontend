@@ -24,7 +24,17 @@ function SearchBar() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
 
-  // useCallback을 사용하여 sendSearchDataToBackend 함수 메모이제이션
+  // updateSearchHistory 함수의 메모이제이션
+  const updateSearchHistory = useCallback((term: string) => {
+    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
+    if (newHistory.length > 6) {
+      newHistory.shift(); // 리스트가 6개 이상이면 가장 오래된 항목을 삭제
+    }
+    localStorage.setItem('searchLog', JSON.stringify(newHistory));
+    setSearchHistory(newHistory);
+  }, [searchHistory]); // searchHistory를 종속성 배열에 추가
+
+  // sendSearchDataToBackend 함수의 메모이제이션
   const sendSearchDataToBackend = useCallback(async () => {
     if (!searchTerm) return;
 
@@ -39,13 +49,13 @@ function SearchBar() {
         setErrorMessage('검색어에 맞는 VOD가 없습니다.');
         setSearchResults([]);
       }
-      updateSearchHistory(searchTerm);
+      updateSearchHistory(searchTerm); // updateSearchHistory 호출
     } catch (error) {
       console.error('검색 중 문제 발생:', error);
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
-  }, [searchTerm]); // searchTerm을 종속성으로 추가
+  }, [searchTerm, updateSearchHistory]); // searchTerm과 updateSearchHistory를 종속성 배열에 추가
 
   // useEffect에서 sendSearchDataToBackend와 searchTerm을 종속성 배열에 추가
   useEffect(() => {
@@ -66,15 +76,6 @@ function SearchBar() {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-  };
-
-  const updateSearchHistory = (term: string) => {
-    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
-    if (newHistory.length > 6) {
-      newHistory.shift(); // 리스트가 6개 이상이면 가장 오래된 항목을 삭제
-    }
-    localStorage.setItem('searchLog', JSON.stringify(newHistory));
-    setSearchHistory(newHistory);
   };
 
   return (
