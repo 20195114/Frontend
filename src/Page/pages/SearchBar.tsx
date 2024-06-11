@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import '../CSS/SearchBar.css';
 import axios from 'axios';
@@ -24,27 +24,8 @@ function SearchBar() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
 
-  useEffect(() => {
-    const historyRaw = localStorage.getItem('searchLog');
-    if (historyRaw) {
-      try {
-        const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
-        setSearchHistory(history);
-      } catch (error) {
-        console.error('searchLog 파싱 중 오류 발생', error);
-        setSearchHistory([]);
-      }
-    }
-    if (searchTerm) {
-      sendSearchDataToBackend();
-    }
-  }, []);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const sendSearchDataToBackend = async () => {
+  // useCallback을 사용하여 sendSearchDataToBackend 함수 메모이제이션
+  const sendSearchDataToBackend = useCallback(async () => {
     if (!searchTerm) return;
 
     setIsLoading(true);
@@ -64,6 +45,27 @@ function SearchBar() {
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
+  }, [searchTerm]); // searchTerm을 종속성으로 추가
+
+  // useEffect에서 sendSearchDataToBackend와 searchTerm을 종속성 배열에 추가
+  useEffect(() => {
+    const historyRaw = localStorage.getItem('searchLog');
+    if (historyRaw) {
+      try {
+        const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
+        setSearchHistory(history);
+      } catch (error) {
+        console.error('searchLog 파싱 중 오류 발생', error);
+        setSearchHistory([]);
+      }
+    }
+    if (searchTerm) {
+      sendSearchDataToBackend(); // searchTerm과 sendSearchDataToBackend에 의존
+    }
+  }, [searchTerm, sendSearchDataToBackend]); // 종속성 배열에 추가
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
   const updateSearchHistory = (term: string) => {
