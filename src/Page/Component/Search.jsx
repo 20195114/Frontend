@@ -24,10 +24,11 @@ const Search = ({
 
     if (keyword.length > 0) {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_CUD_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        setSearchResults(response.data.vod_list.slice(0, 5));
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
+        setSearchResults(response.data || []);  // 결과를 받아와 상태를 업데이트
       } catch (error) {
         console.error('Error fetching search results:', error);
+        setSearchResults([]); // 에러 발생 시 결과를 초기화
       }
     } else {
       setSearchResults([]);
@@ -39,7 +40,7 @@ const Search = ({
     if (event.key === 'Enter' && keyword !== '') {
       try {
         const response = await axios.get(`${process.env.REACT_APP_CUD_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        navigate('/SearchBar', { state: { searchResults: response.data.vod_list } });
+        navigate('/SearchBar', { state: { searchResults: response.data || [] } });  // 검색 결과 페이지로 이동
       } catch (error) {
         console.error('Error searching VODs:', error);
       }
@@ -81,8 +82,8 @@ const Search = ({
       {searchActive && searchResults.length > 0 && (
         <div className="search-results">
           {searchResults.map((result, index) => (
-            <p key={index} onClick={() => handleSearchResultClick(result.vod_id)}>
-              {result.vod_title}
+            <p key={index} onClick={() => handleSearchResultClick(result.VOD_ID)}>
+              {result.TITLE}
             </p>
           ))}
         </div>

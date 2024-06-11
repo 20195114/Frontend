@@ -39,8 +39,8 @@ function SearchBar() {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('https://your-backend-api.com/search', { keyword: searchTerm });
-      if (response.data && response.data.length > 0) {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${searchTerm}`);
+      if (response.status === 200 && response.data.length > 0) {
         setSearchResults(response.data);
         setErrorMessage('');
       } else {
@@ -80,11 +80,10 @@ function SearchBar() {
       <div className="search-results">
         <ul>
           {searchResults.map((item) => (
-            <li key={item.id}>
-              <img src={item.poster} alt={item.title} />
+            <li key={item.VOD_ID}>
+              <img src={item.POSTER} alt={item.TITLE} />
               <div>
-                <h3>{item.title}</h3>
-                <p>{item.characters ? item.characters.join(', ') : 'No characters available'}</p>
+                <h3>{item.TITLE}</h3>
               </div>
             </li>
           ))}
@@ -95,7 +94,3 @@ function SearchBar() {
 }
 
 export default SearchBar;
-
-// api 변경
-// 임의데이터 넣어서 어떻게 표시되는지 확인해 봐야함
-// CSS 수정해야함
