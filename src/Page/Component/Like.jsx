@@ -4,14 +4,18 @@ import '../CSS/Like.css'; // CSS 파일 경로 확인
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Like = ({ playlistVisible, togglePlaylistVisibility }) => {
+const Like = ({ playlistVisible, togglePlaylistVisibility, user_id }) => {
   const [likedVods, setLikedVods] = useState([]);
   const navigate = useNavigate();
-  const user_id = 'example_user_id'; // 실제 사용자 ID로 교체해야 합니다.
 
   // 백엔드로부터 찜 목록 데이터를 가져오는 함수
   useEffect(() => {
     const fetchLikedVods = async () => {
+      if (!user_id) {
+        console.error('사용자 ID를 찾을 수 없습니다.');
+        return;
+      }
+
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/like/${user_id}`);
         setLikedVods(response.data || []);
@@ -21,7 +25,7 @@ const Like = ({ playlistVisible, togglePlaylistVisibility }) => {
     };
 
     fetchLikedVods();
-  }, [user_id]);
+  }, [user_id]); // user_id가 변경될 때마다 찜 목록을 다시 가져옴
 
   // VOD 상세 페이지로 이동하는 함수
   const handlePlaylistPosterClick = async (vod_id) => {

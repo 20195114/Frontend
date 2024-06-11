@@ -13,15 +13,18 @@ const Playlist = () => {
   const searchInputRef = useRef(null);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
-  const user_id = 'example_user_id'; // Replace with actual user ID
 
+  // 사용자 ID를 localStorage에서 가져오기
+  const user_id = localStorage.getItem('user_id') || 'example_user_id'; // 기본 값으로 대체
+
+  // 찜 목록 데이터를 가져오는 함수
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
       setVods(response.data || []);
     } catch (error) {
-      console.error('Failed to fetch VODs:', error);
+      console.error('찜 목록을 가져오는 데 실패했습니다:', error);
     } finally {
       setLoading(false);
     }
@@ -47,12 +50,12 @@ const Playlist = () => {
 
   const removeVod = async (vodId) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_EUD_ADDRESS}/like/${user_id}`, { VOD_ID: vodId });
+      const response = await axios.delete(`${process.env.REACT_APP_EUD_ADDRESS}/like/${user_id}`, { data: { VOD_ID: vodId } });
       if (response.data.response === "FINISH DELETE LIKE") {
         setVods(vods.filter(vod => vod.VOD_ID !== vodId));
       }
     } catch (error) {
-      console.error('Error deleting VOD:', error);
+      console.error('찜 항목을 삭제하는 데 실패했습니다:', error);
     }
   };
 
@@ -95,13 +98,21 @@ const Playlist = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            vods.map((vod) => (
-              <div key={vod.VOD_ID} className='movie-item'>
-                <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} onClick={() => handlePosterClick(vod.VOD_ID)} />
-                <p>{vod.TITLE}</p>
-                {isEditing && <button className="delete-button" onClick={() => removeVod(vod.VOD_ID)}>X</button>}
-              </div>
-            ))
+            vods.length === 0 ? (
+              <p>찜한 영화가 없습니다.</p>
+            ) : (
+              vods.map((vod) => (
+                <div key={vod.VOD_ID} className='movie-item'>
+                  <img 
+                    src={vod.POSTER || 'default-poster.jpg'} 
+                    alt={vod.TITLE} 
+                    onClick={() => handlePosterClick(vod.VOD_ID)} 
+                  />
+                  <p>{vod.TITLE}</p>
+                  {isEditing && <button className="delete-button" onClick={() => removeVod(vod.VOD_ID)}>X</button>}
+                </div>
+              ))
+            )
           )}
         </div>
         <button className='edit-button' onClick={() => setIsEditing(!isEditing)}>

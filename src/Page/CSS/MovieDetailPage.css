@@ -345,7 +345,7 @@
 
 @media (max-width: 480px) {
   .movie-detail-page {
-    padding-top: 0px;
+    padding-top: 100px;
   }
   .movie-detail-container {
     padding-top: 0px;

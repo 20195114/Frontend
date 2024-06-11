@@ -48,8 +48,7 @@ const Main = () => {
       if (key === 'spotifyVods') {
         if (response.data.status === false) {
           const spotifyAuthResponse = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/mainpage/spotify/${user_id}`);
-          console.log(spotifyAuthResponse.data.response)
-          const spotifyAuthUrl = spotifyAuthResponse.data.response
+          const spotifyAuthUrl = spotifyAuthResponse.data.response;
           const newWindow = window.open(spotifyAuthUrl, '_blank', 'width=500,height=600');
 
           const interval = setInterval(() => {

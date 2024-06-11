@@ -11,7 +11,7 @@ const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const vod_id = location.state?.vod_id;
-  const user_id = localStorage.getItem('user_id'); // localStorage에서 user_id 가져오기
+  const user_id = 'example_user_id'; // 실제 사용자 ID로 교체해야 합니다.
 
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
@@ -24,7 +24,7 @@ const MovieDetailPage = () => {
   const [reviewRating, setReviewRating] = useState(0);
 
   useEffect(() => {
-    if (!vod_id || !user_id) {
+    if (!vod_id) {
       setLoading(false);
       return;
     }
@@ -140,18 +140,11 @@ const MovieDetailPage = () => {
       return;
     }
 
-    const user_id = localStorage.getItem('user_id'); // localStorage에서 user_id 가져오기
-
-    if (!user_id) {
-      alert('로그인 정보가 없습니다. 로그인 후 다시 시도해 주세요.');
-      return;
-    }
-
     try {
-      await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/review/${user_id}`, {
+      await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/api/review`, {
         vod_id,
-        rating: reviewRating,
         comment: reviewText,
+        rating: reviewRating,
       });
       setReviewData([...reviewData, { USER_NAME: '익명', COMMENT: reviewText, RATING: reviewRating, date: new Date().toLocaleDateString() }]);
       closeModal();
