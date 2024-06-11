@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import '../CSS/SearchBar.css';
 import axios from 'axios';
@@ -38,13 +38,13 @@ function SearchBar() {
     if (searchTerm) {
       sendSearchDataToBackend();
     }
-  }, [searchTerm, sendSearchDataToBackend]); // 종속성 배열에 searchTerm과 sendSearchDataToBackend 추가
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const sendSearchDataToBackend = useCallback(async () => { // useCallback으로 함수 안정성 보장
+  const sendSearchDataToBackend = async () => {
     if (!searchTerm) return;
 
     setIsLoading(true);
@@ -64,7 +64,7 @@ function SearchBar() {
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
-  }, [searchTerm]); // 종속성 배열에 searchTerm 추가
+  };
 
   const updateSearchHistory = (term: string) => {
     const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
