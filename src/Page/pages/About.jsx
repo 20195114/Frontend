@@ -35,8 +35,8 @@ function About() {
       }
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
-        console.log(response.data)
-        setUsers(response.data || []); // API 응답이 바로 배열이므로 이를 반영
+        console.log(response.data);
+        setUsers(response.data); // Directly set the users from the API response
       } else {
         console.error('Unexpected response status:', response.status);
       }
@@ -58,15 +58,16 @@ function About() {
   const handleSignup = async () => {
     const settopnum = localStorage.getItem('settop_num');
 
+    // Constructing new user payload
     const newUser = {
-      SETTOP_NUM: settopnum,
-      USER_NAME: USER_NAME,
+      SETTOP_NUM: settopnum, 
+      USER_NAME: USER_NAME, 
       GENDER: GENDER,
-      AGE: AGE
+      AGE: parseInt(AGE) // Ensure AGE is sent as a number
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user`, newUser);
+      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser);
       if (response.status === 200) {
         fetchUsers();
         setIsSignupModalOpen(false);

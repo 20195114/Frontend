@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import YouTube from 'react-youtube';
@@ -10,104 +10,72 @@ import '../CSS/MovieDetailPage.css';
 const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const vod_id = location.state?.vod_id;
-  const user_id = 'example_user_id'; // 실제 사용자 ID로 교체해야 합니다.
+  const vodId = location.state?.vod_id;
+  const userId = localStorage.getItem('selectedUserId'); // localStorage에서 user_id 가져오기
 
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
-  const [relatedMoviesData, setRelatedMoviesData] = useState([]);
-  const [reviewData, setReviewData] = useState([]);
+  const [relatedMovies, setRelatedMovies] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
 
-  useEffect(() => {
-    if (!vod_id) {
+  const fetchMovieData = useCallback(async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vodId}`);
+      const movieData = response.data;
+
+      setMovie({
+        id: movieData.MOVIE_ID || movieData.SERIES_ID || movieData.K_SERIES_ID,
+        title: movieData.TITLE,
+        genres: movieData.GENRE,
+        summary: movieData.MOVIE_OVERVIEW || movieData.SERIES_OVERVIEW,
+        posterURL: movieData.POSTER,
+        trailerURL: movieData.TRAILER,
+        releaseDate: movieData.RELEASE_DATE,
+        duration: movieData.RTM,
+        rating: movieData.MOVIE_RATING || movieData.SERIES_RATING,
+      });
+
+      setCastData(
+        movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))
+      );
+
+      const relatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vodId}/related`);
+      setRelatedMovies(Array.isArray(relatedResponse.data) ? relatedResponse.data : []);
+
+      const playlistResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`);
+      const likedVods = playlistResponse.data;
+      setIsInPlaylist(likedVods.some(vod => vod.VOD_ID === vodId));
+
+      // 리뷰 데이터 가져오기
+      const reviewResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
+      const userReviews = reviewResponse.data.filter(review => review.VOD_ID === vodId);
+      setReviews(userReviews);
+
       setLoading(false);
-      return;
+    } catch (error) {
+      console.error('영화 데이터를 가져오는 중 오류 발생:', error);
+      setLoading(false);
     }
+  }, [vodId, userId]);
 
-    const fetchMovieData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}`);
-        const movieData = response.data;
-
-        if (movieData.MOVIE_ID) {
-          setMovie({
-            id: movieData.MOVIE_ID,
-            title: movieData.TITLE,
-            genres: movieData.GENRE,
-            summary: movieData.MOVIE_OVERVIEW,
-            posterURL: movieData.POSTER,
-            trailerURL: movieData.TRAILER,
-            releaseDate: movieData.RELEASE_DATE,
-            duration: movieData.RTM,
-            rating: movieData.MOVIE_RATING,
-          });
-          setCastData(movieData.ACTOR || []);
-          setReviewData(movieData.review || []);
-        } else if (movieData.SERIES_ID) {
-          setMovie({
-            id: movieData.SERIES_ID,
-            title: movieData.TITLE,
-            genres: movieData.GENRE,
-            summary: movieData.SERIES_OVERVIEW,
-            posterURL: movieData.POSTER,
-            trailerURL: movieData.TRAILER,
-            releaseDate: movieData.RELEASE_DATE,
-            duration: movieData.RTM,
-            rating: movieData.SERIES_RATING,
-          });
-          setCastData((movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name })));
-          setReviewData(movieData.review || []);
-        } else if (movieData.K_SERIES_ID) {
-          setMovie({
-            id: movieData.K_SERIES_ID,
-            title: movieData.TITLE,
-            genres: movieData.GENRE,
-            summary: movieData.SERIES_OVERVIEW,
-            posterURL: movieData.POSTER,
-            trailerURL: movieData.TRAILER,
-            releaseDate: movieData.RELEASE_DATE,
-            duration: movieData.RTM,
-            rating: movieData.SERIES_RATING,
-          });
-          setCastData((movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name })));
-          setReviewData(movieData.review || []);
-        }
-
-        const relatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}/related`);
-        setRelatedMoviesData(Array.isArray(relatedResponse.data) ? relatedResponse.data : []);
-
-        // 사용자 찜 상태 확인
-        const playlistResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
-        const likedVods = playlistResponse.data;
-        setIsInPlaylist(likedVods.some(vod => vod.VOD_ID === vod_id));
-
-        // 리뷰 데이터 가져오기
-        const reviewResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
-        const reviews = reviewResponse.data.filter(review => review.VOD_ID === vod_id);
-        setReviewData(reviews);
-
-        setLoading(false);
-      } catch (error) {
-        console.error('영화 데이터를 가져오는 중 오류 발생:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchMovieData();
-  }, [vod_id, user_id]);
+  useEffect(() => {
+    if (vodId) {
+      fetchMovieData();
+    }
+  }, [vodId, fetchMovieData]);
 
   const togglePlaylist = async () => {
     try {
       if (isInPlaylist) {
-        await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, { data: { VOD_ID: vod_id } });
+        await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`, { data: { VOD_ID: vodId } });
         setIsInPlaylist(false);
       } else {
-        await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, { VOD_ID: vod_id });
+        await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`, { VOD_ID: vodId });
         setIsInPlaylist(true);
       }
     } catch (error) {
@@ -117,22 +85,16 @@ const MovieDetailPage = () => {
 
   const getYouTubeId = (url) => {
     if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|.*v=|.*\/)([\w-]{11}))/);
+    return match ? match[1] : null;
   };
 
   const handleMovieClick = (movieId) => {
     navigate('/MovieDetailPage', { state: { vod_id: movieId } });
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleReviewSave = async () => {
     if (reviewText.trim() === '' || reviewRating === 0) {
@@ -141,26 +103,29 @@ const MovieDetailPage = () => {
     }
 
     try {
-      await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/api/review`, {
-        vod_id,
-        comment: reviewText,
-        rating: reviewRating,
-      });
-      setReviewData([...reviewData, { USER_NAME: '익명', COMMENT: reviewText, RATING: reviewRating, date: new Date().toLocaleDateString() }]);
-      closeModal();
+      const reviewPayload = {
+        VOD_ID: vodId,
+        RATING: reviewRating.toString(),
+        COMMENT: reviewText,
+      };
+
+      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/review/${userId}`, reviewPayload);
+      if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
+        const updatedReviews = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
+        const userReviews = updatedReviews.data.filter(review => review.VOD_ID === vodId);
+        setReviews(userReviews);
+        closeModal();
+      } else {
+        alert('리뷰 저장에 실패했습니다.');
+      }
     } catch (error) {
       console.error('리뷰 저장 중 오류 발생:', error);
       alert('리뷰 저장에 실패했습니다.');
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!movie) {
-    return <div>Movie not found</div>;
-  }
+  if (loading) return <div>로딩 중...</div>;
+  if (!movie) return <div>영화를 찾을 수 없습니다.</div>;
 
   const videoId = getYouTubeId(movie.trailerURL);
 
@@ -171,8 +136,7 @@ const MovieDetailPage = () => {
         <div className="movie-header">
           <img src={movie.posterURL} alt={movie.title} className="movie-poster" />
           <div className="movie-info">
-            <h1>
-              {movie.title}
+            <h1>{movie.title}
               <FaRegPlayCircle className="play-button" onClick={openModal} />
             </h1>
             <p>개봉일: {movie.releaseDate}</p>
@@ -187,81 +151,107 @@ const MovieDetailPage = () => {
         </div>
 
         <div className="movie-sections">
-          <div className="trailer-section">
-            <h3>예고편</h3>
-            {videoId ? (
-              <YouTube videoId={videoId} opts={{ width: '100%', height: '390px' }} />
-            ) : (
-              <p>예고편을 불러올 수 없습니다.</p>
-            )}
-          </div>
-
-          <div className="cast-section">
-            <h3>출연진</h3>
-            <ul className="cast-list">
-              {castData.map((actor, index) => (
-                <li key={index} className="cast-item">
-                  {actor.PROFILE && <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" />}
-                  <p>{actor.ACTOR_NAME}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="review-section">
-            <h3>리뷰</h3>
-            <ul className="review-list">
-              {reviewData.map((review, index) => (
-                <li key={index} className="review-item">
-                  <p><strong>ID:</strong> {review.USER_NAME}</p>
-                  <p><strong>리뷰:</strong> {review.COMMENT}</p>
-                  <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
-                  <p className="review-date">({review.REVIEW_WDATE})</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="related-movies-section">
-            <h3>추천 영화</h3>
-            <ul className="related-movies-list">
-              {relatedMoviesData.map((relatedMovie) => (
-                <li key={relatedMovie.id} className="related-movie-item" onClick={() => handleMovieClick(relatedMovie.id)}>
-                  <img src={relatedMovie.imageUrl} alt={relatedMovie.title} />
-                  <p>{relatedMovie.title}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <TrailerSection videoId={videoId} />
+          <CastSection castData={castData} />
+          <ReviewSection reviews={reviews} />
+          <RelatedMoviesSection relatedMovies={relatedMovies} onMovieClick={handleMovieClick} />
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onRequestClose={closeModal} className="modal" overlayClassName="modal-overlay">
-        <div className="modal-content">
-          <img src={movie.posterURL} alt={movie.title} className="modal-poster" />
-          <textarea
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
-            placeholder="리뷰를 남겨주세요."
-            className="modal-textarea"
-          />
-          <div className="modal-rating">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaRegStar
-                key={star}
-                className={`modal-star ${star <= reviewRating ? 'selected' : ''}`}
-                onClick={() => setReviewRating(star)}
-              />
-            ))}
-          </div>
-          <div className="modal-buttons">
-            <button onClick={closeModal} className="modal-button cancel">나중에</button>
-            <button onClick={handleReviewSave} className="modal-button save">저장</button>
-          </div>
-        </div>
-      </Modal>
+      <ReviewModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        movie={movie}
+        reviewText={reviewText}
+        setReviewText={setReviewText}
+        reviewRating={reviewRating}
+        setReviewRating={setReviewRating}
+        onSave={handleReviewSave}
+      />
     </div>
   );
 };
+
+const TrailerSection = ({ videoId }) => (
+  <div className="trailer-section">
+    <h3>예고편</h3>
+    {videoId ? (
+      <YouTube videoId={videoId} opts={{ width: '100%', height: '390px' }} />
+    ) : (
+      <p>예고편을 불러올 수 없습니다.</p>
+    )}
+  </div>
+);
+
+const CastSection = ({ castData }) => (
+  <div className="cast-section">
+    <h3>출연진</h3>
+    <ul className="cast-list">
+      {castData.map((actor, index) => (
+        <li key={index} className="cast-item">
+          {actor.PROFILE && <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" />}
+          <p>{actor.ACTOR_NAME}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const ReviewSection = ({ reviews }) => (
+  <div className="review-section">
+    <h3>리뷰</h3>
+    <ul className="review-list">
+      {reviews.map((review, index) => (
+        <li key={index} className="review-item">
+          <p><strong>ID:</strong> {review.USER_ID}</p>
+          <p><strong>리뷰:</strong> {review.COMMENT}</p>
+          <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
+          <p className="review-date">({review.REVIEW_WDATE})</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const RelatedMoviesSection = ({ relatedMovies, onMovieClick }) => (
+  <div className="related-movies-section">
+    <h3>추천 영화</h3>
+    <ul className="related-movies-list">
+      {relatedMovies.map((relatedMovie) => (
+        <li key={relatedMovie.id} className="related-movie-item" onClick={() => onMovieClick(relatedMovie.id)}>
+          <img src={relatedMovie.imageUrl} alt={relatedMovie.title} />
+          <p>{relatedMovie.title}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const ReviewModal = ({ isOpen, onClose, movie, reviewText, setReviewText, reviewRating, setReviewRating, onSave }) => (
+  <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay">
+    <div className="modal-content">
+      <img src={movie.posterURL} alt={movie.title} className="modal-poster" />
+      <textarea
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
+        placeholder="리뷰를 작성해 주세요..."
+        className="modal-textarea"
+      />
+      <div className="modal-rating">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <FaRegStar
+            key={star}
+            className={`modal-star ${star <= reviewRating ? 'selected' : ''}`}
+            onClick={() => setReviewRating(star)}
+          />
+        ))}
+      </div>
+      <div className="modal-buttons">
+        <button onClick={onClose} className="modal-button cancel">나중에</button>
+        <button onClick={onSave} className="modal-button save">저장</button>
+      </div>
+    </div>
+  </Modal>
+);
 
 export default MovieDetailPage;

@@ -25,10 +25,11 @@ const Search = ({
     if (keyword.length > 0) {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        setSearchResults(response.data || []);  // 결과를 받아와 상태를 업데이트
+        console.log('검색 결과:', response.data);
+        setSearchResults(response.data || []);
       } catch (error) {
-        console.error('Error fetching search results:', error);
-        setSearchResults([]); // 에러 발생 시 결과를 초기화
+        console.error('검색 결과 가져오기 중 오류:', error);
+        setSearchResults([]);
       }
     } else {
       setSearchResults([]);
@@ -38,11 +39,14 @@ const Search = ({
   const handleSearchSubmit = async (event) => {
     const keyword = searchQuery.trim();
     if (event.key === 'Enter' && keyword !== '') {
+      console.log('엔터 키 입력 감지, 검색어:', keyword);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_CUD_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        navigate('/SearchBar', { state: { searchResults: response.data || [] } });  // 검색 결과 페이지로 이동
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
+        console.log('네비게이트 호출 전 검색 결과:', response.data);
+        navigate('/SearchBar', { state: { searchResults: response.data || [], searchQuery: keyword } });
+        console.log('네비게이트 호출 완료');
       } catch (error) {
-        console.error('Error searching VODs:', error);
+        console.error('VOD 검색 중 오류:', error);
       }
     }
   };
@@ -81,7 +85,7 @@ const Search = ({
       />
       {searchActive && searchResults.length > 0 && (
         <div className="search-results">
-          {searchResults.map((result, index) => (
+          {searchResults.slice(0, 10).map((result, index) => (
             <p key={index} onClick={() => handleSearchResultClick(result.VOD_ID)}>
               {result.TITLE}
             </p>

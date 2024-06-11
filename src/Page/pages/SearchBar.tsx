@@ -3,6 +3,12 @@ import { useLocation } from 'react-router-dom';
 import '../CSS/SearchBar.css';
 import axios from 'axios';
 
+interface SearchResult {
+  VOD_ID: string;
+  TITLE: string;
+  POSTER: string;
+}
+
 interface SearchHistoryEntry {
   keyword: string;
   date: Date;
@@ -10,9 +16,10 @@ interface SearchHistoryEntry {
 
 function SearchBar() {
   const location = useLocation();
-  const initialResults = location.state?.searchResults || [];
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState(initialResults);
+  const initialResults: SearchResult[] = location.state?.searchResults || [];
+  const initialQuery: string = location.state?.searchQuery || '';
+  const [searchTerm, setSearchTerm] = useState(initialQuery);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>(initialResults);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
@@ -24,13 +31,16 @@ function SearchBar() {
         const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
         setSearchHistory(history);
       } catch (error) {
-        console.error('Error parsing searchLog', error);
+        console.error('searchLog 파싱 중 오류 발생', error);
         setSearchHistory([]);
       }
     }
+    if (searchTerm) {
+      sendSearchDataToBackend();
+    }
   }, []);
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
@@ -39,17 +49,18 @@ function SearchBar() {
 
     setIsLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${searchTerm}`);
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(searchTerm)}`);
       if (response.status === 200 && response.data.length > 0) {
         setSearchResults(response.data);
         setErrorMessage('');
+        console.log('검색 결과:', response.data);
       } else {
         setErrorMessage('검색어에 맞는 VOD가 없습니다.');
         setSearchResults([]);
       }
       updateSearchHistory(searchTerm);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('검색 중 문제 발생:', error);
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);

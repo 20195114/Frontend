@@ -11,7 +11,7 @@
 }
 
 .search-container.search-active .search-icon {
-  transform: translateX(-20px); /* 이동 거리를 조정 */
+  transform: translateX(-20px); /* Adjust the movement distance */
 }
 
 .search-input {
@@ -56,15 +56,43 @@
   border-radius: 5px;
   z-index: 1000;
   padding: 10px;
+  max-height: 300px; /* Set a maximum height */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .search-results p {
   margin: 0;
   padding: 5px 0;
   cursor: pointer;
+  font-size: 20px; /* Set default font size to 20px */
   transition: background-color 0.2s ease;
 }
 
 .search-results p:hover {
   background-color: #444;
+}
+
+/* Media Queries for responsive font size */
+@media (max-width: 1200px) {
+  .search-results p {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 992px) {
+  .search-results p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-results p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-results p {
+    font-size: 12px;
+  }
 }

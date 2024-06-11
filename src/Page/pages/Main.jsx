@@ -94,21 +94,24 @@ const Main = () => {
   }, [loadUserData]);
 
   const handlePosterClick = (vod_id) => {
-    navigate(`/MovieDetailPage`, { state: { vod_id } });
+    const user_id = localStorage.getItem('selectedUserId');
+    navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
   const handleSearchResultClick = (vod_id) => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    navigate(`/MovieDetailPage`, { state: { vod_id } });
+    const user_id = localStorage.getItem('selectedUserId');
+    navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
   const handleSearchSubmit = async (event) => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
-        navigate('/SearchBar', { state: { searchResults: response.data } });
+        const user_id = localStorage.getItem('selectedUserId');
+        navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
         console.error('Error searching VODs:', error);
       }
