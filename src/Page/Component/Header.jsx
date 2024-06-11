@@ -36,6 +36,7 @@ const Header = ({
       <div className="logo-container">
         <img
           src={logo}
+          alt="Hell:D Logo"
           className="logo"
           onClick={goToMainPage}
         />

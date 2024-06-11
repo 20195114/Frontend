@@ -95,7 +95,7 @@ function About() {
     <Background>
       <header>
         <div className="Logo">
-          <img src={logo} className="logo-image" />
+          <img src={logo} alt="Hell:D Logo" className="logo-image" />
         </div>
       </header>
       <main>
