@@ -7,7 +7,7 @@ function User() {
   const [user, setUser] = useState({ USER_NAME: "", GENDER: "", AGE: "" });
   const [editMode, setEditMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [userId, setUserId] = useState(localStorage.getItem('selectedUserId'));
+  const userId = localStorage.getItem('selectedUserId'); // Use `userId` directly without state management
 
   const nameInputRef = useRef(null);
   const ageInputRef = useRef(null);
