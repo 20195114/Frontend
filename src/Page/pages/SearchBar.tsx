@@ -38,16 +38,16 @@ function SearchBar() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchHistory();
-    if (searchTerm) {
-      sendSearchDataToBackend();
-    }
-  }, [fetchHistory, searchTerm]);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
+  const updateSearchHistory = useCallback((term: string) => {
+    setSearchHistory((prevHistory) => {
+      const newHistory = [...prevHistory, { keyword: term, date: new Date() }];
+      if (newHistory.length > 6) {
+        newHistory.shift();
+      }
+      localStorage.setItem('searchLog', JSON.stringify(newHistory));
+      return newHistory;
+    });
+  }, []);
 
   const sendSearchDataToBackend = useCallback(async () => {
     if (!searchTerm) return;
@@ -69,16 +69,18 @@ function SearchBar() {
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
-  }, [searchTerm]);
+  }, [searchTerm, updateSearchHistory]);
 
-  const updateSearchHistory = useCallback((term: string) => {
-    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
-    if (newHistory.length > 6) {
-      newHistory.shift();
+  useEffect(() => {
+    fetchHistory();
+    if (searchTerm) {
+      sendSearchDataToBackend();
     }
-    localStorage.setItem('searchLog', JSON.stringify(newHistory));
-    setSearchHistory(newHistory);
-  }, [searchHistory]);
+  }, [fetchHistory, searchTerm, sendSearchDataToBackend]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
 
   const handleSearchResultClick = async (vod_id: string) => {
     try {
@@ -93,15 +95,18 @@ function SearchBar() {
 
   return (
     <div className="search-bar-container">
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        placeholder="검색어를 입력하세요"
-      />
-      <button onClick={sendSearchDataToBackend} disabled={isLoading}>
-        검색
-      </button>
+      <div className="search-container">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="검색어를 입력하세요"
+          className="search-input"
+        />
+        <button onClick={sendSearchDataToBackend} disabled={isLoading}>
+          검색
+        </button>
+      </div>
       {isLoading && <p>검색 중...</p>}
       {errorMessage && <p>{errorMessage}</p>}
       <div className="search-results">
