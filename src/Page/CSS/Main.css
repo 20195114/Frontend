@@ -1,7 +1,7 @@
 /* 전체 스타일 */
 body {
   font-family: 'Netflix Sans', Arial, sans-serif;
-  background-color: #141414;
+  background-color: #0a0a0a;
   color: #fff;
   margin: 0;
   padding: 0;
@@ -12,13 +12,13 @@ body {
 /* 트레일러 컨테이너 스타일 */
 .trailer-container {
   position: relative;
-  height: 70vh;
+  height: 80vh;
   overflow: hidden;
   margin-top: 0px;
 }
 
 .trailer-container video {
-  margin-top: 100px;
+  margin-top: 90px;
   position: absolute;
   top: 0;
   left: 0;
@@ -55,7 +55,7 @@ body {
 .rating-based-vods-container,
 .spotify-container {
   padding: 10px 0; /* 패딩을 조정하여 섹션 간 간격 조정 */
-  background-color: #141414;
+  background-color: #0a0a0a;
 }
 
 /* 제목 스타일 */
@@ -123,14 +123,14 @@ body {
 @media (max-width: 1200px) {
   .vod-item img {
     width: 160px;
-    height: 240px;
+    height: 260px;
   }
 }
 
 @media (max-width: 992px) {
   .vod-item img {
     width: 140px;
-    height: 210px;
+    height: 260px;
   }
   .trailer-container {
     margin-top: 0px; /* 추가된 부분 */

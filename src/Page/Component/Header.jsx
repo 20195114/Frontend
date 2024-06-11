@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Search from './Search'; 
-import Like from './Like'; 
-import MyMenu from './MyMenu'; 
-import '../CSS/Header.css'; 
-
+import Search from './Search';
+import Like from './Like';
+import MyMenu from './MyMenu';
+import '../CSS/Header.css';
+import logo from '../URL/hellodlogo.png';
 const Header = ({
   state,
   searchActive,
@@ -34,7 +34,11 @@ const Header = ({
   return (
     <header className="header">
       <div className="logo-container">
-        <h1 className="logo" onClick={goToMainPage}>Hell:D</h1>
+        <img
+          src={logo}
+          className="logo"
+          onClick={goToMainPage}
+        />
       </div>
       <nav className="category-container">
         <Link to="/Movie" className="category" onClick={handleCategoryClick}>영화</Link>

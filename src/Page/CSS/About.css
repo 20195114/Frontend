@@ -8,17 +8,21 @@ body {
 }
 
 .Logo {
-  font-family: 'Netflix Sans', Arial, sans-serif;
-  color: #e5099c;
-  font-size: 32px;
-  font-weight: bold;
+  display: flex;
+  justify-content: left;
+  align-items: center;
   margin-bottom: 10px;
+}
+
+.logo-image {
+  width: 150px; /* 이미지 크기를 적절하게 조정 */
+  height: auto;
 }
 
 .user-selection-page {
   padding: 50px;
   font-family: 'Netflix Sans', Arial, sans-serif;
-  background-color: #141414;
+  background-color: #090808;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,7 +104,7 @@ body {
   width: 100%;
   box-sizing: border-box;
   font-size: 16px;
-  background-color: #333333;
+  background-color: #020202;
   color: #CCCCCC;
 }
 

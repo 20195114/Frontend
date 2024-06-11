@@ -1,5 +1,6 @@
 .movie-detail-page {
   padding-top: 10px;
+  background-color: #010101;
 }
 
 .movie-detail-container {
@@ -101,7 +102,7 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid #010101;
 }
 
 .review-avatar {

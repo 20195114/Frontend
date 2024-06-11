@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import "../CSS/About.css";
 import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
+import logo from '../URL/hellodlogo.png';
+
 
 const Background = styled.div`
   background-color: black;
@@ -35,8 +37,7 @@ function About() {
       }
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
-        console.log(response.data);
-        setUsers(response.data); // Directly set the users from the API response
+        setUsers(response.data);
       } else {
         console.error('Unexpected response status:', response.status);
       }
@@ -58,12 +59,11 @@ function About() {
   const handleSignup = async () => {
     const settopnum = localStorage.getItem('settop_num');
 
-    // Constructing new user payload
     const newUser = {
       SETTOP_NUM: settopnum, 
       USER_NAME: USER_NAME, 
       GENDER: GENDER,
-      AGE: parseInt(AGE) // Ensure AGE is sent as a number
+      AGE: parseInt(AGE)
     };
 
     try {
@@ -94,7 +94,9 @@ function About() {
   return (
     <Background>
       <header>
-        <div className="Logo">헬:D</div>
+        <div className="Logo">
+          <img src={logo} className="logo-image" />
+        </div>
       </header>
       <main>
         <div className="user-selection-page">
