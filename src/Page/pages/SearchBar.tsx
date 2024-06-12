@@ -100,20 +100,37 @@ function SearchBar() {
     }
   };
 
+  const handleHistoryClick = (keyword: string) => {
+    setSearchTerm(keyword);
+    sendSearchDataToBackend();
+  };
+
   return (
     <div className="search-bar-container">
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        onKeyDown={handleKeyDown}
-        placeholder="검색어를 입력하세요"
-      />
-      <button onClick={sendSearchDataToBackend} disabled={isLoading}>
-        검색
-      </button>
+      <div className="search-bar">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          onKeyDown={handleKeyDown}
+          placeholder="검색어를 입력하세요"
+        />
+        <button onClick={sendSearchDataToBackend} disabled={isLoading}>
+          검색
+        </button>
+      </div>
       {isLoading && <p>검색 중...</p>}
       {errorMessage && <p>{errorMessage}</p>}
+      <div className="search-history">
+        <h3>검색 기록</h3>
+        <ul>
+          {searchHistory.map((entry, index) => (
+            <li key={index} onClick={() => handleHistoryClick(entry.keyword)}>
+              {entry.keyword} ({entry.date.toLocaleString()})
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className="search-results">
         <ul>
           {searchResults.map((item) => (
