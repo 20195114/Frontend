@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import "../CSS/About.css";
@@ -16,32 +16,32 @@ function About() {
   const [USER_NAME, setUSER_NAME] = useState("");
   const [GENDER, setGENDER] = useState("");
   const [AGE, setAGE] = useState("");
-
-  const nameInputRef = useRef(null);
-  const genderInputRef = useRef(null);
-  const ageInputRef = useRef(null);
+  const [msg, setMsg] = useState(""); // 상태 메시지 추가
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUsers();
+    const settopnum = localStorage.getItem('settop_num');
+    if (settopnum) {
+      fetchUsers(settopnum);
+    } else {
+      setMsg("셋탑 번호를 찾을 수 없습니다.");
+      console.error("셋탑 번호를 찾을 수 없습니다.");
+    }
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (settopnum) => {
     try {
-      const settopnum = localStorage.getItem('settop_num');
-      if (!settopnum) {
-        console.error("Set-top 번호가 누락되었습니다.");
-        return;
-      }
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
         setUsers(response.data);
       } else {
         console.error('예상치 못한 응답 상태:', response.status);
+        setMsg('사용자 데이터를 가져오는 중 오류 발생');
       }
     } catch (error) {
       console.error('사용자 데이터를 가져오는 중 오류 발생:', error);
+      setMsg('사용자 데이터를 가져오는 중 오류 발생');
     }
   };
 
@@ -73,7 +73,7 @@ function About() {
     try {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser);
       if (response.status === 200) {
-        fetchUsers();
+        fetchUsers(settopnum); // 등록 후 사용자 목록 갱신
         setIsSignupModalOpen(false);
         setUSER_NAME("");
         setGENDER("");
@@ -126,12 +126,10 @@ function About() {
                 <input
                   type="text"
                   placeholder="이름"
-                  ref={nameInputRef}
                   value={USER_NAME}
                   onChange={onChangeUSER_NAME}
                 />
                 <select
-                  ref={genderInputRef}
                   value={GENDER}
                   onChange={(e) => setGENDER(e.target.value)}
                 >
@@ -140,7 +138,6 @@ function About() {
                   <option value="여성">여성</option>
                 </select>
                 <select
-                  ref={ageInputRef}
                   value={AGE}
                   onChange={handleAGEChange}
                 >
@@ -154,6 +151,7 @@ function About() {
               </div>
             </div>
           )}
+          {msg && <div className="msg">{msg}</div>}
         </div>
       </main>
     </Background>
