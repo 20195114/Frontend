@@ -38,22 +38,14 @@ function SearchBar() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchHistory();
-    if (searchTerm) {
-      sendSearchDataToBackend();
+  const updateSearchHistory = useCallback((term: string) => {
+    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
+    if (newHistory.length > 6) {
+      newHistory.shift();
     }
-  }, [fetchHistory, searchTerm]);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      sendSearchDataToBackend();
-    }
-  };
+    localStorage.setItem('searchLog', JSON.stringify(newHistory));
+    setSearchHistory(newHistory);
+  }, [searchHistory]);
 
   const sendSearchDataToBackend = useCallback(async () => {
     if (!searchTerm.trim()) return;
@@ -76,16 +68,24 @@ function SearchBar() {
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
-  }, [searchTerm, navigate]);
+  }, [searchTerm, navigate, updateSearchHistory]);
 
-  const updateSearchHistory = useCallback((term: string) => {
-    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
-    if (newHistory.length > 6) {
-      newHistory.shift();
+  useEffect(() => {
+    fetchHistory();
+    if (searchTerm) {
+      sendSearchDataToBackend();
     }
-    localStorage.setItem('searchLog', JSON.stringify(newHistory));
-    setSearchHistory(newHistory);
-  }, [searchHistory]);
+  }, [fetchHistory, searchTerm, sendSearchDataToBackend]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      sendSearchDataToBackend();
+    }
+  };
 
   const handleSearchResultClick = async (vod_id: string) => {
     try {
