@@ -38,19 +38,25 @@ function SearchBar() {
     }
   }, []);
 
-  const updateSearchHistory = useCallback((term: string) => {
-    setSearchHistory((prevHistory) => {
-      const newHistory = [...prevHistory, { keyword: term, date: new Date() }];
-      if (newHistory.length > 6) {
-        newHistory.shift();
-      }
-      localStorage.setItem('searchLog', JSON.stringify(newHistory));
-      return newHistory;
-    });
-  }, []);
+  useEffect(() => {
+    fetchHistory();
+    if (searchTerm) {
+      sendSearchDataToBackend();
+    }
+  }, [fetchHistory, searchTerm]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      sendSearchDataToBackend();
+    }
+  };
 
   const sendSearchDataToBackend = useCallback(async () => {
-    if (!searchTerm) return;
+    if (!searchTerm.trim()) return;
 
     setIsLoading(true);
     try {
@@ -59,6 +65,7 @@ function SearchBar() {
         setSearchResults(response.data);
         setErrorMessage('');
         console.log('검색 결과:', response.data);
+        navigate('/SearchBar', { state: { searchResults: response.data, searchQuery: searchTerm } });
       } else {
         setErrorMessage('검색어에 맞는 VOD가 없습니다.');
         setSearchResults([]);
@@ -69,18 +76,16 @@ function SearchBar() {
       setErrorMessage('검색 중 문제가 발생했습니다.');
     }
     setIsLoading(false);
-  }, [searchTerm, updateSearchHistory]);
+  }, [searchTerm, navigate]);
 
-  useEffect(() => {
-    fetchHistory();
-    if (searchTerm) {
-      sendSearchDataToBackend();
+  const updateSearchHistory = useCallback((term: string) => {
+    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
+    if (newHistory.length > 6) {
+      newHistory.shift();
     }
-  }, [fetchHistory, searchTerm, sendSearchDataToBackend]);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
+    localStorage.setItem('searchLog', JSON.stringify(newHistory));
+    setSearchHistory(newHistory);
+  }, [searchHistory]);
 
   const handleSearchResultClick = async (vod_id: string) => {
     try {
@@ -95,18 +100,16 @@ function SearchBar() {
 
   return (
     <div className="search-bar-container">
-      <div className="search-container">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder="검색어를 입력하세요"
-          className="search-input"
-        />
-        <button onClick={sendSearchDataToBackend} disabled={isLoading}>
-          검색
-        </button>
-      </div>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        onKeyDown={handleKeyDown}
+        placeholder="검색어를 입력하세요"
+      />
+      <button onClick={sendSearchDataToBackend} disabled={isLoading}>
+        검색
+      </button>
       {isLoading && <p>검색 중...</p>}
       {errorMessage && <p>{errorMessage}</p>}
       <div className="search-results">
