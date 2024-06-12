@@ -13,41 +13,40 @@
   box-sizing: border-box;
 }
 
-.search-bar-container input[type="text"] {
-  width: 30%;
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  width: 70%; /* 너비를 원하는 대로 조정 */
+  margin-bottom: 20px;
+}
+
+.search-bar-wrapper input[type="text"] {
+  flex: 1;
   padding: 10px;
   border: 1px solid #555;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  border-radius: 4px 0 0 4px; /* 왼쪽 상단과 하단만 둥글게 */
   font-size: 16px;
   background-color: #2b2b2b;
   color: #fff;
 }
 
-.search-bar-container input[type="text"]::placeholder {
-  color: #bbb;
-}
-
-.search-bar-container button {
-  margin-left:500px;
-  margin-top: -50px;
+.search-bar-wrapper button {
   padding: 10px 20px;
   background-color: #d731b9;
   border: none;
-  border-radius: 4px;
+  border-radius: 0 4px 4px 0; /* 오른쪽 상단과 하단만 둥글게 */
   color: #fff;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.search-bar-container button:disabled {
+.search-bar-wrapper button:disabled {
   background-color: #555;
   cursor: not-allowed;
-  
 }
 
-.search-bar-container button:hover:not(:disabled) {
+.search-bar-wrapper button:hover:not(:disabled) {
   background-color: #b42699;
 }
 
@@ -110,12 +109,8 @@
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-  .search-bar-container button {
-    margin-left:500px;
-    margin-top: -50px;
-  }
-  .search-bar-container input[type="text"] {
-    width: 50%;
+  .search-bar-wrapper {
+    width: 90%;
   }
 
   .search-results li {
@@ -128,13 +123,8 @@
 }
 
 @media (max-width: 576px) {
-
-  .search-bar-container button {
-    margin-left:300px;
-    margin-top: -50px;
-  }
-  .search-bar-container input[type="text"] {
-    width: 50%;
+  .search-bar-wrapper {
+    width: 100%;
   }
 
   .search-results li {
