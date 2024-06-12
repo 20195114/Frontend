@@ -20,6 +20,7 @@ body {
 }
 
 .user-selection-page {
+  margin-top: -100px;
   padding: 50px;
   font-family: 'Netflix Sans', Arial, sans-serif;
   background-color: #090808;

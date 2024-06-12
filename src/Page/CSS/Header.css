@@ -15,9 +15,10 @@
 }
 
 .logo-container {
+  margin-top: 70px;
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 0px;
   width: auto; /* width를 auto로 설정 */
 }
 

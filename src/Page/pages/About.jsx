@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import "../CSS/About.css";
 import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
-import logo from '../URL/hellodlogo.png';
+import logo from '../URL/logoHelloD.png';
 
 
 const Background = styled.div`

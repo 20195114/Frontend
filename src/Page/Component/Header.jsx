@@ -4,7 +4,7 @@ import Search from './Search';
 import Like from './Like';
 import MyMenu from './MyMenu';
 import '../CSS/Header.css';
-import logo from '../URL/hellodlogo.png';
+import logo from '../URL/logoHelloD.png';
 const Header = ({
   state,
   searchActive,
