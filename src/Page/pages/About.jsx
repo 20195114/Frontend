@@ -6,7 +6,6 @@ import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
 import logo from '../URL/logoHelloD.png';
 
-
 const Background = styled.div`
   background-color: black;
 `;
@@ -32,17 +31,17 @@ function About() {
     try {
       const settopnum = localStorage.getItem('settop_num');
       if (!settopnum) {
-        console.error("Set-top number is missing.");
+        console.error("Set-top 번호가 누락되었습니다.");
         return;
       }
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
         setUsers(response.data);
       } else {
-        console.error('Unexpected response status:', response.status);
+        console.error('예상치 못한 응답 상태:', response.status);
       }
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('사용자 데이터를 가져오는 중 오류 발생:', error);
     }
   };
 
@@ -58,6 +57,11 @@ function About() {
 
   const handleSignup = async () => {
     const settopnum = localStorage.getItem('settop_num');
+
+    if (!USER_NAME || !GENDER || !AGE) {
+      alert('모든 필드를 입력하세요.');
+      return;
+    }
 
     const newUser = {
       SETTOP_NUM: settopnum, 
@@ -75,11 +79,12 @@ function About() {
         setGENDER("");
         setAGE("");
       } else {
-        console.error('Failed to register user:', response.status);
+        console.error('사용자 등록 실패:', response.status);
+        alert('사용자 등록에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Failed to register user:', error);
-      alert('회원가입 실패');
+      console.error('사용자 등록 중 오류 발생:', error);
+      alert('회원가입에 실패했습니다.');
     }
   };
 
@@ -138,7 +143,6 @@ function About() {
                   ref={ageInputRef}
                   value={AGE}
                   onChange={handleAGEChange}
-                  size="1"
                 >
                   <option value="">나이 선택</option>
                   {Array.from({ length: 100 }, (_, i) => i).map((age) => (
