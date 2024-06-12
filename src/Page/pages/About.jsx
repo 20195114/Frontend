@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import "../CSS/About.css";
@@ -16,7 +16,7 @@ function About() {
   const [USER_NAME, setUSER_NAME] = useState("");
   const [GENDER, setGENDER] = useState("");
   const [AGE, setAGE] = useState("");
-  const [msg, setMsg] = useState(""); // 상태 메시지 추가
+  const [msg, setMsg] = useState("");
 
   const navigate = useNavigate();
 
