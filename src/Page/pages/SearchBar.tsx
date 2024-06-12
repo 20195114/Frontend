@@ -39,13 +39,15 @@ function SearchBar() {
   }, []);
 
   const updateSearchHistory = useCallback((term: string) => {
-    const newHistory: SearchHistoryEntry[] = [...searchHistory, { keyword: term, date: new Date() }];
-    if (newHistory.length > 6) {
-      newHistory.shift();
-    }
-    localStorage.setItem('searchLog', JSON.stringify(newHistory));
-    setSearchHistory(newHistory);
-  }, [searchHistory]);
+    setSearchHistory((prevHistory) => {
+      const newHistory = [...prevHistory, { keyword: term, date: new Date() }];
+      if (newHistory.length > 6) {
+        newHistory.shift();
+      }
+      localStorage.setItem('searchLog', JSON.stringify(newHistory));
+      return newHistory;
+    });
+  }, []);
 
   const sendSearchDataToBackend = useCallback(async () => {
     if (!searchTerm.trim()) return;
@@ -65,7 +67,7 @@ function SearchBar() {
       updateSearchHistory(searchTerm);
     } catch (error) {
       console.error('검색 중 문제 발생:', error);
-      setErrorMessage('검색 중 문제가 발생했습니다.');
+      setErrorMessage('검색어를 올바르게 입력해 주세요.');
     }
     setIsLoading(false);
   }, [searchTerm, navigate, updateSearchHistory]);
