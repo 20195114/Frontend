@@ -48,14 +48,35 @@ const Playlist = () => {
     navigate(`/MovieDetail/${vod_id}`);
   };
 
-  const removeVod = async (vodId) => {
+  const likeVod = async (vodId) => {
     try {
-      const response = await axios.delete(`${process.env.REACT_APP_EUD_ADDRESS}/like/${user_id}`, { data: { VOD_ID: vodId } });
-      if (response.data.response === "FINISH DELETE LIKE") {
-        setVods(vods.filter(vod => vod.VOD_ID !== vodId));
+      const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, null, {
+        params: { VOD_ID: vodId },
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      if (response.data.response === "FINISH INSERT REVIEW") {
+        fetchData(); // Refresh the VODs list
       }
     } catch (error) {
-      console.error('찜 항목을 삭제하는 데 실패했습니다:', error);
+      console.error('Failed to like the VOD:', error);
+    }
+  };
+
+  const removeVod = async (vodId) => {
+    try {
+      const response = await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, {
+        params: { VOD_ID: vodId },
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      if (response.data.response === "FINISH UPDATE REVIEW") {
+        setVods(vods.filter(vod => vod.VOD_ID !== vodId)); // Update the list
+      }
+    } catch (error) {
+      console.error('Failed to delete the VOD from likes:', error);
     }
   };
 
@@ -110,6 +131,7 @@ const Playlist = () => {
                   />
                   <p>{vod.TITLE}</p>
                   {isEditing && <button className="delete-button" onClick={() => removeVod(vod.VOD_ID)}>X</button>}
+                  <button className="like-button" onClick={() => likeVod(vod.VOD_ID)}>Like</button>
                 </div>
               ))
             )

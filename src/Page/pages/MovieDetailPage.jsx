@@ -11,11 +11,12 @@ const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const vodId = location.state?.vod_id;
-  const userId = localStorage.getItem('selectedUserId'); // localStorage에서 user_id 가져오기
+  const userId = localStorage.getItem('selectedUserId');
+  
 
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
-  const [relatedMovies, setRelatedMovies] = useState([]);
+  const [recommendList, setRecommendList] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ const MovieDetailPage = () => {
 
   const fetchMovieData = useCallback(async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vodId}`);
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vodId}/${userId}`);
       const movieData = response.data;
 
       setMovie({
@@ -44,21 +45,19 @@ const MovieDetailPage = () => {
         movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))
       );
 
-      const relatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vodId}/related`);
-      setRelatedMovies(Array.isArray(relatedResponse.data) ? relatedResponse.data : []);
+      setRecommendList(movieData.recommend_list || []);
 
       const playlistResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`);
       const likedVods = playlistResponse.data;
       setIsInPlaylist(likedVods.some(vod => vod.VOD_ID === vodId));
 
-      // 리뷰 데이터 가져오기
       const reviewResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
       const userReviews = reviewResponse.data.filter(review => review.VOD_ID === vodId);
       setReviews(userReviews);
 
-      setLoading(false);
     } catch (error) {
       console.error('영화 데이터를 가져오는 중 오류 발생:', error);
+    } finally {
       setLoading(false);
     }
   }, [vodId, userId]);
@@ -72,10 +71,10 @@ const MovieDetailPage = () => {
   const togglePlaylist = async () => {
     try {
       if (isInPlaylist) {
-        await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`, { data: { VOD_ID: vodId } });
+        await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`, { data: { VOD_ID: vodId } });
         setIsInPlaylist(false);
       } else {
-        await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`, { VOD_ID: vodId });
+        await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`, { VOD_ID: vodId });
         setIsInPlaylist(true);
       }
     } catch (error) {
@@ -134,14 +133,14 @@ const MovieDetailPage = () => {
       <Header goToMainPage={() => navigate('/Main')} />
       <div className="movie-detail-container">
         <div className="movie-header">
-          <img src={movie.posterURL} alt={movie.title} className="movie-poster" />
+          <img src={movie.posterURL} alt={movie.title} className="movie-poster" loading="lazy" />
           <div className="movie-info">
             <h1>{movie.title}
               <FaRegPlayCircle className="play-button" onClick={openModal} />
             </h1>
             <p>개봉일: {movie.releaseDate}</p>
             <p>장르: {movie.genres}</p>
-            <p>런닝타임: {movie.duration}분</p>
+            <p>러닝타임: {movie.duration}분</p>
             <p>관람등급: {movie.rating}</p>
             <p>{movie.summary}</p>
             <button onClick={togglePlaylist} className="playlist-button">
@@ -154,7 +153,7 @@ const MovieDetailPage = () => {
           <TrailerSection videoId={videoId} />
           <CastSection castData={castData} />
           <ReviewSection reviews={reviews} />
-          <RelatedMoviesSection relatedMovies={relatedMovies} onMovieClick={handleMovieClick} />
+          <RelatedMoviesSection recommendList={recommendList} onMovieClick={handleMovieClick} />
         </div>
       </div>
 
@@ -189,7 +188,7 @@ const CastSection = ({ castData }) => (
     <ul className="cast-list">
       {castData.map((actor, index) => (
         <li key={index} className="cast-item">
-          {actor.PROFILE && <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" />}
+          {actor.PROFILE && <img src={actor.PROFILE} alt={actor.ACTOR_NAME} className="cast-img" loading="lazy" />}
           <p>{actor.ACTOR_NAME}</p>
         </li>
       ))}
@@ -203,7 +202,7 @@ const ReviewSection = ({ reviews }) => (
     <ul className="review-list">
       {reviews.map((review, index) => (
         <li key={index} className="review-item">
-          <p><strong>ID:</strong> {review.USER_ID}</p>
+          <p><strong>이름:</strong> {review.USER_NAME}</p>
           <p><strong>리뷰:</strong> {review.COMMENT}</p>
           <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
           <p className="review-date">({review.REVIEW_WDATE})</p>
@@ -213,14 +212,15 @@ const ReviewSection = ({ reviews }) => (
   </div>
 );
 
-const RelatedMoviesSection = ({ relatedMovies, onMovieClick }) => (
+
+const RelatedMoviesSection = ({ recommendList, onMovieClick }) => (
   <div className="related-movies-section">
     <h3>추천 영화</h3>
     <ul className="related-movies-list">
-      {relatedMovies.map((relatedMovie) => (
-        <li key={relatedMovie.id} className="related-movie-item" onClick={() => onMovieClick(relatedMovie.id)}>
-          <img src={relatedMovie.imageUrl} alt={relatedMovie.title} />
-          <p>{relatedMovie.title}</p>
+      {recommendList.map((relatedMovie, index) => (
+        <li key={index} className="related-movie-item" onClick={() => onMovieClick(relatedMovie.VOD_ID)}>
+          <img src={relatedMovie.POSTER} alt={relatedMovie.TITLE} loading="lazy" />
+          <p>{relatedMovie.TITLE}</p>
         </li>
       ))}
     </ul>
@@ -230,7 +230,7 @@ const RelatedMoviesSection = ({ relatedMovies, onMovieClick }) => (
 const ReviewModal = ({ isOpen, onClose, movie, reviewText, setReviewText, reviewRating, setReviewRating, onSave }) => (
   <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay">
     <div className="modal-content">
-      <img src={movie.posterURL} alt={movie.title} className="modal-poster" />
+      <img src={movie.posterURL} alt={movie.title} className="modal-poster" loading="lazy" />
       <textarea
         value={reviewText}
         onChange={(e) => setReviewText(e.target.value)}
