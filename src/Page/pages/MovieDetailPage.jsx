@@ -32,6 +32,50 @@ const MovieDetailPage = () => {
   const [episodeList, setEpisodeList] = useState([]);
   const [isKidsContent, setIsKidsContent] = useState(false);
 
+  // 시즌 데이터를 가져오는 함수
+  const fetchSeasonList = useCallback(async (seriesId, isKids) => {
+    try {
+      const endpoint = isKids
+        ? `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/kids_season_detail/${seriesId}`
+        : `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/season_detail/${seriesId}`;
+      const response = await axios.get(endpoint);
+      const seasonData = response.data;
+      setSeasonList(seasonData);
+
+      if (seasonData.length > 0) {
+        const firstSeasonId = seasonData[0].SEASON_ID;
+        const firstSeasonNum = seasonData[0].SEASON_NUM;
+
+        // 첫 번째 시즌의 시즌명을 설정
+        setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
+
+        // 첫 번째 시즌의 ID를 설정
+        setSelectedSeasonId(firstSeasonId);
+
+        // 첫 번째 시즌의 에피소드 목록을 가져옴
+        await fetchEpisodeList(firstSeasonId, isKids);
+      }
+    } catch (error) {
+      console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
+      alert('시즌 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }, []);
+
+  // 에피소드 데이터를 가져오는 함수
+  const fetchEpisodeList = async (seasonId, isKids) => {
+    try {
+      setSelectedSeasonId(seasonId);
+      const endpoint = isKids
+        ? `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
+        : `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/season_detail/episode_detail/${seasonId}`;
+      const response = await axios.get(endpoint);
+      setEpisodeList(response.data);
+    } catch (error) {
+      console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
+      alert('에피소드 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  };
+
   // 영화 데이터를 가져오는 함수
   const fetchMovieData = useCallback(async () => {
     try {
@@ -72,51 +116,7 @@ const MovieDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [vodId, userId]);
-
-  // 시즌 데이터를 가져오는 함수
-  const fetchSeasonList = async (seriesId, isKids) => {
-    try {
-      const endpoint = isKids
-        ? `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/kids_season_detail/${seriesId}`
-        : `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/season_detail/${seriesId}`;
-      const response = await axios.get(endpoint);
-      const seasonData = response.data;
-      setSeasonList(seasonData);
-
-      if (seasonData.length > 0) {
-        const firstSeasonId = seasonData[0].SEASON_ID;
-        const firstSeasonNum = seasonData[0].SEASON_NUM;
-
-        // 첫 번째 시즌의 시즌명을 설정
-        setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
-
-        // 첫 번째 시즌의 ID를 설정
-        setSelectedSeasonId(firstSeasonId);
-
-        // 첫 번째 시즌의 에피소드 목록을 가져옴
-        await fetchEpisodeList(firstSeasonId, isKids);
-      }
-    } catch (error) {
-      console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
-      alert('시즌 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    }
-  };
-
-  // 에피소드 데이터를 가져오는 함수
-  const fetchEpisodeList = async (seasonId, isKids) => {
-    try {
-      setSelectedSeasonId(seasonId);
-      const endpoint = isKids
-        ? `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
-        : `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/season_detail/episode_detail/${seasonId}`;
-      const response = await axios.get(endpoint);
-      setEpisodeList(response.data);
-    } catch (error) {
-      console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
-      alert('에피소드 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    }
-  };
+  }, [vodId, userId, fetchSeasonList]);  // fetchSeasonList를 의존성 배열에 추가
 
   useEffect(() => {
     if (vodId) {
