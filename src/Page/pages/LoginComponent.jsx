@@ -60,7 +60,7 @@ function LoginComponent() {
       <main>
         <h2>나를 위한 추천 영화, 시리즈</h2>
         <form onSubmit={LoginFunc}>
-          <label htmlFor="settop_num">헬:D에서 찾아보세요.</label>
+          <label htmlFor="settop_num">헬로:D에서 찾아보세요.</label>
           <div className="input-group">
             <input
               type="password"

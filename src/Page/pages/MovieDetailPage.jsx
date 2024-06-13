@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FaRegPlayCircle, FaRegHeart, FaHeart, FaRegStar } from 'react-icons/fa'; // FaRegStar 추가
+import Modal from 'react-modal';
 import YouTube from 'react-youtube';
 import Header from '../Component/Header';
-import { FaRegPlayCircle, FaRegHeart, FaHeart, FaRegStar } from 'react-icons/fa';
-import Modal from 'react-modal';
 import '../CSS/MovieDetailPage.css';
+
+// Modal App element 설정
+Modal.setAppElement('#root');
 
 const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const vodId = location.state?.vod_id;
   const userId = localStorage.getItem('selectedUserId');
-  
 
   const [movie, setMovie] = useState(null);
   const [castData, setCastData] = useState([]);
@@ -23,6 +25,12 @@ const MovieDetailPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
+
+  const [seasonList, setSeasonList] = useState([]);
+  const [selectedSeasonId, setSelectedSeasonId] = useState(null);
+  const [selectedSeasonName, setSelectedSeasonName] = useState('');
+  const [episodeList, setEpisodeList] = useState([]);
+  // const [isKidsContent, setIsKidsContent] = useState(false); // 사용되지 않는 변수 제거
 
   const fetchMovieData = useCallback(async () => {
     try {
@@ -41,26 +49,58 @@ const MovieDetailPage = () => {
         rating: movieData.MOVIE_RATING || movieData.SERIES_RATING,
       });
 
-      setCastData(
-        movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))
-      );
-
+      setCastData(movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name })));
       setRecommendList(movieData.recommend_list || []);
+      setIsInPlaylist(movieData.like_status); // "찜" 상태 설정
+      setReviews(movieData.review || []);
 
-      const playlistResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`);
-      const likedVods = playlistResponse.data;
-      setIsInPlaylist(likedVods.some(vod => vod.VOD_ID === vodId));
-
-      const reviewResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
-      const userReviews = reviewResponse.data.filter(review => review.VOD_ID === vodId);
-      setReviews(userReviews);
-
+      if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
+        const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
+        await fetchSeasonList(seriesId, !!movieData.K_SERIES_ID);
+      }
     } catch (error) {
       console.error('영화 데이터를 가져오는 중 오류 발생:', error);
+      alert('영화 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     } finally {
       setLoading(false);
     }
   }, [vodId, userId]);
+
+  const fetchSeasonList = useCallback(async (seriesId, isKids) => {
+    try {
+      const endpoint = isKids
+        ? `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/kids_season_detail/${seriesId}`
+        : `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/season_detail/${seriesId}`;
+      const response = await axios.get(endpoint);
+      const seasonData = response.data;
+      setSeasonList(seasonData);
+
+      if (seasonData.length > 0) {
+        const firstSeasonId = seasonData[0].SEASON_ID;
+        const firstSeasonNum = seasonData[0].SEASON_NUM;
+        setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
+        setSelectedSeasonId(firstSeasonId);
+        await fetchEpisodeList(firstSeasonId, isKids);
+      }
+    } catch (error) {
+      console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
+      alert('시즌 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }, []); // fetchSeasonList를 useCallback으로 설정
+
+  const fetchEpisodeList = async (seasonId, isKids) => {
+    try {
+      setSelectedSeasonId(seasonId);
+      const endpoint = isKids
+        ? `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
+        : `${process.env.REACT_APP_EC2_ADDRESS}/detailpage/season_detail/episode_detail/${seasonId}`;
+      const response = await axios.get(endpoint);
+      setEpisodeList(response.data);
+    } catch (error) {
+      console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
+      alert('에피소드 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  };
 
   useEffect(() => {
     if (vodId) {
@@ -70,15 +110,29 @@ const MovieDetailPage = () => {
 
   const togglePlaylist = async () => {
     try {
+      const payload = { VOD_ID: vodId };
+
+      let response;
       if (isInPlaylist) {
-        await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`, { data: { VOD_ID: vodId } });
-        setIsInPlaylist(false);
+        response = await axios.delete(
+          `${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`,
+          { data: payload }
+        );
       } else {
-        await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`, { VOD_ID: vodId });
-        setIsInPlaylist(true);
+        response = await axios.post(
+          `${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`,
+          payload
+        );
+      }
+
+      if (response.status === 200) {
+        setIsInPlaylist(!isInPlaylist);
+      } else {
+        throw new Error('플레이리스트 상태를 업데이트하는 중 오류 발생');
       }
     } catch (error) {
       console.error('플레이리스트 상태를 업데이트하는 중 오류 발생:', error);
+      alert('플레이리스트 상태를 업데이트하는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   };
 
@@ -110,16 +164,16 @@ const MovieDetailPage = () => {
 
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/review/${userId}`, reviewPayload);
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
-        const updatedReviews = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
-        const userReviews = updatedReviews.data.filter(review => review.VOD_ID === vodId);
-        setReviews(userReviews);
+        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vodId}/${userId}`);
+        const updatedMovieData = updatedResponse.data;
+        setReviews(updatedMovieData.review || []);
         closeModal();
       } else {
         alert('리뷰 저장에 실패했습니다.');
       }
     } catch (error) {
       console.error('리뷰 저장 중 오류 발생:', error);
-      alert('리뷰 저장에 실패했습니다.');
+      alert('리뷰 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
     }
   };
 
@@ -154,6 +208,7 @@ const MovieDetailPage = () => {
           <CastSection castData={castData} />
           <ReviewSection reviews={reviews} />
           <RelatedMoviesSection recommendList={recommendList} onMovieClick={handleMovieClick} />
+          {seasonList.length > 0 && <SeasonContainer seasonList={seasonList} selectedSeasonId={selectedSeasonId} selectedSeasonName={selectedSeasonName} setSelectedSeasonName={setSelectedSeasonName} onSeasonClick={fetchEpisodeList} episodeList={episodeList} />}
         </div>
       </div>
 
@@ -212,23 +267,87 @@ const ReviewSection = ({ reviews }) => (
   </div>
 );
 
+const RelatedMoviesSection = ({ recommendList, onMovieClick }) => {
+  const getRandomMovies = (movies, count) => {
+    const shuffled = [...movies].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
 
-const RelatedMoviesSection = ({ recommendList, onMovieClick }) => (
-  <div className="related-movies-section">
-    <h3>추천 영화</h3>
-    <ul className="related-movies-list">
-      {recommendList.map((relatedMovie, index) => (
-        <li key={index} className="related-movie-item" onClick={() => onMovieClick(relatedMovie.VOD_ID)}>
-          <img src={relatedMovie.POSTER} alt={relatedMovie.TITLE} loading="lazy" />
-          <p>{relatedMovie.TITLE}</p>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+  const randomRecommendList = getRandomMovies(recommendList, 8);
+
+  return (
+    <div className="related-movies-section">
+      <h3>추천 영화</h3>
+      <ul className="related-movies-list">
+        {randomRecommendList.map((relatedMovie, index) => (
+          <li key={index} className="related-movie-item" onClick={() => onMovieClick(relatedMovie.VOD_ID)}>
+            <img src={relatedMovie.POSTER} alt={relatedMovie.TITLE} loading="lazy" />
+            <p>{relatedMovie.TITLE}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, setSelectedSeasonName, onSeasonClick, episodeList }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const handleDropdownToggle = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleSeasonSelect = async (seasonId, seasonName, seasonNum) => {
+    setIsDropdownOpen(false);
+    setSelectedSeasonName(`시즌 ${seasonNum}`);
+    await onSeasonClick(seasonId);
+  };
+
+  return (
+    <div className="season-container">
+      <h3>시즌</h3>
+      <div className="season-dropdown">
+        <button className="season-dropdown-button" onClick={handleDropdownToggle}>
+          {selectedSeasonName || (seasonList.length > 0 ? `시즌 ${seasonList[0].SEASON_NUM}` : '시즌 선택')} <span className="dropdown-arrow">{isDropdownOpen ? '▲' : '▼'}</span>
+        </button>
+        {isDropdownOpen && (
+          <ul className="season-list">
+            {seasonList.map((season) => (
+              <li
+                key={season.SEASON_ID}
+                className={`season-item ${season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
+                onClick={() => handleSeasonSelect(season.SEASON_ID, season.SEASON_NAME, season.SEASON_NUM)}
+              >
+                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_COUNT || '0'} 에피소드)`}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {selectedSeasonId && (
+        <div className="episode-container">
+          <h4>에피소드</h4>
+          <ul className="episode-list">
+            {episodeList.map((episode) => (
+              <li key={episode.EPISODE_ID} className="episode-item">
+                <img src={episode.EPISODE_STILL} alt={episode.EPISODE_NAME} className="episode-thumbnail" loading="lazy" />
+                <div className="episode-info">
+                  <h5>{episode.EPISODE_NAME}</h5>
+                  <p>{episode.EPISODE_OVERVIEW || '설명이 없습니다.'}</p>
+                  <p>방영일: {episode.EPISODE_AIR_DATE}</p>
+                  <p>러닝타임: {episode.EPISODE_RTM}분</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const ReviewModal = ({ isOpen, onClose, movie, reviewText, setReviewText, reviewRating, setReviewRating, onSave }) => (
-  <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay">
+  <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay" style={{ overlay: { top: '100px' } }}> {/* 모달 위치 수정 */}
     <div className="modal-content">
       <img src={movie.posterURL} alt={movie.title} className="modal-poster" loading="lazy" />
       <textarea

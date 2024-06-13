@@ -6,20 +6,22 @@ import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
 import logo from '../URL/logoHelloD.png';
 
+// 배경 스타일 설정
 const Background = styled.div`
   background-color: black;
 `;
 
 function About() {
-  const [users, setUsers] = useState([]);
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [USER_NAME, setUSER_NAME] = useState("");
-  const [GENDER, setGENDER] = useState("");
-  const [AGE, setAGE] = useState("");
-  const [msg, setMsg] = useState("");
+  const [users, setUsers] = useState([]); // 사용자 목록 상태
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false); // 모달 열기/닫기 상태
+  const [USER_NAME, setUSER_NAME] = useState(""); // 사용자 이름 상태
+  const [GENDER, setGENDER] = useState(""); // 성별 상태
+  const [AGE, setAGE] = useState(""); // 나이 상태
+  const [msg, setMsg] = useState(""); // 메시지 상태
 
   const navigate = useNavigate();
 
+  // 컴포넌트가 마운트될 때 실행
   useEffect(() => {
     const settopnum = localStorage.getItem('settop_num');
     if (settopnum) {
@@ -30,6 +32,7 @@ function About() {
     }
   }, []);
 
+  // 사용자 목록을 백엔드에서 가져오는 함수
   const fetchUsers = async (settopnum) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
@@ -45,19 +48,23 @@ function About() {
     }
   };
 
+  // 사용자를 선택했을 때 실행되는 함수
   const handleUserClick = (user_id, user_name) => {
     localStorage.setItem('selectedUserId', user_id);
     localStorage.setItem('selectedUserName', user_name);
-    navigate('/Main');
+    navigate('/Main'); // Main 페이지로 이동
   };
 
+  // 사용자 추가 버튼 클릭 시 실행
   const handleAddUser = () => {
-    setIsSignupModalOpen(true);
+    setIsSignupModalOpen(true); // 모달 열기
   };
 
+  // 회원가입 처리 함수
   const handleSignup = async () => {
     const settopnum = localStorage.getItem('settop_num');
 
+    // 모든 필드가 입력되었는지 확인
     if (!USER_NAME || !GENDER || !AGE) {
       alert('모든 필드를 입력하세요.');
       return;
@@ -74,8 +81,8 @@ function About() {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser);
       if (response.status === 200) {
         fetchUsers(settopnum); // 등록 후 사용자 목록 갱신
-        setIsSignupModalOpen(false);
-        setUSER_NAME("");
+        setIsSignupModalOpen(false); // 모달 닫기
+        setUSER_NAME(""); // 필드 초기화
         setGENDER("");
         setAGE("");
       } else {
@@ -88,10 +95,12 @@ function About() {
     }
   };
 
+  // 나이 선택 시 실행
   const handleAGEChange = (e) => {
     setAGE(e.target.value);
   };
 
+  // 이름 입력 시 실행
   const onChangeUSER_NAME = (e) => {
     setUSER_NAME(e.target.value);
   };
@@ -105,7 +114,7 @@ function About() {
       </header>
       <main>
         <div className="user-selection-page">
-          <h1>여러분의 웃음과 함께 하는 헬:D</h1>
+          <h1>여러분의 웃음과 함께 하는 헬로:D</h1>
           <p>사용자를 선택하여 계속하세요.</p>
           <div className="user-grid">
             {users.map((user) => (

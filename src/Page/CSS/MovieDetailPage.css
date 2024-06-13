@@ -1,3 +1,4 @@
+/* 기본 스타일 */
 .movie-detail-page {
   padding-top: 10px;
   background-color: #010101;
@@ -14,6 +15,7 @@
   display: flex;
   align-items: flex-start;
   margin-bottom: 10px;
+  flex-wrap: wrap; /* flex 아이템을 줄바꿈 허용 */
 }
 
 .movie-poster {
@@ -39,16 +41,19 @@
   margin-bottom: 10px;
 }
 
-.playlist-button {
+.heart-icon {
   position: absolute;
   top: 10px;
   right: -20px;
-  background: none;
-  border: none;
+  padding: 0px;
+  margin: 0px;
   font-size: 1.5rem;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
+  color: white; /* 하트 아이콘의 색상 설정 */
+  transition: transform 0.2s ease-in-out;
+}
+
+.playlist-button:hover .heart-icon {
+  transform: scale(1.2); /* 커서가 갔을 때 아이콘 크기 확대 */
 }
 
 .trailer-section {
@@ -63,11 +68,11 @@
   margin-top: 20px;
 }
 
-.cast-section, .review-section, .related-movies-section {
+.cast-section, .review-section, .related-movies-section, .season-container {
   margin-bottom: 20px;
 }
 
-.cast-section h3, .review-section h3, .related-movies-section h3 {
+.cast-section h3, .review-section h3, .related-movies-section h3, .season-container h3 {
   margin-bottom: 10px;
 }
 
@@ -157,7 +162,21 @@
   margin-bottom: 10px;
 }
 
-.related-movies-section img {
+.related-movies-list {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  list-style: none;
+}
+
+.related-movie-item {
+  text-align: center;
+  cursor: pointer;
+  flex-basis: calc(20% - 10px); /* 각 항목이 같은 너비를 차지하도록 설정 */
+  margin: 0 5px; /* 항목 간 간격을 동일하게 설정 */
+}
+
+.related-movie-item img {
   width: 100px;
   height: auto;
   border-radius: 5px;
@@ -177,6 +196,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 100px; /* 모달 위치를 위쪽으로 100px 이동 */
 }
 
 .modal {
@@ -258,9 +278,89 @@
   color: #fff;
 }
 
-/* 반응형 스타일 */
-/* 반응형 스타일 */
+/* 시즌 드롭다운 스타일 */
+.season-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.season-dropdown-button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-arrow {
+  float: right;
+}
+
+.season-list {
+  display: none;
+  position: absolute;
+  background-color: #333;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.season-list .season-item {
+  color: #fff;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.season-list .season-item:hover {
+  background-color: #575757;
+}
+
+.season-dropdown .season-list {
+  display: block;
+}
+
+.episode-container {
+  margin-top: 20px;
+}
+
+.episode-item {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.episode-thumbnail {
+  width: 90px; /* 에피소드 포스터 크기 조정 */
+  height: auto;
+  margin-right: 20px;
+  border-radius: 5px; /* 에피소드 포스터에도 약간의 둥근 모서리 적용 */
+}
+
+.episode-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* 미디어 쿼리 */
 @media (max-width: 1200px) {
+  .movie-info {
+    max-width: 600px;
+  }
+
+  .related-movie-item {
+    flex-basis: calc(25% - 10px);
+  }
+}
+
+@media (max-width: 992px) {
   .movie-header {
     flex-direction: column;
     align-items: center;
@@ -271,105 +371,57 @@
     text-align: center;
   }
 
-  .playlist-button {
-    position: static;
-    margin-top: 10px;
+  .heart-icon {
+    top: -20px;
+    right: 0;
   }
 
-  .play-button,
-  .playlist-button {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  .trailer-button {
-    margin-top: 10px;
-  }
-
-  .cast-list {
-    justify-content: center;
-  }
-
-  .related-movies-section ul {
-    justify-content: center;
-  }
-
-  .movie-detail-container {
-    padding-top: 50px; /* 수정된 부분: 중첩 방지를 위해 패딩 증가 */
+  .related-movie-item {
+    flex-basis: calc(33.333% - 10px);
   }
 }
 
 @media (max-width: 768px) {
-  .movie-detail-page {
-    padding-top: 10px;
-    margin-top: 0px;
-
-  }
-  .movie-detail-container {
-    padding-top: 70px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  .movie-header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .movie-info {
-    max-width: 100%;
-    text-align: center;
-  }
-
-  .playlist-button {
-    position: static;
-    margin-top: 10px;
-  }
-
-  .play-button,
-  .playlist-button {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  .trailer-button {
-    margin-top: 10px;
-  }
-
-  .cast-list {
-    justify-content: center;
-  }
-
-  .related-movies-section ul {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .movie-detail-page {
-    padding-top: 100px;
-  }
-  .movie-detail-container {
-    padding-top: 0px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  .movie-poster {
-    width: 150px; /* 변경된 부분: 영화 포스터 크기 조정 */
-  }
-
   .movie-info h1 {
     font-size: 1.5rem;
   }
 
-  .cast-item {
-    width: 80px;
+  .movie-poster {
+    width: 150px;
   }
 
-  .cast-img {
-    width: 60px;
+  .cast-item, .related-movie-item {
+    flex-basis: calc(50% - 10px);
   }
 
-  .related-movies-section img {
-    width: 80px;
+  .review-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .review-comment {
+    font-size: 0.9rem;
+  }
+
+  .review-rating {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .movie-poster {
+    width: 120px;
+  }
+
+  .movie-info h1 {
+    font-size: 1.2rem;
+  }
+
+  .movie-info p {
+    font-size: 0.9rem;
+  }
+
+  .cast-item, .related-movie-item {
+    flex-basis: calc(100% - 10px);
   }
 }
