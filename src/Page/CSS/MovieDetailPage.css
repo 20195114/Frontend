@@ -177,7 +177,7 @@
 }
 
 .related-movie-item img {
-  width: 100px;
+  width: 150px;
   height: auto;
   border-radius: 5px;
 }
@@ -337,7 +337,7 @@
 }
 
 .episode-thumbnail {
-  width: 90px; /* 에피소드 포스터 크기 조정 */
+  width: 150px; /* 에피소드 포스터 크기 조정 */
   height: auto;
   margin-right: 20px;
   border-radius: 5px; /* 에피소드 포스터에도 약간의 둥근 모서리 적용 */
