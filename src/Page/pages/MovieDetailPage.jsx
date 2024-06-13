@@ -378,3 +378,4 @@ const ReviewModal = ({ isOpen, onClose, movie, reviewText, setReviewText, review
 );
 
 export default MovieDetailPage;
+//안냥
