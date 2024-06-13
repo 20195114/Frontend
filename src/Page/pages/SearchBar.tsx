@@ -32,7 +32,7 @@ function SearchBar() {
         const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
         setSearchHistory(history);
       } catch (error) {
-        console.error('searchLog 파싱 중 오류 발생', error);
+        console.error('Error parsing searchLog', error);
         setSearchHistory([]);
       }
     }
@@ -58,16 +58,16 @@ function SearchBar() {
       if (response.status === 200 && response.data.length > 0) {
         setSearchResults(response.data);
         setErrorMessage('');
-        console.log('검색 결과:', response.data);
+        console.log('Search results:', response.data);
         navigate('/SearchBar', { state: { searchResults: response.data, searchQuery: searchTerm } });
       } else {
-        setErrorMessage('검색어에 맞는 VOD가 없습니다.');
+        setErrorMessage('No VODs found for the search term.');
         setSearchResults([]);
       }
       updateSearchHistory(searchTerm);
     } catch (error) {
-      console.error('검색 중 문제 발생:', error);
-      setErrorMessage('검색어를 올바르게 입력해 주세요.');
+      console.error('Error during search:', error);
+      setErrorMessage('Please enter a valid search term.');
     }
     setIsLoading(false);
   }, [searchTerm, navigate, updateSearchHistory]);
@@ -90,13 +90,18 @@ function SearchBar() {
   };
 
   const handleSearchResultClick = async (vod_id: string) => {
+    const userId = localStorage.getItem('selectedUserId'); // Retrieve user_id from localStorage
+    if (!userId) {
+      console.error('No user ID found in localStorage.');
+      return;
+    }
     try {
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}`);
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}/${userId}`);
       const vodData = response.data;
-      console.log('VOD 데이터:', vodData);
-      navigate('/MovieDetailPage', { state: { vod_id: vod_id } });
+      console.log('VOD data:', vodData);
+      navigate('/MovieDetailPage', { state: { vod_id: vod_id, user_id: userId } });
     } catch (error) {
-      console.error('VOD 데이터 가져오기 중 오류:', error);
+      console.error('Error fetching VOD data:', error);
     }
   };
 
@@ -113,20 +118,20 @@ function SearchBar() {
           value={searchTerm}
           onChange={handleSearchChange}
           onKeyDown={handleKeyDown}
-          placeholder="검색어를 입력하세요"
+          placeholder="검색어를 입력해 주세요"
         />
         <button onClick={sendSearchDataToBackend} disabled={isLoading}>
           검색
         </button>
       </div>
-      {isLoading && <p>검색 중...</p>}
+      {isLoading && <p>Loading...</p>}
       {errorMessage && <p>{errorMessage}</p>}
       <div className="search-history">
-        <h3>검색 기록</h3>
+        <h3>Search History</h3>
         <ul>
           {searchHistory.map((entry, index) => (
             <li key={index} onClick={() => handleHistoryClick(entry.keyword)}>
-              {entry.keyword} ({entry.date.toLocaleString()})
+              {entry.keyword} ({new Date(entry.date).toLocaleString()})
             </li>
           ))}
         </ul>
