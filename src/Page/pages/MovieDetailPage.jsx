@@ -34,6 +34,22 @@ const MovieDetailPage = () => {
   // 기본 API 주소 설정
   const baseAPI = process.env.REACT_APP_EC2_ADDRESS;
 
+  // 에피소드 데이터를 가져오는 함수
+  const fetchEpisodeList = useCallback(async (seasonId, isKids) => {
+    try {
+      setSelectedSeasonId(seasonId);
+      const endpoint = isKids
+        ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
+        : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
+      const response = await axios.get(endpoint);
+      const episodeData = response.data;
+      setEpisodeList(episodeData);
+    } catch (error) {
+      console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
+      alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }, [baseAPI]);
+
   // 시즌 데이터를 가져오는 함수
   const fetchSeasonList = useCallback(async (seriesId, isKids) => {
     try {
@@ -54,23 +70,7 @@ const MovieDetailPage = () => {
       console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
       alert('시즌 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
-  }, [baseAPI]);
-
-  // 에피소드 데이터를 가져오는 함수
-  const fetchEpisodeList = async (seasonId, isKids) => {
-    try {
-      setSelectedSeasonId(seasonId);
-      const endpoint = isKids
-        ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
-        : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
-      const response = await axios.get(endpoint);
-      const episodeData = response.data;
-      setEpisodeList(episodeData);
-    } catch (error) {
-      console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
-      alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    }
-  };
+  }, [baseAPI, fetchEpisodeList]);
 
   // 영화 데이터를 가져오는 함수
   const fetchMovieData = useCallback(async () => {
