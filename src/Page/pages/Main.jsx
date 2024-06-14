@@ -4,7 +4,6 @@ import Header from '../Component/Header';
 import MyWatchedVods from '../Component/MyWatchedVods';
 import YouTubeTrends from '../Component/YouTubeTrends';
 import PopularVods from '../Component/PopularVods';
-import SearchBasedVods from '../Component/SearchBasedVods';
 import RatingBasedVods from '../Component/RatingBasedVods';
 import Spotify from '../Component/Spotify';
 import '../CSS/Main.css';
@@ -74,7 +73,6 @@ const Main = () => {
     fetchData('/mainpage/home/watch', 'myWatchedVods', user_id);
     fetchData('/mainpage/home/youtube', 'youtubeTrendsVods', user_id);
     fetchData('/mainpage/home/popular', 'popularVods');
-    fetchData('/mainpage/home/search', 'searchBasedVods');
     fetchData('/mainpage/home/rating', 'ratingBasedVods');
     fetchData('/mainpage/home/spotify', 'spotifyVods', user_id);
   }, [fetchData]);
@@ -188,11 +186,6 @@ const Main = () => {
         vods={state.popularVods} 
         handlePosterClick={handlePosterClick} 
         loading={loading.popularVods}
-      />
-      <SearchBasedVods 
-        vods={state.searchBasedVods} 
-        handlePosterClick={handlePosterClick} 
-        loading={loading.searchBasedVods}
       />
       <RatingBasedVods 
         vods={state.ratingBasedVods} 

@@ -51,7 +51,6 @@ body {
 .my-watched-vods-container,
 .youtube-trends-container,
 .popular-vods-container,
-.search-based-vods-container,
 .rating-based-vods-container,
 .spotify-container {
   padding: 10px 0; /* 패딩을 조정하여 섹션 간 간격 조정 */
@@ -62,7 +61,6 @@ body {
 .my-watched-vods-container h2,
 .youtube-trends-container h2,
 .popular-vods-container h2,
-.search-based-vods-container h2,
 .rating-based-vods-container h2,
 .spotify-container h2 {
   font-size: 24px;
