@@ -52,8 +52,8 @@ const Like = ({ playlistVisible, togglePlaylistVisibility }) => {
               <p>{vod.TITLE}</p>
             </div>
           ))}
-          <div className="more" onClick={() => navigate('/Playlist')}>
-            더보기
+          <div className="more" div style={{fontSize: '15px'}} onClick={() => navigate('/Playlist')}>
+            더보기 
           </div>
         </div>
       )}
