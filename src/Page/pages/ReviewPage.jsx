@@ -7,7 +7,7 @@ const ReviewPage = () => {
   const [reviewData, setReviewData] = useState([]);
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user_id = 'example_user_id'; // Replace with actual user ID
+  const user_id = localStorage.getItem('selectedUserId'); // 기본 값으로 대체
 
   useEffect(() => {
     const fetchUserReviews = async () => {
