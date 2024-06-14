@@ -1,52 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { BsSkipStartBtn } from 'react-icons/bs';
-import '../CSS/Like.css'; // CSS 파일 경로 확인
+import '../CSS/Like.css'; // Ensure this path is correct
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Like = ({ playlistVisible, togglePlaylistVisibility, user_id }) => {
+const Like = ({ playlistVisible, togglePlaylistVisibility }) => {
   const [likedVods, setLikedVods] = useState([]);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("selectedUserId"); // Ensure this retrieves the correct user ID
 
-  // 백엔드로부터 찜 목록 데이터를 가져오는 함수
+  console.log("User ID:", userId); // Logging user ID to ensure it is retrieved correctly
+
+  // Fetch liked VODs
   useEffect(() => {
     const fetchLikedVods = async () => {
-      if (!user_id) {
+      if (!userId) {
         console.error('사용자 ID를 찾을 수 없습니다.');
         return;
       }
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/like/${user_id}`);
+        // Ensure the URL is correct and formatted properly
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`);
+        console.log('API Response:', response); // Log response for debugging
         setLikedVods(response.data || []);
       } catch (error) {
+        // Log detailed error information
         console.error('찜 목록을 가져오는 데 실패했습니다:', error);
+        if (error.response) {
+          console.error('서버 응답:', error.response.data);
+          alert(`찜 목록을 가져오는 중 문제가 발생했습니다: ${error.response.data.message || 'Unknown error'}`);
+        }
       }
     };
 
     fetchLikedVods();
-  }, [user_id]); // user_id가 변경될 때마다 찜 목록을 다시 가져옴
+  }, [userId]);
 
-  // VOD 상세 페이지로 이동하는 함수
-  const handlePlaylistPosterClick = async (vod_id) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/movies/${vod_id}`);
-      if (response.status === 200) {
-        navigate('/movieDetailPage', { state: { movieDetail: response.data } });
-      } else {
-        console.error('영화 정보를 가져오는 데 실패했습니다:', response.status);
-      }
-    } catch (error) {
-      console.error('영화 정보를 가져오는 중 오류 발생:', error);
-    }
+  // Handle playlist poster click
+  const handlePlaylistPosterClick = (vod_id) => {
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
-
   return (
     <div className="playlist-container">
-      <BsSkipStartBtn
-        className="play-icon"
-        onClick={togglePlaylistVisibility}
-      />
+      <BsSkipStartBtn className="play-icon" onClick={togglePlaylistVisibility} />
       {playlistVisible && (
         <div className="playlist-box active">
           {likedVods.slice(0, 3).map((vod, index) => (

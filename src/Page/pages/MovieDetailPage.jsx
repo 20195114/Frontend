@@ -118,19 +118,25 @@ const MovieDetailPage = () => {
 
   const togglePlaylist = async () => {
     try {
-      const url = `${process.env.REACT_APP_CUD_ADDRESS}/like/${userId}`;
+      const baseURL = process.env.REACT_APP_CUD_ADDRESS;
+      const url = `${baseURL}/like/${userId}?VOD_ID=${vodId}`;
+  
       if (isInPlaylist) {
-        await axios.delete(url, { data: { VOD_ID: vodId } });
+        await axios.delete(url);
       } else {
-        await axios.post(url, { VOD_ID: vodId });
+        await axios.post(url);
       }
+  
       setIsInPlaylist(!isInPlaylist);
       await fetchMovieData();
     } catch (error) {
       console.error('플레이리스트 상태를 업데이트하는 중 오류 발생:', error);
-      alert('플레이리스트 상태를 업데이트하는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      alert(
+        '플레이리스트 상태를 업데이트하는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+      );
     }
   };
+  
 
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -161,6 +167,7 @@ const MovieDetailPage = () => {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/review/${userId}`, reviewPayload);
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
+        console.log(updatedResponse)
         setReviews(updatedResponse.data.review || []);
         closeModal();
       } else {

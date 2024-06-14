@@ -15,7 +15,7 @@ const Playlist = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
   // 사용자 ID를 localStorage에서 가져오기
-  const user_id = localStorage.getItem('user_id') || 'example_user_id'; // 기본 값으로 대체
+  const user_id = localStorage.getItem('selectedUserId'); // 기본 값으로 대체
 
   // 찜 목록 데이터를 가져오는 함수
   const fetchData = useCallback(async () => {
@@ -45,12 +45,12 @@ const Playlist = () => {
   };
 
   const handlePosterClick = (vod_id) => {
-    navigate(`/MovieDetail/${vod_id}`);
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
 
   const likeVod = async (vodId) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, null, {
+      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/like/${user_id}`, null, {
         params: { VOD_ID: vodId },
         headers: {
           'Accept': 'application/json',
@@ -66,7 +66,7 @@ const Playlist = () => {
 
   const removeVod = async (vodId) => {
     try {
-      const response = await axios.delete(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`, {
+      const response = await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/like/${user_id}`, {
         params: { VOD_ID: vodId },
         headers: {
           'Accept': 'application/json',
