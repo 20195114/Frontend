@@ -42,8 +42,7 @@ const MovieDetailPage = () => {
         ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
         : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
       const response = await axios.get(endpoint);
-      const episodeData = response.data;
-      setEpisodeList(episodeData);
+      setEpisodeList(response.data);
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
@@ -57,11 +56,10 @@ const MovieDetailPage = () => {
         ? `${baseAPI}/detailpage/kids_season_detail/${seriesId}`
         : `${baseAPI}/detailpage/season_detail/${seriesId}`;
       const response = await axios.get(endpoint);
-      const seasonData = response.data;
-      setSeasonList(seasonData);
+      setSeasonList(response.data);
 
-      if (seasonData.length > 0) {
-        const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
+      if (response.data.length > 0) {
+        const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = response.data[0];
         setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
         setSelectedSeasonId(firstSeasonId);
         await fetchEpisodeList(firstSeasonId, isKids);
@@ -119,24 +117,37 @@ const MovieDetailPage = () => {
   const togglePlaylist = async () => {
     try {
       const baseURL = process.env.REACT_APP_CUD_ADDRESS;
-      const url = `${baseURL}/like/${userId}?VOD_ID=${vodId}`;
-  
+      const url = `${baseURL}/like/${userId}`;
+      const params = new URLSearchParams({ VOD_ID: vodId }).toString(); // URLSearchParams로 쿼리 파라미터 생성
+
       if (isInPlaylist) {
-        await axios.delete(url);
+        await axios.delete(`${url}?${params}`);
       } else {
-        await axios.post(url);
+        await axios.post(`${url}?${params}`, {}); // 빈 데이터로 POST 요청
       }
-  
+
       setIsInPlaylist(!isInPlaylist);
       await fetchMovieData();
     } catch (error) {
       console.error('플레이리스트 상태를 업데이트하는 중 오류 발생:', error);
-      alert(
-        '플레이리스트 상태를 업데이트하는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.'
-      );
+
+      if (error.response) {
+        console.error('서버 응답:', error.response.data);
+        alert(`플레이리스트 업데이트 중 문제가 발생했습니다: ${error.response.data.message || '알 수 없는 오류'}`);
+      } else if (error.request) {
+        console.error('요청을 보냈으나 응답을 받지 못했습니다:', error.request);
+        alert('서버와의 통신 중 문제가 발생했습니다. 네트워크 상태를 확인해 주세요.');
+      } else {
+        console.error('요청 설정 중 오류가 발생했습니다:', error.message);
+        alert(`플레이리스트 업데이트 중 문제가 발생했습니다: ${error.message}`);
+      }
+
+      // 추가 네트워크 오류 처리
+      if (error.message.includes('Network Error')) {
+        alert('네트워크 오류가 발생했습니다. 네트워크 연결을 확인하고 다시 시도하세요.');
+      }
     }
   };
-  
 
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -167,7 +178,6 @@ const MovieDetailPage = () => {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/review/${userId}`, reviewPayload);
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
-        console.log(updatedResponse)
         setReviews(updatedResponse.data.review || []);
         closeModal();
       } else {
@@ -320,7 +330,7 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
                 className={`season-item ${season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
                 onClick={() => handleSeasonSelect(season.SEASON_ID, season.SEASON_NUM)}
               >
-                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_COUNT || '0'} 에피소드)`}
+                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_NUM} 에피소드)`}
               </li>
             ))}
           </ul>
