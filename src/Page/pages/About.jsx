@@ -4,11 +4,20 @@ import styled from 'styled-components';
 import "../CSS/About.css";
 import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
+import { FaPlus } from "react-icons/fa"; // FaPlus 아이콘 가져오기
 import logo from '../URL/logoHelloD.png';
 
 // 배경 스타일 설정
 const Background = styled.div`
   background-color: black;
+`;
+
+const AddUserButton = styled(FaPlus)` // 아이콘에 스타일 적용
+  font-size: 4rem;
+  color: #fff;
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s;
 `;
 
 function About() {
@@ -130,7 +139,7 @@ function About() {
               </div>
             ))}
             {users.length < 4 && (
-              <button id="addUserButton" onClick={handleAddUser}>사용자 추가</button>
+              <AddUserButton onClick={handleAddUser} />
             )}
           </div>
           {isSignupModalOpen && (
