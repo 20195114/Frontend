@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Search from './Search';
 import Like from './Like';
@@ -50,7 +50,7 @@ const Header = ({
     setIsMenuVisible(false);
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = useCallback((event) => {
     if (
       searchRef.current && !searchRef.current.contains(event.target) &&
       likeRef.current && !likeRef.current.contains(event.target) &&
@@ -58,14 +58,14 @@ const Header = ({
     ) {
       closeOthers();
     }
-  };
+  }, [closeOthers]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [handleClickOutside]);
 
   return (
     <header className="header">
@@ -73,22 +73,13 @@ const Header = ({
         <img src={logo} alt="Hell:D Logo" className="logo" />
       </div>
       <nav className="category-container">
-        <Link
-          to="/Movie"
-          className={getCategoryClass('/Movie')}
-        >
+        <Link to="/Movie" className={getCategoryClass('/Movie')}>
           영화
         </Link>
-        <Link
-          to="/Series"
-          className={getCategoryClass('/Series')}
-        >
+        <Link to="/Series" className={getCategoryClass('/Series')}>
           시리즈
         </Link>
-        <Link
-          to="/Kids"
-          className={getCategoryClass('/Kids')}
-        >
+        <Link to="/Kids" className={getCategoryClass('/Kids')}>
           키즈
         </Link>
       </nav>

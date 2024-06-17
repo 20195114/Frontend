@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +9,6 @@ const Search = ({
   isVisible,
   setIsVisible,
   closeOthers,
-  searchActive,
-  setSearchActive,
   searchQuery,
   setSearchQuery,
   searchResults,
@@ -30,6 +28,7 @@ const Search = ({
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
         setSearchResults(response.data || []);
       } catch (error) {
+        console.error('검색 결과를 가져오는 중 오류 발생:', error);
         setSearchResults([]);
       }
     } else {
@@ -38,11 +37,10 @@ const Search = ({
   };
 
   const handleSearchSubmit = async (event) => {
-    const keyword = searchQuery.trim();
-    if (event.key === 'Enter' && keyword !== '') {
+    if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        navigate('/SearchBar', { state: { searchResults: response.data || [], searchQuery: keyword } });
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(searchQuery.trim())}`);
+        navigate('/SearchBar', { state: { searchResults: response.data || [], searchQuery: searchQuery.trim() } });
       } catch (error) {
         console.error('VOD 검색 중 오류:', error);
       }
@@ -56,12 +54,12 @@ const Search = ({
     searchInputRef.current.focus();
   };
 
-  const handleCloseIconClick = () => {
+  const handleCloseIconClick = useCallback(() => {
     setIsVisible(false);
     containerRef.current.classList.remove('search-active');
     setSearchQuery('');
     setSearchResults([]);
-  };
+  }, [setIsVisible, setSearchQuery, setSearchResults]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -73,14 +71,11 @@ const Search = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [handleCloseIconClick]);
 
   return (
     <div className="search-container" ref={containerRef}>
-      <FaSearch
-        className="search-icon"
-        onClick={handleIconClick}
-      />
+      <FaSearch className="search-icon" onClick={handleIconClick} />
       <input
         type="text"
         className="search-input"
@@ -90,10 +85,7 @@ const Search = ({
         ref={searchInputRef}
         placeholder="제목, 배우, 장르 검색"
       />
-      <IoClose
-        className="close-icon"
-        onClick={handleCloseIconClick}
-      />
+      <IoClose className="close-icon" onClick={handleCloseIconClick} />
       {isVisible && searchResults.length > 0 && (
         <div className="search-results">
           {searchResults.slice(0, 10).map((result, index) => (

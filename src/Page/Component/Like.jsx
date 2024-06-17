@@ -4,10 +4,11 @@ import '../CSS/Like.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, togglePlaylistVisibility, navigate }) => {
+const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, togglePlaylistVisibility }) => {
   const [likedVods, setLikedVods] = useState([]);
   const userId = localStorage.getItem("selectedUserId");
   const likeRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLikedVods = async () => {

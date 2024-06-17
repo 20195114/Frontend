@@ -36,16 +36,6 @@ const MovieDetailPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
-  const [state, setState] = useState({
-    myWatchedVods: [],
-    youtubeTrendsVods: [],
-    popularVods: [],
-    searchBasedVods: [],
-    ratingBasedVods: [],
-    spotifyVods: [],
-    isSpotifyLinked: false,
-    user_name: 'User Name'
-  });
 
   const searchInputRef = useRef(null);
   const searchRef = useRef(null);
@@ -208,7 +198,7 @@ const MovieDetailPage = () => {
   return (
     <div className="movie-detail-page">
       <Header
-        state={state}
+        state={{}} // state 변수가 필요하지 않다면 빈 객체로 전달하거나, 필요 없다면 삭제
         searchActive={searchActive}
         setSearchActive={setSearchActive}
         searchResults={searchResults}
@@ -216,14 +206,14 @@ const MovieDetailPage = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         users={[]}
-        handleSearchInputChange={() => { }}
-        handleSearchSubmit={() => { }}
+        handleSearchInputChange={() => {}}
+        handleSearchSubmit={() => {}}
         handleSearchResultClick={handleMovieClick}
         togglePlaylistVisibility={() => setPlaylistVisible(!playlistVisible)}
         playlistVisible={playlistVisible}
         toggleUserMenuVisibility={() => setUserMenuVisible(!userMenuVisible)}
         userMenuVisible={userMenuVisible}
-        handleUserChange={() => { }}
+        handleUserChange={() => {}}
         searchInputRef={searchInputRef}
         closeOthers={closeOthers}
         setIsSearchVisible={setSearchActive}
