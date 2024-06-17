@@ -9,6 +9,8 @@ const Search = ({
   isVisible,
   setIsVisible,
   closeOthers,
+  searchActive,
+  setSearchActive,
   searchQuery,
   setSearchQuery,
   searchResults,

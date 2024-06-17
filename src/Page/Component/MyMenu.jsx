@@ -4,14 +4,14 @@ import { FaUser } from "react-icons/fa";
 import { IoLogoOctocat } from "react-icons/io5";
 import '../CSS/MyMenu.css';
 
-const MyMenu = ({ isVisible, setIsVisible, closeOthers }) => {
-  const [users, setUsers] = useState([]);
+const MyMenu = ({ isVisible, setIsVisible, closeOthers, users, userMenuVisible, toggleUserMenuVisibility, handleUserChange }) => {
+  const [userList, setUserList] = useState([]);
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem('user_list')) || [];
-    setUsers(storedUsers);
+    setUserList(storedUsers);
   }, []);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers }) => {
   const handleUserClick = (user_id, user_name) => {
     localStorage.setItem('selectedUserId', user_id);
     localStorage.setItem('selectedUserName', user_name);
-    navigate('/User');
+    handleUserChange(user_id, user_name);
   };
 
   return (
@@ -46,7 +46,7 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers }) => {
       />
       {isVisible && (
         <div className="user-menu active">
-          {users.map(user => (
+          {userList.map(user => (
             <div key={user.USER_ID} className="user-menu-item" onClick={() => handleUserClick(user.USER_ID, user.USER_NAME)}>
               <IoLogoOctocat className="user-icon-small" />
               <p>{user.USER_NAME}</p>
