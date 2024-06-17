@@ -12,7 +12,6 @@ body {
   justify-content: left;
   align-items: center;
   margin-bottom: 10px;
-  margin-left: 20px;
 }
 
 .logo-image {
@@ -20,6 +19,7 @@ body {
   height: auto;
 }
 
+/* 사용자 선택 페이지 스타일 */
 .user-selection-page {
   margin-top: -140px;
   padding: 50px;
@@ -30,16 +30,17 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  text-align: center;
 }
 
 .user-selection-page h1 {
-  font-size: 32px;
+  font-size: 2.5rem;
   margin-bottom: 24px;
   color: #FFFFFF;
 }
 
 .user-selection-page p {
-  font-size: 18px;
+  font-size: 1.125rem;
   margin-bottom: 24px;
   color: #FFFFFF;
 }
@@ -72,13 +73,13 @@ body {
 }
 
 .user-icon-cat {
-  font-size: 100px;
+  font-size: 6.25rem; /* 100px */
   color: #f12c64;
   margin-bottom: 10px;
 }
 
 .user-card p {
-  font-size: 30px;
+  font-size: 1.875rem; /* 30px */
   font-weight: bold;
   color: #f5f0f2;
 }
@@ -92,7 +93,7 @@ body {
   cursor: pointer;
   transition: background-color 0.3s;
   margin: 16px 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: bold;
 }
 
@@ -108,7 +109,7 @@ body {
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
-  font-size: 16px;
+  font-size: 1rem;
   background-color: #020202;
   color: #CCCCCC;
 }
@@ -116,11 +117,11 @@ body {
 .user-selection-page label {
   display: block;
   margin-bottom: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   color: #CCCCCC;
 }
 
-/* Style for the signup modal */
+/* 회원가입 모달 스타일 */
 .signup-modal {
   display: flex;
   position: fixed;
@@ -146,7 +147,7 @@ body {
 }
 
 .signup-modal-content h2 {
-  font-size: 24px;
+  font-size: 1.5rem;
   margin-bottom: 24px;
   color: #FFFFFF;
 }
@@ -156,7 +157,7 @@ body {
   position: absolute;
   top: 10px;
   right: 20px;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: bold;
   cursor: pointer;
 }
@@ -167,36 +168,141 @@ body {
   text-decoration: none;
 }
 
-/* Media query for aspect ratio */
-@media (max-aspect-ratio: 16/9) {
-  .user-selection-page {
-    margin-top: -140px;
-    padding: 30px;
+/* 미디어 쿼리 */
+@media (max-width: 1200px) {
+  .user-selection-page h1 {
+    font-size: 2.25rem;
+  }
+
+  .user-selection-page p {
+    font-size: 1.125rem;
+  }
+
+  .user-card p {
+    font-size: 1.75rem;
+  }
+
+  .user-icon-cat {
+    font-size: 5.5rem;
+  }
+
+  .user-selection-page button {
+    font-size: 0.875rem;
   }
 }
 
-@media (max-aspect-ratio: 4/3) {
-  .user-selection-page {
-    margin-top: -80px;
-    padding: 10px;
+@media (max-width: 992px) {
+  .user-selection-page h1 {
+    font-size: 2rem;
   }
-}
 
-/* Responsive grid layout */
-@media (max-width: 768px) {
-  .user-grid {
-    gap: 20px; /* 모바일 환경에서 간격 줄이기 */
+  .user-selection-page p {
+    font-size: 1rem;
   }
-}
 
-@media (min-width: 769px) and (max-width: 1024px) {
+  .user-card p {
+    font-size: 1.625rem;
+  }
+
+  .user-icon-cat {
+    font-size: 5rem;
+  }
+
+  .user-selection-page button {
+    font-size: 0.875rem;
+  }
+
   .user-grid {
     gap: 30px; /* 중간 화면에서 간격 줄이기 */
   }
 }
 
-@media (min-width: 1025px) {
+@media (max-width: 768px) {
+  .user-selection-page {
+    padding: 30px;
+  }
+
+  .user-selection-page h1 {
+    font-size: 1.75rem;
+  }
+
+  .user-selection-page p {
+    font-size: 0.875rem;
+  }
+
+  .user-card p {
+    font-size: 1.5rem;
+  }
+
+  .user-icon-cat {
+    font-size: 4.5rem;
+  }
+
+  .user-selection-page button {
+    font-size: 0.875rem;
+  }
+
   .user-grid {
-    gap: 40px; /* 큰 화면에서 간격 늘리기 */
+    gap: 20px; /* 모바일 환경에서 간격 줄이기 */
+  }
+}
+
+@media (max-width: 576px) {
+  .user-selection-page {
+    padding: 20px;
+  }
+
+  .user-selection-page h1 {
+    font-size: 1.5rem;
+  }
+
+  .user-selection-page p {
+    font-size: 0.75rem;
+  }
+
+  .user-card p {
+    font-size: 1.25rem;
+  }
+
+  .user-icon-cat {
+    font-size: 4rem;
+  }
+
+  .user-selection-page button {
+    font-size: 0.75rem;
+  }
+
+  .user-grid {
+    gap: 15px; /* 더 작은 화면에서 간격 줄이기 */
+  }
+}
+
+@media (max-width: 480px) {
+  .user-selection-page {
+    padding: 10px;
+  }
+
+  .user-selection-page h1 {
+    font-size: 1.25rem;
+  }
+
+  .user-selection-page p {
+    font-size: 0.75rem;
+  }
+
+  .user-card p {
+    font-size: 1rem;
+  }
+
+  .user-icon-cat {
+    font-size: 3.5rem;
+  }
+
+  .user-selection-page button {
+    font-size: 0.75rem;
+  }
+
+  .user-grid {
+    gap: 10px; /* 더 작은 화면에서 간격 줄이기 */
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BsSkipStartBtn } from 'react-icons/bs';
+import {FaRegHeart} from 'react-icons/fa';
 import '../CSS/Like.css'; // Ensure this path is correct
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +41,7 @@ const Like = ({ playlistVisible, togglePlaylistVisibility }) => {
   };
   return (
     <div className="playlist-container">
-      <BsSkipStartBtn className="play-icon" onClick={togglePlaylistVisibility} />
+      <FaRegHeart className="play-icon" onClick={togglePlaylistVisibility} />
       {playlistVisible && (
         <div className="playlist-box active">
           {likedVods.slice(0, 3).map((vod, index) => (

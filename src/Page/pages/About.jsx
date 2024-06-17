@@ -12,14 +12,33 @@ const Background = styled.div`
   background-color: black;
 `;
 
-const AddUserButton = styled(FaPlus)` // 아이콘에 스타일 적용
+const AddUserButton = styled(FaPlus)`
   font-size: 4rem;
   color: #fff;
   padding: 1rem;
   cursor: pointer;
   transition: transform 0.2s;
-`;
 
+  @media (max-width: 1200px) {
+    font-size: 4rem;
+  }
+
+  @media (max-width: 992px) {
+    font-size: 3.5rem;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 3rem;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
+`;
 function About() {
   const [users, setUsers] = useState([]); // 사용자 목록 상태
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false); // 모달 열기/닫기 상태
