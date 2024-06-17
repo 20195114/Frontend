@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Search from './Search';
 import Like from './Like';
@@ -25,8 +25,16 @@ const Header = ({
   handleUserChange,
   searchInputRef
 }) => {
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isLikeVisible, setIsLikeVisible] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
   const navigate = useNavigate();
-  const location = useLocation();  // 현재 URL 경로를 가져옴
+  const location = useLocation();
+
+  const searchRef = useRef(null);
+  const likeRef = useRef(null);
+  const menuRef = useRef(null);
 
   const goToMainPage = () => {
     navigate('/Main');
@@ -35,6 +43,29 @@ const Header = ({
   const getCategoryClass = (path) => {
     return location.pathname === path ? 'category active' : 'category';
   };
+
+  const closeOthers = () => {
+    setIsSearchVisible(false);
+    setIsLikeVisible(false);
+    setIsMenuVisible(false);
+  };
+
+  const handleClickOutside = (event) => {
+    if (
+      searchRef.current && !searchRef.current.contains(event.target) &&
+      likeRef.current && !likeRef.current.contains(event.target) &&
+      menuRef.current && !menuRef.current.contains(event.target)
+    ) {
+      closeOthers();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="header">
@@ -62,8 +93,11 @@ const Header = ({
         </Link>
       </nav>
       <div className="icons-container">
-        <div className="icon">
+        <div className="icon" ref={searchRef}>
           <Search
+            isVisible={isSearchVisible}
+            setIsVisible={setIsSearchVisible}
+            closeOthers={closeOthers}
             searchActive={searchActive}
             setSearchActive={setSearchActive}
             searchQuery={searchQuery}
@@ -76,16 +110,22 @@ const Header = ({
             searchInputRef={searchInputRef}
           />
         </div>
-        <div className="icon">
+        <div className="icon" ref={likeRef}>
           <Like
+            isVisible={isLikeVisible}
+            setIsVisible={setIsLikeVisible}
+            closeOthers={closeOthers}
             state={state}
             playlistVisible={playlistVisible}
             togglePlaylistVisibility={togglePlaylistVisibility}
             navigate={navigate}
           />
         </div>
-        <div className="icon">
+        <div className="icon" ref={menuRef}>
           <MyMenu
+            isVisible={isMenuVisible}
+            setIsVisible={setIsMenuVisible}
+            closeOthers={closeOthers}
             users={users}
             userMenuVisible={userMenuVisible}
             toggleUserMenuVisibility={toggleUserMenuVisibility}

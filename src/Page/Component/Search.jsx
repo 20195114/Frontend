@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +6,9 @@ import axios from 'axios';
 import '../CSS/Search.css';
 
 const Search = ({
-  searchActive,
-  setSearchActive,
+  isVisible,
+  setIsVisible,
+  closeOthers,
   searchQuery,
   setSearchQuery,
   searchResults,
@@ -25,10 +26,8 @@ const Search = ({
     if (keyword.length > 0) {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        console.log('검색 결과:', response.data);
         setSearchResults(response.data || []);
       } catch (error) {
-        console.error('검색 결과 가져오기 중 오류:', error);
         setSearchResults([]);
       }
     } else {
@@ -39,36 +38,46 @@ const Search = ({
   const handleSearchSubmit = async (event) => {
     const keyword = searchQuery.trim();
     if (event.key === 'Enter' && keyword !== '') {
-      console.log('엔터 키 입력 감지, 검색어:', keyword);
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        console.log('네비게이트 호출 전 검색 결과:', response.data);
         navigate('/SearchBar', { state: { searchResults: response.data || [], searchQuery: keyword } });
-        console.log('네비게이트 호출 완료');
       } catch (error) {
         console.error('VOD 검색 중 오류:', error);
       }
     }
   };
 
-  const handleSearchIconClick = () => {
-    setSearchActive(true);
+  const handleIconClick = () => {
+    closeOthers();
+    setIsVisible(true);
     containerRef.current.classList.add('search-active');
     searchInputRef.current.focus();
   };
 
   const handleCloseIconClick = () => {
-    setSearchActive(false);
+    setIsVisible(false);
     containerRef.current.classList.remove('search-active');
     setSearchQuery('');
     setSearchResults([]);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        handleCloseIconClick();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="search-container" ref={containerRef}>
       <FaSearch
         className="search-icon"
-        onClick={handleSearchIconClick}
+        onClick={handleIconClick}
       />
       <input
         type="text"
@@ -83,7 +92,7 @@ const Search = ({
         className="close-icon"
         onClick={handleCloseIconClick}
       />
-      {searchActive && searchResults.length > 0 && (
+      {isVisible && searchResults.length > 0 && (
         <div className="search-results">
           {searchResults.slice(0, 10).map((result, index) => (
             <p key={index} onClick={() => handleSearchResultClick(result.VOD_ID)}>
