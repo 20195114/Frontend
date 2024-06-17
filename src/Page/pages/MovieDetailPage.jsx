@@ -143,13 +143,13 @@ const MovieDetailPage = () => {
     try {
       const baseURL = process.env.REACT_APP_CUD_ADDRESS;
       const url = `${baseURL}/like/${userId}?VOD_ID=${vodId}`;
-  
+
       if (isInPlaylist) {
         await axios.delete(url);
       } else {
         await axios.post(url);
       }
-  
+
       setIsInPlaylist(!isInPlaylist);
       await fetchMovieData();
     } catch (error) {
@@ -159,7 +159,6 @@ const MovieDetailPage = () => {
       );
     }
   };
-  
 
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -190,7 +189,6 @@ const MovieDetailPage = () => {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/review/${userId}`, reviewPayload);
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
-        console.log(updatedResponse)
         setReviews(updatedResponse.data.review || []);
         closeModal();
       } else {
@@ -209,7 +207,7 @@ const MovieDetailPage = () => {
 
   return (
     <div className="movie-detail-page">
-      <Header 
+      <Header
         state={state}
         searchActive={searchActive}
         setSearchActive={setSearchActive}
@@ -218,14 +216,14 @@ const MovieDetailPage = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         users={[]}
-        handleSearchInputChange={() => {}}
-        handleSearchSubmit={() => {}}
+        handleSearchInputChange={() => { }}
+        handleSearchSubmit={() => { }}
         handleSearchResultClick={handleMovieClick}
         togglePlaylistVisibility={() => setPlaylistVisible(!playlistVisible)}
         playlistVisible={playlistVisible}
         toggleUserMenuVisibility={() => setUserMenuVisible(!userMenuVisible)}
         userMenuVisible={userMenuVisible}
-        handleUserChange={() => {}}
+        handleUserChange={() => { }}
         searchInputRef={searchInputRef}
         closeOthers={closeOthers}
         setIsSearchVisible={setSearchActive}
