@@ -7,7 +7,6 @@ import { FaRegPlayCircle, FaRegHeart, FaHeart, FaRegStar } from 'react-icons/fa'
 import Modal from 'react-modal';
 import '../CSS/MovieDetailPage.css';
 
-// Modal App element 설정
 Modal.setAppElement('#root');
 
 const MovieDetailPage = () => {

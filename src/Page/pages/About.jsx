@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import "../CSS/About.css";
 import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
-import { FaPlus } from "react-icons/fa"; // FaPlus 아이콘 가져오기
+import { FaPlus } from "react-icons/fa";
 import logo from '../URL/logoHelloD.png';
 
 // 배경 스타일 설정
@@ -39,6 +39,7 @@ const AddUserButton = styled(FaPlus)`
     font-size: 2rem;
   }
 `;
+
 function About() {
   const [users, setUsers] = useState([]); // 사용자 목록 상태
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false); // 모달 열기/닫기 상태
@@ -105,13 +106,15 @@ function About() {
       AGE: parseInt(AGE)
     };
 
+    console.log('전송할 데이터:', newUser); // 전송할 데이터 로그
+
     try {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser, {
-        headers: {
-          'Content-Type': 'application/json',
-          'accept': 'application/json'
-        }
+    
       });
+
+      console.log('서버 응답:', response); // 서버 응답 로그
+
       if (response.status === 200) {
         fetchUsers(settopnum); // 등록 후 사용자 목록 갱신
         setIsSignupModalOpen(false); // 모달 닫기
