@@ -44,11 +44,12 @@ const Header = ({
     return location.pathname === path ? 'category active' : 'category';
   };
 
-  const closeOthers = () => {
+  // useCallback을 사용하여 closeOthers 함수를 정의
+  const closeOthers = useCallback(() => {
     setIsSearchVisible(false);
     setIsLikeVisible(false);
     setIsMenuVisible(false);
-  };
+  }, [setIsSearchVisible, setIsLikeVisible, setIsMenuVisible]);
 
   const handleClickOutside = useCallback((event) => {
     if (
