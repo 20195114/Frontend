@@ -15,6 +15,7 @@
 }
 
 .logo-container {
+  margin-left: -10px;
   margin-top: 70px;
   display: flex;
   align-items: center;
@@ -38,12 +39,20 @@
   cursor: pointer;
 }
 
+
 .category {
   margin: 0 15px;
   color: #fff;
   text-decoration: none;
-  cursor: pointer;
   font-size: 1.2rem;
+  transition: color 0.3s, font-weight 0.3s;
+}
+
+/* 활성화된 카테고리 스타일 */
+.category.active {
+  font-weight: bold; /* 글자 굵게 */
+  font-size: 1.5rem;
+
 }
 
 .icons-container {

@@ -20,12 +20,10 @@ const Like = ({ playlistVisible, togglePlaylistVisibility }) => {
       }
 
       try {
-        // Ensure the URL is correct and formatted properly
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`);
         console.log('API Response:', response); // Log response for debugging
         setLikedVods(response.data || []);
       } catch (error) {
-        // Log detailed error information
         console.error('찜 목록을 가져오는 데 실패했습니다:', error);
         if (error.response) {
           console.error('서버 응답:', error.response.data);
