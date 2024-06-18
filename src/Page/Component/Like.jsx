@@ -17,6 +17,11 @@ const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, to
         return;
       }
 
+      if (!state.likeStatus) {
+        console.log('찜 목록을 불러오지 않습니다.'); // likeStatus가 false일 때 동작 확인
+        return;
+      }
+
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${userId}`);
         setLikedVods(response.data || []);
@@ -29,7 +34,7 @@ const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, to
     };
 
     fetchLikedVods();
-  }, [userId]);
+  }, [userId, state.likeStatus]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -51,7 +56,7 @@ const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, to
   return (
     <div className="playlist-container" ref={likeRef}>
       <FaRegHeart className="play-icon" onClick={handleIconClick} />
-      {isVisible && (
+      {isVisible && state.likeStatus && (
         <div className="playlist-box active">
           {likedVods.slice(0, 3).map((vod, index) => (
             <div key={index} className="playlist-item" onClick={() => navigate(`/MovieDetailPage`, { state: { vod_id: vod.VOD_ID } })}>

@@ -78,9 +78,10 @@ function About() {
   };
 
   // 사용자를 선택했을 때 실행되는 함수
-  const handleUserClick = (userId, userName) => {
+  const handleUserClick = (userId, userName, likeStatus) => {
     localStorage.setItem('selectedUserId', userId);
     localStorage.setItem('selectedUserName', userName);
+    localStorage.setItem('likeStatus', JSON.stringify(likeStatus)); // LIKE_STATUS 저장
     navigate('/Main'); // Main 페이지로 이동
   };
 
@@ -153,7 +154,7 @@ function About() {
           <p>사용자를 선택하여 계속하세요.</p>
           <div className="user-grid">
             {users.map((user) => (
-              <div key={user.USER_ID} className="user-card" onClick={() => handleUserClick(user.USER_ID, user.USER_NAME)}>
+              <div key={user.USER_ID} className="user-card" onClick={() => handleUserClick(user.USER_ID, user.USER_NAME, user.LIKE_STATUS)}>
                 <IoLogoOctocat className="user-icon-cat" />
                 <p>{user.USER_NAME}</p>
               </div>

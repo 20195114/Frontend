@@ -40,7 +40,13 @@ const Search = ({
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(searchQuery.trim())}`);
-        navigate('/SearchBar', { state: { searchResults: response.data || [], searchQuery: searchQuery.trim() } });
+        const results = response.data || [];
+        
+        // Store results and query in localStorage
+        localStorage.setItem('searchResults', JSON.stringify(results));
+        localStorage.setItem('searchQuery', searchQuery.trim());
+        
+        navigate('/SearchBar');
       } catch (error) {
         console.error('VOD 검색 중 오류:', error);
       }

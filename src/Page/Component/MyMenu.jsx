@@ -2,19 +2,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import { IoLogoOctocat } from "react-icons/io5";
+import axios from 'axios';
 import '../CSS/MyMenu.css';
 
-const MyMenu = ({ isVisible, setIsVisible, closeOthers, users, userMenuVisible, toggleUserMenuVisibility, handleUserChange }) => {
+const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
   const [userList, setUserList] = useState([]);
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
   useEffect(() => {
+    // localStorage에서 유저 목록을 가져옵니다.
     const storedUsers = JSON.parse(localStorage.getItem('user_list')) || [];
     setUserList(storedUsers);
   }, []);
 
   useEffect(() => {
+    // 메뉴 외부 클릭 시 메뉴를 닫습니다.
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsVisible(false);
@@ -31,10 +34,37 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, users, userMenuVisible, 
     setIsVisible((prev) => !prev);
   };
 
-  const handleUserClick = (user_id, user_name) => {
-    localStorage.setItem('selectedUserId', user_id);
-    localStorage.setItem('selectedUserName', user_name);
-    handleUserChange(user_id, user_name);
+  const handleUserClick = async (user_id, user_name) => {
+    const user = userList.find(user => user.USER_ID === user_id);
+
+    if (user) {
+      const { LIKE_STATUS } = user;
+
+      // localStorage에 선택한 유저 정보를 저장합니다.
+      localStorage.setItem('selectedUserId', user_id);
+      localStorage.setItem('selectedUserName', user_name);
+      localStorage.setItem('likeStatus', JSON.stringify(LIKE_STATUS));
+
+      try {
+        // 백엔드에서 유저의 VOD 데이터를 가져옵니다.
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/user/${user_id}/vods`);
+        const userVods = response.data;
+
+        // 메인 페이지의 상태를 업데이트하기 위해 handleUserChange를 호출합니다.
+        handleUserChange({
+          userId: user_id,
+          userName: user_name,
+          likeStatus: LIKE_STATUS,
+          vods: userVods
+        });
+
+        // 메인 페이지로 이동합니다.
+        navigate('/Main');
+      } catch (error) {
+        console.error('유저 VOD 데이터를 로딩 중 오류 발생:', error);
+        alert('유저 VOD 데이터를 로딩하는 중 문제가 발생했습니다.');
+      }
+    }
   };
 
   return (
@@ -68,3 +98,4 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, users, userMenuVisible, 
 };
 
 export default MyMenu;
+// 유저 변경 error
