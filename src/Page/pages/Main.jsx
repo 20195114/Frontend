@@ -61,7 +61,8 @@ const Main = () => {
       if (key === 'spotifyVods') {
         if (data.status === false) {
           // 연동되지 않은 경우, 인증 URL을 받아옴
-          const spotifyAuthResponse = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/spotify/${user_id}`);
+          const spotifyAuthResponse = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/mainpage/spotify/${user_id}`);
+          console.log(spotifyAuthResponse)
           const spotifyAuthUrl = spotifyAuthResponse.data.response;
           const newWindow = window.open(spotifyAuthUrl, '_blank', 'width=500,height=600');
 
@@ -133,7 +134,7 @@ const Main = () => {
   const handleSearchSubmit = async (event) => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
+        const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/search-vods`, { query: searchQuery });
         const user_id = Cookies.get('selectedUserId');
         navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
