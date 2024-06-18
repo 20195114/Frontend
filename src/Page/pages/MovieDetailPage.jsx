@@ -80,7 +80,9 @@ const MovieDetailPage = () => {
       Cookies.set('seasonList', JSON.stringify(seasonData), { expires: 1 });
 
       if (seasonData.length > 0) {
-        const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
+        const firstSeason = seasonData[0];
+        const firstSeasonId = firstSeason.K_SEASON_ID || firstSeason.SEASON_ID;
+        const firstSeasonNum = firstSeason.SEASON_NUM;
         setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
         setSelectedSeasonId(firstSeasonId);
         await fetchEpisodeList(firstSeasonId, contentType);
@@ -353,7 +355,8 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
   const handleSeasonSelect = async (seasonId, seasonNum) => {
     setIsDropdownOpen(false);
     setSelectedSeasonName(`시즌 ${seasonNum}`);
-    await onSeasonClick(seasonId, 'series');
+    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series'; // 시즌 ID가 'K'로 시작하면 키즈 콘텐츠로 간주
+    await onSeasonClick(seasonId, contentType);
   };
 
   return (
@@ -367,17 +370,17 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
           <ul className="season-list">
             {seasonList.map((season) => (
               <li
-                key={season.SEASON_ID}
-                className={`season-item ${season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
-                onClick={() => handleSeasonSelect(season.SEASON_ID, season.SEASON_NUM)}
+                key={season.K_SEASON_ID || season.SEASON_ID}
+                className={`season-item ${season.K_SEASON_ID === selectedSeasonId || season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
+                onClick={() => handleSeasonSelect(season.K_SEASON_ID || season.SEASON_ID, season.SEASON_NUM)}
               >
-                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_} 에피소드)`}
+                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_ || 0} 에피소드)`}
               </li>
             ))}
           </ul>
         )}
       </div>
-      {selectedSeasonId && (
+      {selectedSeasonId && episodeList.length > 0 ? (
         <div className="episode-container">
           <h4>에피소드</h4>
           <ul className="episode-list">
@@ -385,15 +388,17 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
               <li key={episode.EPISODE_ID || episode.K_EPISODE_ID} className="episode-item">
                 <img src={episode.EPISODE_STILL || 'default-poster.png'} alt={episode.EPISODE_NAME} className="episode-thumbnail" loading="lazy" />
                 <div className="episode-info">
-                  <h5>{episode.EPISODE_NAME}</h5>
+                  <h5>{episode.EPISODE_NAME || '제목이 없습니다.'}</h5>
                   <p>{episode.EPISODE_OVERVIEW || '설명이 없습니다.'}</p>
-                  <p>방영일: {episode.EPISODE_AIR_DATE || episode.AIR_DATE}</p>
-                  <p>러닝타임: {episode.EPISODE_RTM}분</p>
+                  <p>방영일: {episode.EPISODE_AIR_DATE || episode.AIR_DATE || '미정'}</p>
+                  <p>러닝타임: {episode.EPISODE_RTM ? `${episode.EPISODE_RTM}분` : '미정'}</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
+      ) : (
+        <p>선택된 시즌에 에피소드가 없습니다.</p>
       )}
     </div>
   );
