@@ -4,25 +4,24 @@ import axios from 'axios';
 import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
-import Cookies from 'js-cookie';
 
-// 쿠키에서 데이터를 가져오고 기본 값을 설정하는 함수
-const getCookieData = (key, defaultValue) => {
-  const value = Cookies.get(key);
+// localStorage에서 데이터를 가져오고 기본 값을 설정하는 함수
+const getLocalStorageData = (key, defaultValue) => {
+  const value = localStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing cookie data for ${key}:`, error);
+    console.error(`Error parsing localStorage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// 쿠키에 데이터를 설정하는 함수
-const setCookieData = (key, data) => {
+// localStorage에 데이터를 설정하는 함수
+const setLocalStorageData = (key, data) => {
   try {
-    Cookies.set(key, JSON.stringify(data), { expires: 1 });
+    localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting cookie data for ${key}:`, error);
+    console.error(`Error setting localStorage data for ${key}:`, error);
   }
 };
 
@@ -30,18 +29,18 @@ const Movie = () => {
   const navigate = useNavigate();
 
   const [state, setState] = useState({
-    myWatchedVods: getCookieData('myWatchedVods', [])
+    myWatchedVods: getLocalStorageData('myWatchedVods', [])
   });
 
   const [vodsByCategory, setVodsByCategory] = useState({
-    SF: getCookieData('SF', []),
-    Education: getCookieData('Education', []),
-    Family: getCookieData('Family', []),
-    Horror: getCookieData('Horror', []),
-    Drama: getCookieData('Drama', []),
-    Romance: getCookieData('Romance', []),
-    Action: getCookieData('Action', []),
-    Animation: getCookieData('Animation', [])
+    SF: getLocalStorageData('SF', []),
+    Education: getLocalStorageData('Education', []),
+    Family: getLocalStorageData('Family', []),
+    Horror: getLocalStorageData('Horror', []),
+    Drama: getLocalStorageData('Drama', []),
+    Romance: getLocalStorageData('Romance', []),
+    Action: getLocalStorageData('Action', []),
+    Animation: getLocalStorageData('Animation', [])
   });
 
   const [searchActive, setSearchActive] = useState(false);
@@ -59,7 +58,7 @@ const Movie = () => {
         ...prevState,
         [category]: vods
       }));
-      setCookieData(category, vods);
+      setLocalStorageData(category, vods);
     } catch (error) {
       console.error(`Failed to fetch VODs for ${category}:`, error);
     }

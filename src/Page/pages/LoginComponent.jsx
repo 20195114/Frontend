@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import '../CSS/LoginComponent.css';
 
 const LoginComponent = () => {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
-  const [settop_num, setSettopNum] = useState(Cookies.get('settop_num') || '');
+  const [settopNum, setSettopNum] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,18 +20,19 @@ const LoginComponent = () => {
 
   const loginFunc = async (e) => {
     e.preventDefault();
-    if (!settop_num) {
+    if (!settopNum) {
       setMsg('셋탑번호를 입력하세요.');
       return;
     } else {
       try {
         setLoading(true);
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settop_num}`);
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopNum}`);
         if (response.status === 200 && Array.isArray(response.data)) {
-          const user_list = response.data;
-          if (user_list.length > 0) {
-            Cookies.set('user_list', JSON.stringify(user_list), { expires: 7 });
-            Cookies.set('settop_num', settop_num, { expires: 7 });
+          const userList = response.data;
+          if (userList.length > 0) {
+            // 이전에 쿠키를 사용하던 부분을 로컬 상태 또는 다른 방식으로 저장하도록 변경
+            localStorage.setItem('user_list', JSON.stringify(userList));
+            localStorage.setItem('settop_num', settopNum);
             setMsg('');
             setSettopNum(''); // 입력 필드 지우기
             navigate('/About');
@@ -65,7 +65,7 @@ const LoginComponent = () => {
               type="password"
               id="settop_num"
               placeholder="셋탑번호 입력"
-              value={settop_num}
+              value={settopNum}
               onChange={(e) => setSettopNum(e.target.value)}
             />
             <button type="submit" disabled={loading}>

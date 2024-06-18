@@ -3,32 +3,31 @@ import '../CSS/Kids.css';
 import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
-// 쿠키에서 데이터를 가져오고 기본 값을 설정하는 함수
-const getCookieData = (key, defaultValue) => {
-  const value = Cookies.get(key);
+// localStorage에서 데이터를 가져오고 기본 값을 설정하는 함수
+const getLocalStorageData = (key, defaultValue) => {
+  const value = localStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing cookie data for ${key}:`, error);
+    console.error(`Error parsing localStorage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// 쿠키에 데이터를 설정하는 함수
-const setCookieData = (key, data) => {
+// localStorage에 데이터를 설정하는 함수
+const setLocalStorageData = (key, data) => {
   try {
-    Cookies.set(key, JSON.stringify(data), { expires: 1 });
+    localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting cookie data for ${key}:`, error);
+    console.error(`Error setting localStorage data for ${key}:`, error);
   }
 };
 
 const Kids = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({ myWatchedVods: getCookieData('myWatchedVods', []) });
-  const [vods, setVods] = useState(getCookieData('kidsVods', []));
+  const [state, setState] = useState({ myWatchedVods: getLocalStorageData('myWatchedVods', []) });
+  const [vods, setVods] = useState(getLocalStorageData('kidsVods', []));
   const [loading, setLoading] = useState(false);
   const [sortOption, setSortOption] = useState('popular');
   const [searchActive, setSearchActive] = useState(false);
@@ -45,7 +44,7 @@ const Kids = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/kids/${sortOption === 'popular' ? 'popularlist' : 'recentlylist'}`);
       const vodsData = response.data || [];
       setVods(vodsData);
-      setCookieData('kidsVods', vodsData);
+      setLocalStorageData('kidsVods', vodsData);
     } catch (error) {
       console.error('Failed to fetch VODs:', error);
     } finally {

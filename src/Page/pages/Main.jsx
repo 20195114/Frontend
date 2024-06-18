@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import Header from '../Component/Header';
 import MyWatchedVods from '../Component/MyWatchedVods';
 import YouTubeTrends from '../Component/YouTubeTrends';
@@ -10,27 +9,36 @@ import RatingBasedVods from '../Component/RatingBasedVods';
 import Spotify from '../Component/Spotify';
 import '../CSS/Main.css';
 
-// 쿠키에서 데이터를 가져오고 기본 값을 설정하는 함수
-const getCookieData = (key, defaultValue) => {
-  const value = Cookies.get(key);
+// 로컬 스토리지에서 데이터를 가져오고 기본 값을 설정하는 함수
+const getLocalStorageData = (key, defaultValue) => {
+  const value = localStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing cookie data for ${key}:`, error);
+    console.error(`Error parsing local storage data for ${key}:`, error);
     return defaultValue;
+  }
+};
+
+// 로컬 스토리지에 데이터를 설정하는 함수
+const setLocalStorageData = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error setting local storage data for ${key}:`, error);
   }
 };
 
 const Main = () => {
   const [state, setState] = useState({
-    myWatchedVods: getCookieData('myWatchedVods', []),
-    youtubeTrendsVods: getCookieData('youtubeTrendsVods', []),
-    popularVods: getCookieData('popularVods', []),
-    searchBasedVods: getCookieData('searchBasedVods', []),
-    ratingBasedVods: getCookieData('ratingBasedVods', []),
-    spotifyVods: getCookieData('spotifyVods', []),
+    myWatchedVods: getLocalStorageData('myWatchedVods', []),
+    youtubeTrendsVods: getLocalStorageData('youtubeTrendsVods', []),
+    popularVods: getLocalStorageData('popularVods', []),
+    searchBasedVods: getLocalStorageData('searchBasedVods', []),
+    ratingBasedVods: getLocalStorageData('ratingBasedVods', []),
+    spotifyVods: getLocalStorageData('spotifyVods', []),
     isSpotifyLinked: false,
-    user_name: Cookies.get('selectedUserName') || 'User Name',
+    user_name: localStorage.getItem('selectedUserName') || 'User Name',
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -75,11 +83,11 @@ const Main = () => {
         } else {
           // 연동된 경우 VOD 데이터를 상태에 저장
           setState((prevState) => ({ ...prevState, [key]: data.vods, isSpotifyLinked: true }));
-          Cookies.set(key, JSON.stringify(data.vods), { expires: 1 });
+          setLocalStorageData(key, data.vods);
         }
       } else {
         setState((prevState) => ({ ...prevState, [key]: data }));
-        Cookies.set(key, JSON.stringify(data), { expires: 1 });
+        setLocalStorageData(key, data);
       }
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
@@ -101,9 +109,9 @@ const Main = () => {
   );
 
   useEffect(() => {
-    const user_name = Cookies.get('selectedUserName');
-    const user_id = Cookies.get('selectedUserId');
-    const storedUsers = getCookieData('user_list', []);
+    const user_name = localStorage.getItem('selectedUserName');
+    const user_id = localStorage.getItem('selectedUserId');
+    const storedUsers = getLocalStorageData('user_list', []);
     setUsers(storedUsers);
 
     if (user_id) {
@@ -116,7 +124,7 @@ const Main = () => {
 
   // 포스터 클릭 시 처리하는 함수
   const handlePosterClick = (vod_id) => {
-    const user_id = Cookies.get('selectedUserId');
+    const user_id = localStorage.getItem('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -125,7 +133,7 @@ const Main = () => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    const user_id = Cookies.get('selectedUserId');
+    const user_id = localStorage.getItem('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -134,7 +142,7 @@ const Main = () => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/search-vods`, { query: searchQuery });
-        const user_id = Cookies.get('selectedUserId');
+        const user_id = localStorage.getItem('selectedUserId');
         navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
         console.error('Error searching VODs:', error);
@@ -154,8 +162,8 @@ const Main = () => {
 
   // 사용자 변경 처리 함수
   const handleUserChange = (user_id, user_name) => {
-    Cookies.set('selectedUserId', user_id, { expires: 1 });
-    Cookies.set('selectedUserName', user_name, { expires: 1 });
+    localStorage.setItem('selectedUserId', user_id);
+    localStorage.setItem('selectedUserName', user_name);
     setState((prevState) => ({ ...prevState, user_name }));
     setUserMenuVisible(false);
     loadUserData(user_id);
@@ -233,4 +241,3 @@ const Main = () => {
 };
 
 export default Main;
-//

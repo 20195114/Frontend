@@ -1,37 +1,36 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
 
-// Helper function to get data from cookies
-const getCookieData = (key, defaultValue) => {
-  const value = Cookies.get(key);
+// Helper function to get data from localStorage
+const getLocalStorageData = (key, defaultValue) => {
+  const value = localStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing cookie data for ${key}:`, error);
+    console.error(`Error parsing localStorage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// Helper function to set data in cookies
-const setCookieData = (key, data) => {
+// Helper function to set data in localStorage
+const setLocalStorageData = (key, data) => {
   try {
-    Cookies.set(key, JSON.stringify(data), { expires: 1 });
+    localStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting cookie data for ${key}:`, error);
+    console.error(`Error setting localStorage data for ${key}:`, error);
   }
 };
 
 const Series = () => {
   const [state, setState] = useState({
-    actionFantasy: getCookieData('actionFantasy', []),
-    familyComedy: getCookieData('familyComedy', []),
-    drama: getCookieData('drama', []),
-    reality: getCookieData('reality', []),
+    actionFantasy: getLocalStorageData('actionFantasy', []),
+    familyComedy: getLocalStorageData('familyComedy', []),
+    drama: getLocalStorageData('drama', []),
+    reality: getLocalStorageData('reality', []),
   });
 
   const [loading, setLoading] = useState({
@@ -56,7 +55,7 @@ const Series = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}`);
       const data = Array.isArray(response.data) ? response.data : [];
       setState((prevState) => ({ ...prevState, [key]: data }));
-      setCookieData(key, data);
+      setLocalStorageData(key, data);
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
       setState((prevState) => ({ ...prevState, [key]: [] }));

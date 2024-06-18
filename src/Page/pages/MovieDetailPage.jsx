@@ -5,7 +5,6 @@ import YouTube from 'react-youtube';
 import Header from '../Component/Header';
 import { FaRegPlayCircle, FaRegHeart, FaHeart, FaRegStar } from 'react-icons/fa';
 import Modal from 'react-modal';
-import Cookies from 'js-cookie';
 import '../CSS/MovieDetailPage.css';
 
 Modal.setAppElement('#root');
@@ -13,26 +12,26 @@ Modal.setAppElement('#root');
 const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const vodId = location.state?.vod_id || Cookies.get('vodId');
-  const userId = Cookies.get('selectedUserId');
+  const vodId = location.state?.vod_id || localStorage.getItem('vodId');
+  const userId = localStorage.getItem('selectedUserId');
 
   const [movie, setMovie] = useState(() => {
-    const savedMovie = Cookies.get('movieDetail');
+    const savedMovie = localStorage.getItem('movieDetail');
     return savedMovie ? JSON.parse(savedMovie) : null;
   });
-  const [castData, setCastData] = useState(() => JSON.parse(Cookies.get('castData') || '[]'));
-  const [recommendList, setRecommendList] = useState(() => JSON.parse(Cookies.get('recommendList') || '[]'));
-  const [reviews, setReviews] = useState(() => JSON.parse(Cookies.get('reviews') || '[]'));
+  const [castData, setCastData] = useState(() => JSON.parse(localStorage.getItem('castData') || '[]'));
+  const [recommendList, setRecommendList] = useState(() => JSON.parse(localStorage.getItem('recommendList') || '[]'));
+  const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem('reviews') || '[]'));
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
 
-  const [seasonList, setSeasonList] = useState(() => JSON.parse(Cookies.get('seasonList') || '[]'));
+  const [seasonList, setSeasonList] = useState(() => JSON.parse(localStorage.getItem('seasonList') || '[]'));
   const [selectedSeasonId, setSelectedSeasonId] = useState(null);
   const [selectedSeasonName, setSelectedSeasonName] = useState('');
-  const [episodeList, setEpisodeList] = useState(() => JSON.parse(Cookies.get('episodeList') || '[]'));
+  const [episodeList, setEpisodeList] = useState(() => JSON.parse(localStorage.getItem('episodeList') || '[]'));
 
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,36 +52,38 @@ const MovieDetailPage = () => {
     setUserMenuVisible(false);
   };
 
-  const fetchEpisodeList = useCallback(async (seasonId, isKids) => {
+  const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
     try {
       setSelectedSeasonId(seasonId);
-      const endpoint = isKids
+      const endpoint = contentType === 'kids'
         ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
         : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
       const response = await axios.get(endpoint);
       const episodeData = response.data;
       setEpisodeList(episodeData);
+      localStorage.setItem('episodeList', JSON.stringify(episodeData));
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }, [baseAPI]);
 
-  // 시즌 데이터를 가져오는 함수
-  const fetchSeasonList = useCallback(async (seriesId, isKids) => {
+  const fetchSeasonList = useCallback(async (seriesId, contentType) => {
     try {
-      const endpoint = isKids
+      const endpoint = contentType === 'kids'
         ? `${baseAPI}/detailpage/kids_season_detail/${seriesId}`
         : `${baseAPI}/detailpage/season_detail/${seriesId}`;
       const response = await axios.get(endpoint);
       const seasonData = response.data;
       setSeasonList(seasonData);
+      localStorage.setItem('seasonList', JSON.stringify(seasonData));
 
       if (seasonData.length > 0) {
-        const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
-        setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
+        const { K_SEASON_ID, SEASON_ID, SEASON_NUM } = seasonData[0];
+        const firstSeasonId = K_SEASON_ID || SEASON_ID;
+        setSelectedSeasonName(`시즌 ${SEASON_NUM}`);
         setSelectedSeasonId(firstSeasonId);
-        await fetchEpisodeList(firstSeasonId, isKids);
+        await fetchEpisodeList(firstSeasonId, contentType);
       }
     } catch (error) {
       console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
@@ -90,13 +91,13 @@ const MovieDetailPage = () => {
     }
   }, [baseAPI, fetchEpisodeList]);
 
-  // 영화 데이터를 가져오는 함수
   const fetchMovieData = useCallback(async () => {
+    if (!vodId) return;
     try {
       const response = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
       const movieData = response.data;
 
-      setMovie({
+      const movieDetails = {
         id: movieData.MOVIE_ID || movieData.SERIES_ID || movieData.K_SERIES_ID,
         title: movieData.TITLE,
         genres: movieData.GENRE,
@@ -106,19 +107,27 @@ const MovieDetailPage = () => {
         releaseDate: movieData.RELEASE_DATE,
         duration: movieData.RTM,
         rating: movieData.MOVIE_RATING || movieData.SERIES_RATING,
-      });
+      };
 
-      setCastData(
-        movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))
-      );
+      setMovie(movieDetails);
+      localStorage.setItem('movieDetail', JSON.stringify(movieDetails));
+      localStorage.setItem('vodId', vodId);
+
+      const castDetails = movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }));
+      setCastData(castDetails);
+      localStorage.setItem('castData', JSON.stringify(castDetails));
 
       setRecommendList(movieData.recommend_list || []);
+      localStorage.setItem('recommendList', JSON.stringify(movieData.recommend_list || []));
+
       setIsInPlaylist(movieData.like_status);
       setReviews(movieData.review || []);
+      localStorage.setItem('reviews', JSON.stringify(movieData.review || []));
 
       if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
         const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
-        await fetchSeasonList(seriesId, !!movieData.K_SERIES_ID);
+        const contentType = movieData.K_SERIES_ID ? 'kids' : 'series';
+        await fetchSeasonList(seriesId, contentType);
       }
     } catch (error) {
       console.error('영화 데이터를 가져오는 중 오류 발생:', error);
@@ -185,7 +194,7 @@ const MovieDetailPage = () => {
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
         setReviews(updatedResponse.data.review || []);
-        Cookies.set('reviews', JSON.stringify(updatedResponse.data.review || []), { expires: 1 });
+        localStorage.setItem('reviews', JSON.stringify(updatedResponse.data.review || []));
         closeModal();
       } else {
         alert('리뷰 저장에 실패했습니다.');
@@ -252,16 +261,7 @@ const MovieDetailPage = () => {
           <CastSection castData={castData} />
           <ReviewSection reviews={reviews} />
           <RelatedMoviesSection recommendList={recommendList} onMovieClick={handleMovieClick} />
-          {seasonList.length > 0 && (
-            <SeasonContainer
-              seasonList={seasonList}
-              selectedSeasonId={selectedSeasonId}
-              selectedSeasonName={selectedSeasonName}
-              setSelectedSeasonName={setSelectedSeasonName}
-              onSeasonClick={fetchEpisodeList}
-              episodeList={episodeList}
-            />
-          )}
+          {seasonList.length > 0 && <SeasonContainer seasonList={seasonList} selectedSeasonId={selectedSeasonId} selectedSeasonName={selectedSeasonName} setSelectedSeasonName={setSelectedSeasonName} onSeasonClick={fetchEpisodeList} episodeList={episodeList} />}
         </div>
       </div>
 
@@ -353,13 +353,8 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
   const handleSeasonSelect = async (seasonId, seasonNum) => {
     setIsDropdownOpen(false);
     setSelectedSeasonName(`시즌 ${seasonNum}`);
-    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series';
+    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series'; // 시즌 ID가 'K'로 시작하면 키즈 콘텐츠로 간주
     await onSeasonClick(seasonId, contentType);
-  };
-
-  const getEpisodesCount = (seasonId) => {
-    const selectedSeason = seasonList.find(season => season.K_SEASON_ID === seasonId || season.SEASON_ID === seasonId);
-    return selectedSeason ? selectedSeason.EPISODE_NUM || 0 : 0;
   };
 
   return (
@@ -377,7 +372,7 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
                 className={`season-item ${season.K_SEASON_ID === selectedSeasonId || season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
                 onClick={() => handleSeasonSelect(season.K_SEASON_ID || season.SEASON_ID, season.SEASON_NUM)}
               >
-                {`시즌 ${season.SEASON_NUM} (에피소드 ${getEpisodesCount(season.K_SEASON_ID || season.SEASON_ID)} 개)`}
+                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_ || 0} 에피소드)`}
               </li>
             ))}
           </ul>
