@@ -80,10 +80,9 @@ const MovieDetailPage = () => {
       Cookies.set('seasonList', JSON.stringify(seasonData), { expires: 1 });
 
       if (seasonData.length > 0) {
-        const firstSeason = seasonData[0];
-        const firstSeasonId = firstSeason.K_SEASON_ID || firstSeason.SEASON_ID;
-        const firstSeasonNum = firstSeason.SEASON_NUM;
-        setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
+        const { K_SEASON_ID, SEASON_ID, SEASON_NUM } = seasonData[0];
+        const firstSeasonId = K_SEASON_ID || SEASON_ID;
+        setSelectedSeasonName(`시즌 ${SEASON_NUM}`);
         setSelectedSeasonId(firstSeasonId);
         await fetchEpisodeList(firstSeasonId, contentType);
       }
@@ -204,7 +203,7 @@ const MovieDetailPage = () => {
     } catch (error) {
       console.error('리뷰 저장 중 오류 발생:', error);
       alert('리뷰 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-    } 
+    }
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -215,7 +214,7 @@ const MovieDetailPage = () => {
   return (
     <div className="movie-detail-page">
       <Header
-        state={{}} 
+        state={{}}
         searchActive={searchActive}
         setSearchActive={setSearchActive}
         searchResults={searchResults}
@@ -223,14 +222,14 @@ const MovieDetailPage = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         users={[]}
-        handleSearchInputChange={() => {}}
-        handleSearchSubmit={() => {}}
+        handleSearchInputChange={() => { }}
+        handleSearchSubmit={() => { }}
         handleSearchResultClick={handleMovieClick}
         togglePlaylistVisibility={() => setPlaylistVisible(!playlistVisible)}
         playlistVisible={playlistVisible}
         toggleUserMenuVisibility={() => setUserMenuVisible(!userMenuVisible)}
         userMenuVisible={userMenuVisible}
-        handleUserChange={() => {}}
+        handleUserChange={() => { }}
         searchInputRef={searchInputRef}
         closeOthers={closeOthers}
         setIsSearchVisible={setSearchActive}
