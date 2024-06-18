@@ -53,38 +53,36 @@ const MovieDetailPage = () => {
     setUserMenuVisible(false);
   };
 
-  const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
+  const fetchEpisodeList = useCallback(async (seasonId, isKids) => {
     try {
       setSelectedSeasonId(seasonId);
-      const endpoint = contentType === 'kids'
+      const endpoint = isKids
         ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
         : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
       const response = await axios.get(endpoint);
       const episodeData = response.data;
       setEpisodeList(episodeData);
-      Cookies.set('episodeList', JSON.stringify(episodeData), { expires: 1 });
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }, [baseAPI]);
 
-  const fetchSeasonList = useCallback(async (seriesId, contentType) => {
+  // 시즌 데이터를 가져오는 함수
+  const fetchSeasonList = useCallback(async (seriesId, isKids) => {
     try {
-      const endpoint = contentType === 'kids'
+      const endpoint = isKids
         ? `${baseAPI}/detailpage/kids_season_detail/${seriesId}`
         : `${baseAPI}/detailpage/season_detail/${seriesId}`;
       const response = await axios.get(endpoint);
       const seasonData = response.data;
       setSeasonList(seasonData);
-      Cookies.set('seasonList', JSON.stringify(seasonData), { expires: 1 });
 
       if (seasonData.length > 0) {
-        const { K_SEASON_ID, SEASON_ID, SEASON_NUM } = seasonData[0];
-        const firstSeasonId = K_SEASON_ID || SEASON_ID;
-        setSelectedSeasonName(`시즌 ${SEASON_NUM}`);
+        const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
+        setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
         setSelectedSeasonId(firstSeasonId);
-        await fetchEpisodeList(firstSeasonId, contentType);
+        await fetchEpisodeList(firstSeasonId, isKids);
       }
     } catch (error) {
       console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
@@ -92,13 +90,13 @@ const MovieDetailPage = () => {
     }
   }, [baseAPI, fetchEpisodeList]);
 
+  // 영화 데이터를 가져오는 함수
   const fetchMovieData = useCallback(async () => {
-    if (!vodId) return;
     try {
       const response = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
       const movieData = response.data;
 
-      const movieDetails = {
+      setMovie({
         id: movieData.MOVIE_ID || movieData.SERIES_ID || movieData.K_SERIES_ID,
         title: movieData.TITLE,
         genres: movieData.GENRE,
@@ -108,27 +106,19 @@ const MovieDetailPage = () => {
         releaseDate: movieData.RELEASE_DATE,
         duration: movieData.RTM,
         rating: movieData.MOVIE_RATING || movieData.SERIES_RATING,
-      };
+      });
 
-      setMovie(movieDetails);
-      Cookies.set('movieDetail', JSON.stringify(movieDetails), { expires: 1 });
-      Cookies.set('vodId', vodId, { expires: 1 });
-
-      const castDetails = movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }));
-      setCastData(castDetails);
-      Cookies.set('castData', JSON.stringify(castDetails), { expires: 1 });
+      setCastData(
+        movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))
+      );
 
       setRecommendList(movieData.recommend_list || []);
-      Cookies.set('recommendList', JSON.stringify(movieData.recommend_list || []), { expires: 1 });
-
       setIsInPlaylist(movieData.like_status);
       setReviews(movieData.review || []);
-      Cookies.set('reviews', JSON.stringify(movieData.review || []), { expires: 1 });
 
       if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
         const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
-        const contentType = movieData.K_SERIES_ID ? 'kids' : 'series';
-        await fetchSeasonList(seriesId, contentType);
+        await fetchSeasonList(seriesId, !!movieData.K_SERIES_ID);
       }
     } catch (error) {
       console.error('영화 데이터를 가져오는 중 오류 발생:', error);
@@ -262,7 +252,16 @@ const MovieDetailPage = () => {
           <CastSection castData={castData} />
           <ReviewSection reviews={reviews} />
           <RelatedMoviesSection recommendList={recommendList} onMovieClick={handleMovieClick} />
-          {seasonList.length > 0 && <SeasonContainer seasonList={seasonList} selectedSeasonId={selectedSeasonId} selectedSeasonName={selectedSeasonName} setSelectedSeasonName={setSelectedSeasonName} onSeasonClick={fetchEpisodeList} episodeList={episodeList} />}
+          {seasonList.length > 0 && (
+            <SeasonContainer
+              seasonList={seasonList}
+              selectedSeasonId={selectedSeasonId}
+              selectedSeasonName={selectedSeasonName}
+              setSelectedSeasonName={setSelectedSeasonName}
+              onSeasonClick={fetchEpisodeList}
+              episodeList={episodeList}
+            />
+          )}
         </div>
       </div>
 
@@ -354,8 +353,13 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
   const handleSeasonSelect = async (seasonId, seasonNum) => {
     setIsDropdownOpen(false);
     setSelectedSeasonName(`시즌 ${seasonNum}`);
-    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series'; // 시즌 ID가 'K'로 시작하면 키즈 콘텐츠로 간주
+    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series';
     await onSeasonClick(seasonId, contentType);
+  };
+
+  const getEpisodesCount = (seasonId) => {
+    const selectedSeason = seasonList.find(season => season.K_SEASON_ID === seasonId || season.SEASON_ID === seasonId);
+    return selectedSeason ? selectedSeason.EPISODE_NUM || 0 : 0;
   };
 
   return (
@@ -373,7 +377,7 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
                 className={`season-item ${season.K_SEASON_ID === selectedSeasonId || season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
                 onClick={() => handleSeasonSelect(season.K_SEASON_ID || season.SEASON_ID, season.SEASON_NUM)}
               >
-                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_ || 0} 에피소드)`}
+                {`시즌 ${season.SEASON_NUM} (에피소드 ${getEpisodesCount(season.K_SEASON_ID || season.SEASON_ID)} 개)`}
               </li>
             ))}
           </ul>
