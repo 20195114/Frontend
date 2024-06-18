@@ -16,7 +16,7 @@ const getCookieData = (key, defaultValue) => {
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`${key} 데이터를 파싱하는 중 에러 발생:`, error);
+    console.error(`Error parsing cookie data for ${key}:`, error);
     return defaultValue;
   }
 };
@@ -30,7 +30,7 @@ const Main = () => {
     ratingBasedVods: getCookieData('ratingBasedVods', []),
     spotifyVods: getCookieData('spotifyVods', []),
     isSpotifyLinked: false,
-    user_name: Cookies.get('selectedUserName') || '사용자 이름',
+    user_name: Cookies.get('selectedUserName') || 'User Name',
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -59,7 +59,8 @@ const Main = () => {
       const data = response.data;
 
       if (key === 'spotifyVods') {
-        if (!data.status) {
+        if (data.status === false) {
+          // 연동되지 않은 경우, 인증 URL을 받아옴
           const spotifyAuthResponse = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/spotify/${user_id}`);
           const spotifyAuthUrl = spotifyAuthResponse.data.response;
           const newWindow = window.open(spotifyAuthUrl, '_blank', 'width=500,height=600');
@@ -67,11 +68,13 @@ const Main = () => {
           const interval = setInterval(() => {
             if (newWindow.closed) {
               clearInterval(interval);
-              fetchData('/mainpage/vodlist/spotify', 'spotifyVods', user_id);
+              // 인증 후 다시 Spotify VOD 목록 요청
+              fetchData('/mainpage/home/spotify', 'spotifyVods', user_id);
             }
           }, 1000);
         } else {
-          setState((prevState) => ({ ...prevState, [key]: data.vods }));
+          // 연동된 경우 VOD 데이터를 상태에 저장
+          setState((prevState) => ({ ...prevState, [key]: data.vods, isSpotifyLinked: true }));
           Cookies.set(key, JSON.stringify(data.vods), { expires: 1 });
         }
       } else {
@@ -79,7 +82,7 @@ const Main = () => {
         Cookies.set(key, JSON.stringify(data), { expires: 1 });
       }
     } catch (error) {
-      console.error(`${key} 데이터를 가져오는 중 에러 발생:`, error);
+      console.error(`Error fetching ${key}:`, error);
     } finally {
       setLoading((prevState) => ({ ...prevState, [key]: false }));
     }
@@ -134,7 +137,7 @@ const Main = () => {
         const user_id = Cookies.get('selectedUserId');
         navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
-        console.error('VOD 검색 중 에러 발생:', error);
+        console.error('Error searching VODs:', error);
       }
     }
   };
