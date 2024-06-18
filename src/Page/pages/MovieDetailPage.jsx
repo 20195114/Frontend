@@ -5,7 +5,7 @@ import YouTube from 'react-youtube';
 import Header from '../Component/Header';
 import { FaRegPlayCircle, FaRegHeart, FaHeart, FaRegStar } from 'react-icons/fa';
 import Modal from 'react-modal';
-import Cookies from 'js-cookie'; // 쿠키를 사용하기 위해 추가
+import Cookies from 'js-cookie';
 import '../CSS/MovieDetailPage.css';
 
 Modal.setAppElement('#root');
@@ -53,10 +53,10 @@ const MovieDetailPage = () => {
     setUserMenuVisible(false);
   };
 
-  const fetchEpisodeList = useCallback(async (seasonId, isKids) => {
+  const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
     try {
       setSelectedSeasonId(seasonId);
-      const endpoint = isKids
+      const endpoint = contentType === 'kids'
         ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
         : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
       const response = await axios.get(endpoint);
@@ -69,9 +69,9 @@ const MovieDetailPage = () => {
     }
   }, [baseAPI]);
 
-  const fetchSeasonList = useCallback(async (seriesId, isKids) => {
+  const fetchSeasonList = useCallback(async (seriesId, contentType) => {
     try {
-      const endpoint = isKids
+      const endpoint = contentType === 'kids'
         ? `${baseAPI}/detailpage/kids_season_detail/${seriesId}`
         : `${baseAPI}/detailpage/season_detail/${seriesId}`;
       const response = await axios.get(endpoint);
@@ -83,7 +83,7 @@ const MovieDetailPage = () => {
         const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
         setSelectedSeasonName(`시즌 ${firstSeasonNum}`);
         setSelectedSeasonId(firstSeasonId);
-        await fetchEpisodeList(firstSeasonId, isKids);
+        await fetchEpisodeList(firstSeasonId, contentType);
       }
     } catch (error) {
       console.error('시즌 데이터를 가져오는 중 오류 발생:', error);
@@ -126,7 +126,8 @@ const MovieDetailPage = () => {
 
       if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
         const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
-        await fetchSeasonList(seriesId, !!movieData.K_SERIES_ID);
+        const contentType = movieData.K_SERIES_ID ? 'kids' : 'series';
+        await fetchSeasonList(seriesId, contentType);
       }
     } catch (error) {
       console.error('영화 데이터를 가져오는 중 오류 발생:', error);
@@ -352,7 +353,7 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
   const handleSeasonSelect = async (seasonId, seasonNum) => {
     setIsDropdownOpen(false);
     setSelectedSeasonName(`시즌 ${seasonNum}`);
-    await onSeasonClick(seasonId);
+    await onSeasonClick(seasonId, 'series');
   };
 
   return (

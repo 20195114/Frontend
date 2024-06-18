@@ -6,19 +6,44 @@ import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
 import Cookies from 'js-cookie';
 
+// 쿠키에서 데이터를 가져오고 기본 값을 설정하는 함수
+const getCookieData = (key, defaultValue) => {
+  const value = Cookies.get(key);
+  try {
+    return value ? JSON.parse(value) : defaultValue;
+  } catch (error) {
+    console.error(`Error parsing cookie data for ${key}:`, error);
+    return defaultValue;
+  }
+};
+
+// 쿠키에 데이터를 설정하는 함수
+const setCookieData = (key, data) => {
+  try {
+    Cookies.set(key, JSON.stringify(data), { expires: 1 });
+  } catch (error) {
+    console.error(`Error setting cookie data for ${key}:`, error);
+  }
+};
+
 const Movie = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({ myWatchedVods: JSON.parse(Cookies.get('myWatchedVods') || '[]') });
-  const [vodsByCategory, setVodsByCategory] = useState({
-    SF: JSON.parse(Cookies.get('SF') || '[]'),
-    Education: JSON.parse(Cookies.get('Education') || '[]'),
-    Family: JSON.parse(Cookies.get('Family') || '[]'),
-    Horror: JSON.parse(Cookies.get('Horror') || '[]'),
-    Drama: JSON.parse(Cookies.get('Drama') || '[]'),
-    Romance: JSON.parse(Cookies.get('Romance') || '[]'),
-    Action: JSON.parse(Cookies.get('Action') || '[]'),
-    Animation: JSON.parse(Cookies.get('Animation') || '[]'),
+
+  const [state, setState] = useState({
+    myWatchedVods: getCookieData('myWatchedVods', [])
   });
+
+  const [vodsByCategory, setVodsByCategory] = useState({
+    SF: getCookieData('SF', []),
+    Education: getCookieData('Education', []),
+    Family: getCookieData('Family', []),
+    Horror: getCookieData('Horror', []),
+    Drama: getCookieData('Drama', []),
+    Romance: getCookieData('Romance', []),
+    Action: getCookieData('Action', []),
+    Animation: getCookieData('Animation', [])
+  });
+
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -29,11 +54,12 @@ const Movie = () => {
   const fetchVods = useCallback(async (category, endpoint) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${endpoint}`);
+      const vods = response.data || [];
       setVodsByCategory(prevState => ({
         ...prevState,
-        [category]: response.data
+        [category]: vods
       }));
-      Cookies.set(category, JSON.stringify(response.data), { expires: 1 });
+      setCookieData(category, vods);
     } catch (error) {
       console.error(`Failed to fetch VODs for ${category}:`, error);
     }

@@ -1,17 +1,37 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
-import Cookies from 'js-cookie';
+
+// Helper function to get data from cookies
+const getCookieData = (key, defaultValue) => {
+  const value = Cookies.get(key);
+  try {
+    return value ? JSON.parse(value) : defaultValue;
+  } catch (error) {
+    console.error(`Error parsing cookie data for ${key}:`, error);
+    return defaultValue;
+  }
+};
+
+// Helper function to set data in cookies
+const setCookieData = (key, data) => {
+  try {
+    Cookies.set(key, JSON.stringify(data), { expires: 1 });
+  } catch (error) {
+    console.error(`Error setting cookie data for ${key}:`, error);
+  }
+};
 
 const Series = () => {
   const [state, setState] = useState({
-    actionFantasy: JSON.parse(Cookies.get('actionFantasy') || '[]'),
-    familyComedy: JSON.parse(Cookies.get('familyComedy') || '[]'),
-    drama: JSON.parse(Cookies.get('drama') || '[]'),
-    reality: JSON.parse(Cookies.get('reality') || '[]'),
+    actionFantasy: getCookieData('actionFantasy', []),
+    familyComedy: getCookieData('familyComedy', []),
+    drama: getCookieData('drama', []),
+    reality: getCookieData('reality', []),
   });
 
   const [loading, setLoading] = useState({
@@ -29,21 +49,23 @@ const Series = () => {
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const navigate = useNavigate();
 
+  // Function to fetch data from API
   const fetchData = useCallback(async (url, key) => {
-    setLoading(prevState => ({ ...prevState, [key]: true }));
+    setLoading((prevState) => ({ ...prevState, [key]: true }));
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}`);
       const data = Array.isArray(response.data) ? response.data : [];
-      setState(prevState => ({ ...prevState, [key]: data }));
-      Cookies.set(key, JSON.stringify(data), { expires: 1 });
+      setState((prevState) => ({ ...prevState, [key]: data }));
+      setCookieData(key, data);
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
-      setState(prevState => ({ ...prevState, [key]: [] }));
+      setState((prevState) => ({ ...prevState, [key]: [] }));
     } finally {
-      setLoading(prevState => ({ ...prevState, [key]: false }));
+      setLoading((prevState) => ({ ...prevState, [key]: false }));
     }
   }, []);
 
+  // Load data when component mounts
   useEffect(() => {
     fetchData('/mainpage/series/action-fantasy', 'actionFantasy');
     fetchData('/mainpage/series/family_comedy', 'familyComedy');
@@ -118,22 +140,22 @@ const Series = () => {
         {loading.actionFantasy ? (
           <p>Loading 액션/판타지 VODs...</p>
         ) : (
-          <VODCategory title="액션/판타지" vods={state.actionFantasy || []} handlePosterClick={handlePosterClick} />
+          <VODCategory title="액션/판타지" vods={state.actionFantasy} handlePosterClick={handlePosterClick} />
         )}
         {loading.familyComedy ? (
           <p>Loading 가족/코미디 VODs...</p>
         ) : (
-          <VODCategory title="가족/코미디" vods={state.familyComedy || []} handlePosterClick={handlePosterClick} />
+          <VODCategory title="가족/코미디" vods={state.familyComedy} handlePosterClick={handlePosterClick} />
         )}
         {loading.drama ? (
           <p>Loading 드라마 VODs...</p>
         ) : (
-          <VODCategory title="드라마" vods={state.drama || []} handlePosterClick={handlePosterClick} />
+          <VODCategory title="드라마" vods={state.drama} handlePosterClick={handlePosterClick} />
         )}
         {loading.reality ? (
           <p>Loading 예능(리얼리티) VODs...</p>
         ) : (
-          <VODCategory title="예능(리얼리티)" vods={state.reality || []} handlePosterClick={handlePosterClick} />
+          <VODCategory title="예능(리얼리티)" vods={state.reality} handlePosterClick={handlePosterClick} />
         )}
       </div>
     </div>
