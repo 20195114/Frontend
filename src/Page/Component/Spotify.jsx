@@ -39,4 +39,3 @@ Spotify.propTypes = {
 };
 
 export default Spotify;
-
