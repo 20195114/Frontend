@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import "../CSS/About.css";
-import axios from 'axios';
-import { IoLogoOctocat } from "react-icons/io";
-import { FaPlus } from "react-icons/fa";
-import logo from '../URL/logoHelloD.png';
 import Cookies from 'js-cookie';
+import axios from 'axios'; // axios 모듈을 추가로 임포트합니다.
+import '../CSS/About.css';
+import { IoLogoOctocat } from 'react-icons/io';
+import { FaPlus } from 'react-icons/fa';
+import logo from '../URL/logoHelloD.png';
 
 const Background = styled.div`
   background-color: black;
@@ -40,13 +40,13 @@ const AddUserButton = styled(FaPlus)`
   }
 `;
 
-function About() {
+const About = () => {
   const [users, setUsers] = useState(JSON.parse(Cookies.get('user_list') || '[]'));
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [USER_NAME, setUSER_NAME] = useState("");
-  const [GENDER, setGENDER] = useState("");
-  const [AGE, setAGE] = useState("");
-  const [msg, setMsg] = useState("");
+  const [USER_NAME, setUSER_NAME] = useState('');
+  const [GENDER, setGENDER] = useState('');
+  const [AGE, setAGE] = useState('');
+  const [msg, setMsg] = useState('');
 
   const navigate = useNavigate();
 
@@ -55,8 +55,8 @@ function About() {
     if (settopnum) {
       fetchUsers(settopnum);
     } else {
-      setMsg("셋탑 번호를 찾을 수 없습니다.");
-      console.error("셋탑 번호를 찾을 수 없습니다.");
+      setMsg('셋탑 번호를 찾을 수 없습니다.');
+      console.error('셋탑 번호를 찾을 수 없습니다.');
     }
   }, []);
 
@@ -65,7 +65,7 @@ function About() {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
         setUsers(response.data);
-        Cookies.set('user_list', JSON.stringify(response.data), { expires: 1 });
+        Cookies.set('user_list', JSON.stringify(response.data), { expires: 7 });
       } else {
         console.error('예상치 못한 응답 상태:', response.status);
         setMsg('사용자 데이터를 가져오는 중 오류 발생');
@@ -77,8 +77,8 @@ function About() {
   };
 
   const handleUserClick = (user_id, user_name) => {
-    Cookies.set('selectedUserId', user_id, { expires: 1 });
-    Cookies.set('selectedUserName', user_name, { expires: 1 });
+    Cookies.set('selectedUserId', user_id, { expires: 7 });
+    Cookies.set('selectedUserName', user_name, { expires: 7 });
     navigate('/Main');
   };
 
@@ -98,7 +98,7 @@ function About() {
       SETTOP_NUM: settopnum,
       USER_NAME: USER_NAME,
       GENDER: GENDER,
-      AGE: parseInt(AGE)
+      AGE: parseInt(AGE, 10),
     };
 
     try {
@@ -106,10 +106,10 @@ function About() {
       if (response.status === 200) {
         fetchUsers(settopnum);
         setIsSignupModalOpen(false);
-        setUSER_NAME("");
-        setGENDER("");
-        setAGE("");
-        setMsg("사용자 등록이 완료되었습니다.");
+        setUSER_NAME('');
+        setGENDER('');
+        setAGE('');
+        setMsg('사용자 등록이 완료되었습니다.');
       } else {
         console.error('사용자 등록 실패:', response.status);
         alert('사용자 등록에 실패했습니다.');
@@ -146,36 +146,27 @@ function About() {
                 <p>{user.USER_NAME}</p>
               </div>
             ))}
-            {users.length < 4 && (
-              <AddUserButton onClick={handleAddUser} />
-            )}
+            {users.length < 4 && <AddUserButton onClick={handleAddUser} />}
           </div>
           {isSignupModalOpen && (
             <div className="signup-modal">
               <div className="signup-modal-content">
-                <span className="close" onClick={() => setIsSignupModalOpen(false)}>&times;</span>
+                <span className="close" onClick={() => setIsSignupModalOpen(false)}>
+                  &times;
+                </span>
                 <h2>회원가입</h2>
-                <input
-                  type="text"
-                  placeholder="이름"
-                  value={USER_NAME}
-                  onChange={onChangeUSER_NAME}
-                />
-                <select
-                  value={GENDER}
-                  onChange={(e) => setGENDER(e.target.value)}
-                >
+                <input type="text" placeholder="이름" value={USER_NAME} onChange={onChangeUSER_NAME} />
+                <select value={GENDER} onChange={(e) => setGENDER(e.target.value)}>
                   <option value="">성별 선택</option>
                   <option value="남성">남성</option>
                   <option value="여성">여성</option>
                 </select>
-                <select
-                  value={AGE}
-                  onChange={handleAGEChange}
-                >
+                <select value={AGE} onChange={handleAGEChange}>
                   <option value="">나이 선택</option>
                   {Array.from({ length: 100 }, (_, i) => i).map((age) => (
-                    <option key={age} value={age}>{age}세</option>
+                    <option key={age} value={age}>
+                      {age}세
+                    </option>
                   ))}
                 </select>
                 <button onClick={handleSignup}>가입하기</button>
@@ -188,6 +179,6 @@ function About() {
       </main>
     </Background>
   );
-}
+};
 
 export default About;
