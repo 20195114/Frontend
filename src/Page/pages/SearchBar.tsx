@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../CSS/SearchBar.css';
 
@@ -15,7 +15,6 @@ interface SearchHistoryEntry {
 }
 
 function SearchBar() {
-  const location = useLocation();
   const navigate = useNavigate();
   const initialResults: SearchResult[] = JSON.parse(sessionStorage.getItem('searchResults') || '[]');
   const initialQuery: string = sessionStorage.getItem('searchQuery') || '';
@@ -91,7 +90,7 @@ function SearchBar() {
   };
 
   const handleSearchResultClick = async (vod_id: string) => {
-    const userId = sessionStorage.getItem('selectedUserId');
+    const userId = sessionStorage.getItem('selectedUserId'); // Retrieve user_id from sessionStorage
     if (!userId) {
       console.error('No user ID found in sessionStorage.');
       return;
