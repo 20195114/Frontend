@@ -11,14 +11,14 @@ import axios from 'axios';
 
 const Main = () => {
   const [state, setState] = useState({
-    myWatchedVods: [],
-    youtubeTrendsVods: [],
-    popularVods: [],
+    myWatchedVods: JSON.parse(sessionStorage.getItem('myWatchedVods') || '[]'),
+    youtubeTrendsVods: JSON.parse(sessionStorage.getItem('youtubeTrendsVods') || '[]'),
+    popularVods: JSON.parse(sessionStorage.getItem('popularVods') || '[]'),
     searchBasedVods: [],
-    ratingBasedVods: [],
-    spotifyVods: [],
+    ratingBasedVods: JSON.parse(sessionStorage.getItem('ratingBasedVods') || '[]'),
+    spotifyVods: JSON.parse(sessionStorage.getItem('spotifyVods') || '[]'),
     isSpotifyLinked: false,
-    user_name: 'User Name'
+    user_name: sessionStorage.getItem('user_name') || 'User Name'
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -26,7 +26,7 @@ const Main = () => {
   const [searchActive, setSearchActive] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(JSON.parse(sessionStorage.getItem('user_list') || '[]'));
   const [loading, setLoading] = useState({
     myWatchedVods: false,
     youtubeTrendsVods: false,
@@ -43,7 +43,6 @@ const Main = () => {
     setLoading(prevState => ({ ...prevState, [key]: true }));
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}${user_id ? `/${user_id}` : ''}`);
-      
       if (key === 'spotifyVods') {
         if (response.data.status === false) {
           const spotifyAuthResponse = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/spotify/${user_id}`);
@@ -58,9 +57,11 @@ const Main = () => {
           }, 1000);
         } else {
           setState(prevState => ({ ...prevState, [key]: response.data.vods }));
+          sessionStorage.setItem(key, JSON.stringify(response.data.vods));
         }
       } else {
         setState(prevState => ({ ...prevState, [key]: response.data }));
+        sessionStorage.setItem(key, JSON.stringify(response.data));
       }
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
@@ -78,9 +79,9 @@ const Main = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    const user_name = localStorage.getItem('selectedUserName');
-    const user_id = localStorage.getItem('selectedUserId');
-    const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
+    const user_name = sessionStorage.getItem('selectedUserName');
+    const user_id = sessionStorage.getItem('selectedUserId');
+    const storedUsers = JSON.parse(sessionStorage.getItem('user_list') || '[]');
     setUsers(storedUsers);
 
     if (user_id) {
@@ -88,11 +89,12 @@ const Main = () => {
     }
     if (user_name) {
       setState(prevState => ({ ...prevState, user_name }));
+      sessionStorage.setItem('user_name', user_name);
     }
   }, [loadUserData]);
 
   const handlePosterClick = (vod_id) => {
-    const user_id = localStorage.getItem('selectedUserId');
+    const user_id = sessionStorage.getItem('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -100,7 +102,7 @@ const Main = () => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    const user_id = localStorage.getItem('selectedUserId');
+    const user_id = sessionStorage.getItem('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -108,7 +110,7 @@ const Main = () => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
-        const user_id = localStorage.getItem('selectedUserId');
+        const user_id = sessionStorage.getItem('selectedUserId');
         navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
         console.error('Error searching VODs:', error);
@@ -125,8 +127,8 @@ const Main = () => {
   };
 
   const handleUserChange = (user_id, user_name) => {
-    localStorage.setItem('selectedUserId', user_id);
-    localStorage.setItem('selectedUserName', user_name);
+    sessionStorage.setItem('selectedUserId', user_id);
+    sessionStorage.setItem('selectedUserName', user_name);
     setState(prevState => ({ ...prevState, user_name }));
     setUserMenuVisible(false);
     loadUserData(user_id);
@@ -202,12 +204,3 @@ const Main = () => {
 };
 
 export default Main;
-
-
-
-
-
-
-
-
-

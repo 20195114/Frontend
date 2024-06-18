@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../Component/Header';
@@ -7,10 +7,10 @@ import '../CSS/Movie.css';
 
 const Series = () => {
   const [state, setState] = useState({
-    actionFantasy: [],
-    familyComedy: [],
-    drama: [],
-    reality: [],
+    actionFantasy: JSON.parse(sessionStorage.getItem('actionFantasy') || '[]'),
+    familyComedy: JSON.parse(sessionStorage.getItem('familyComedy') || '[]'),
+    drama: JSON.parse(sessionStorage.getItem('drama') || '[]'),
+    reality: JSON.parse(sessionStorage.getItem('reality') || '[]'),
   });
 
   const [loading, setLoading] = useState({
@@ -34,6 +34,7 @@ const Series = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}`);
       const data = Array.isArray(response.data) ? response.data : [];
       setState(prevState => ({ ...prevState, [key]: data }));
+      sessionStorage.setItem(key, JSON.stringify(data));
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
       setState(prevState => ({ ...prevState, [key]: [] }));
@@ -69,17 +70,6 @@ const Series = () => {
       }
     }
   };
-
-  // const handleSearchIconClick = () => {
-  //   setSearchActive(true);
-  //   searchInputRef.current.focus();
-  // };
-
-  // const handleCloseIconClick = () => {
-  //   setSearchActive(false);
-  //   setSearchQuery('');
-  //   setSearchResults([]);
-  // };
 
   const toggleUserMenuVisibility = () => {
     setUserMenuVisible(!userMenuVisible);

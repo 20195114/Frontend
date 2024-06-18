@@ -4,16 +4,17 @@ import Modal from 'react-modal';
 import '../CSS/ReviewPage.css';
 
 const ReviewPage = () => {
-  const [reviewData, setReviewData] = useState([]);
+  const [reviewData, setReviewData] = useState(JSON.parse(sessionStorage.getItem('reviewData') || '[]'));
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user_id = localStorage.getItem('selectedUserId'); // 기본 값으로 대체
+  const user_id = sessionStorage.getItem('selectedUserId');
 
   useEffect(() => {
     const fetchUserReviews = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(response.data);
+        sessionStorage.setItem('reviewData', JSON.stringify(response.data));
       } catch (error) {
         console.error('Error fetching user reviews:', error);
       }
@@ -43,6 +44,7 @@ const ReviewPage = () => {
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
+        sessionStorage.setItem('reviewData', JSON.stringify(updatedResponse.data));
         closeModal();
       }
     } catch (error) {
@@ -56,6 +58,7 @@ const ReviewPage = () => {
       if (response.data.response === "FINISH DELETE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
+        sessionStorage.setItem('reviewData', JSON.stringify(updatedResponse.data));
       }
     } catch (error) {
       console.error('Error deleting review:', error);

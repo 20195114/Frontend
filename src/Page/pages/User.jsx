@@ -4,10 +4,13 @@ import "../CSS/User.css";
 import { IoLogoOctocat } from "react-icons/io5";
 
 function User() {
-  const [user, setUser] = useState({ USER_NAME: "", GENDER: "", AGE: "" });
+  const [user, setUser] = useState(() => {
+    const savedUser = sessionStorage.getItem('userInfo');
+    return savedUser ? JSON.parse(savedUser) : { USER_NAME: "", GENDER: "", AGE: "" };
+  });
   const [editMode, setEditMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const userId = localStorage.getItem('selectedUserId'); // Use `userId` directly without state management
+  const userId = sessionStorage.getItem('selectedUserId');
 
   const nameInputRef = useRef(null);
   const ageInputRef = useRef(null);
@@ -23,6 +26,7 @@ function User() {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/user/${userId}`);
         if (response.status === 200) {
           setUser(response.data);
+          sessionStorage.setItem('userInfo', JSON.stringify(response.data));
         } else {
           setErrorMessage('사용자 데이터를 가져오는 데 실패했습니다.');
         }
@@ -35,7 +39,7 @@ function User() {
   }, [userId]);
 
   const handleUserInfoUpdate = async () => {
-    const SETTOP_NUM = localStorage.getItem('settop_num');
+    const SETTOP_NUM = sessionStorage.getItem('settop_num');
 
     const updatedUserInfo = {
       SETTOP_NUM,
@@ -50,6 +54,7 @@ function User() {
         setEditMode(false);
         setUser(response.data);
         setErrorMessage('');
+        sessionStorage.setItem('userInfo', JSON.stringify(response.data));
       } else {
         setErrorMessage('회원정보 수정에 실패했습니다.');
       }

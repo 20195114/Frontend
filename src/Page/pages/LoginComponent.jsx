@@ -6,7 +6,7 @@ import '../CSS/LoginComponent.css';
 function LoginComponent() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
-  const [settop_num, setSettopNum] = useState("");
+  const [settop_num, setSettopNum] = useState(sessionStorage.getItem('settop_num') || "");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,8 +32,8 @@ function LoginComponent() {
         if (response.status === 200 && Array.isArray(response.data)) {
           const user_list = response.data;
           if (user_list.length > 0) {
-            localStorage.setItem("user_list", JSON.stringify(user_list));
-            localStorage.setItem("settop_num", settop_num);
+            sessionStorage.setItem("user_list", JSON.stringify(user_list));
+            sessionStorage.setItem("settop_num", settop_num);
             setMsg("");
             setSettopNum(""); // 입력 필드 지우기
             navigate('/About', { state: { user_list, settop_num } });
@@ -83,4 +83,3 @@ function LoginComponent() {
 }
 
 export default LoginComponent;
-

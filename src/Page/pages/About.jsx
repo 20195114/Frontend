@@ -7,7 +7,6 @@ import { IoLogoOctocat } from "react-icons/io";
 import { FaPlus } from "react-icons/fa";
 import logo from '../URL/logoHelloD.png';
 
-// 배경 스타일 설정
 const Background = styled.div`
   background-color: black;
 `;
@@ -41,18 +40,17 @@ const AddUserButton = styled(FaPlus)`
 `;
 
 function About() {
-  const [users, setUsers] = useState([]); // 사용자 목록 상태
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false); // 모달 열기/닫기 상태
-  const [USER_NAME, setUSER_NAME] = useState(""); // 사용자 이름 상태
-  const [GENDER, setGENDER] = useState(""); // 성별 상태
-  const [AGE, setAGE] = useState(""); // 나이 상태
-  const [msg, setMsg] = useState(""); // 메시지 상태
+  const [users, setUsers] = useState(JSON.parse(sessionStorage.getItem('user_list')) || []);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [USER_NAME, setUSER_NAME] = useState("");
+  const [GENDER, setGENDER] = useState("");
+  const [AGE, setAGE] = useState("");
+  const [msg, setMsg] = useState("");
 
   const navigate = useNavigate();
 
-  // 컴포넌트가 마운트될 때 실행
   useEffect(() => {
-    const settopnum = localStorage.getItem('settop_num');
+    const settopnum = sessionStorage.getItem('settop_num');
     if (settopnum) {
       fetchUsers(settopnum);
     } else {
@@ -61,12 +59,12 @@ function About() {
     }
   }, []);
 
-  // 사용자 목록을 백엔드에서 가져오는 함수
   const fetchUsers = async (settopnum) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
         setUsers(response.data);
+        sessionStorage.setItem('user_list', JSON.stringify(response.data));
       } else {
         console.error('예상치 못한 응답 상태:', response.status);
         setMsg('사용자 데이터를 가져오는 중 오류 발생');
@@ -77,23 +75,19 @@ function About() {
     }
   };
 
-  // 사용자를 선택했을 때 실행되는 함수
   const handleUserClick = (user_id, user_name) => {
-    localStorage.setItem('selectedUserId', user_id);
-    localStorage.setItem('selectedUserName', user_name);
-    navigate('/Main'); // Main 페이지로 이동
+    sessionStorage.setItem('selectedUserId', user_id);
+    sessionStorage.setItem('selectedUserName', user_name);
+    navigate('/Main');
   };
 
-  // 사용자 추가 버튼 클릭 시 실행
   const handleAddUser = () => {
-    setIsSignupModalOpen(true); // 모달 열기
+    setIsSignupModalOpen(true);
   };
 
-  // 회원가입 처리 함수
   const handleSignup = async () => {
-    const settopnum = localStorage.getItem('settop_num');
+    const settopnum = sessionStorage.getItem('settop_num');
 
-    // 모든 필드가 입력되었는지 확인
     if (!USER_NAME || !GENDER || !AGE) {
       alert('모든 필드를 입력하세요.');
       return;
@@ -106,22 +100,21 @@ function About() {
       AGE: parseInt(AGE)
     };
 
-    console.log('전송할 데이터:', newUser); // 전송할 데이터 로그
+    console.log('전송할 데이터:', newUser);
+
+    console.log('url:', `${process.env.REACT_APP_CUD_ADDRESS}/user/`);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser, {
-    
-      });
-
-      console.log('서버 응답:', response); // 서버 응답 로그
+      const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser);
+      console.log('서버 응답:', response);
 
       if (response.status === 200) {
-        fetchUsers(settopnum); // 등록 후 사용자 목록 갱신
-        setIsSignupModalOpen(false); // 모달 닫기
-        setUSER_NAME(""); // 필드 초기화
+        fetchUsers(settopnum);
+        setIsSignupModalOpen(false);
+        setUSER_NAME("");
         setGENDER("");
         setAGE("");
-        setMsg("사용자 등록이 완료되었습니다."); // 성공 메시지
+        setMsg("사용자 등록이 완료되었습니다.");
       } else {
         console.error('사용자 등록 실패:', response.status);
         alert('사용자 등록에 실패했습니다.');
@@ -132,12 +125,10 @@ function About() {
     }
   };
 
-  // 나이 선택 시 실행
   const handleAGEChange = (e) => {
     setAGE(e.target.value);
   };
 
-  // 이름 입력 시 실행
   const onChangeUSER_NAME = (e) => {
     setUSER_NAME(e.target.value);
   };

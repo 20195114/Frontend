@@ -12,23 +12,26 @@ Modal.setAppElement('#root');
 const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const vodId = location.state?.vod_id;
-  const userId = localStorage.getItem('selectedUserId');
+  const vodId = location.state?.vod_id || sessionStorage.getItem('vodId');
+  const userId = sessionStorage.getItem('selectedUserId');
 
-  const [movie, setMovie] = useState(null);
-  const [castData, setCastData] = useState([]);
-  const [recommendList, setRecommendList] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  const [movie, setMovie] = useState(() => {
+    const savedMovie = sessionStorage.getItem('movieDetail');
+    return savedMovie ? JSON.parse(savedMovie) : null;
+  });
+  const [castData, setCastData] = useState(() => JSON.parse(sessionStorage.getItem('castData') || '[]'));
+  const [recommendList, setRecommendList] = useState(() => JSON.parse(sessionStorage.getItem('recommendList') || '[]'));
+  const [reviews, setReviews] = useState(() => JSON.parse(sessionStorage.getItem('reviews') || '[]'));
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
 
-  const [seasonList, setSeasonList] = useState([]);
+  const [seasonList, setSeasonList] = useState(() => JSON.parse(sessionStorage.getItem('seasonList') || '[]'));
   const [selectedSeasonId, setSelectedSeasonId] = useState(null);
   const [selectedSeasonName, setSelectedSeasonName] = useState('');
-  const [episodeList, setEpisodeList] = useState([]);
+  const [episodeList, setEpisodeList] = useState(() => JSON.parse(sessionStorage.getItem('episodeList') || '[]'));
 
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,6 +61,7 @@ const MovieDetailPage = () => {
       const response = await axios.get(endpoint);
       const episodeData = response.data;
       setEpisodeList(episodeData);
+      sessionStorage.setItem('episodeList', JSON.stringify(episodeData));
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
@@ -72,6 +76,7 @@ const MovieDetailPage = () => {
       const response = await axios.get(endpoint);
       const seasonData = response.data;
       setSeasonList(seasonData);
+      sessionStorage.setItem('seasonList', JSON.stringify(seasonData));
 
       if (seasonData.length > 0) {
         const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
@@ -86,11 +91,12 @@ const MovieDetailPage = () => {
   }, [baseAPI, fetchEpisodeList]);
 
   const fetchMovieData = useCallback(async () => {
+    if (!vodId) return;
     try {
       const response = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
       const movieData = response.data;
 
-      setMovie({
+      const movieDetails = {
         id: movieData.MOVIE_ID || movieData.SERIES_ID || movieData.K_SERIES_ID,
         title: movieData.TITLE,
         genres: movieData.GENRE,
@@ -100,15 +106,21 @@ const MovieDetailPage = () => {
         releaseDate: movieData.RELEASE_DATE,
         duration: movieData.RTM,
         rating: movieData.MOVIE_RATING || movieData.SERIES_RATING,
-      });
+      };
 
-      setCastData(
-        movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))
-      );
+      setMovie(movieDetails);
+      sessionStorage.setItem('movieDetail', JSON.stringify(movieDetails));
+      sessionStorage.setItem('vodId', vodId);
+
+      setCastData(movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name })));
+      sessionStorage.setItem('castData', JSON.stringify(movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))));
 
       setRecommendList(movieData.recommend_list || []);
+      sessionStorage.setItem('recommendList', JSON.stringify(movieData.recommend_list || []));
+
       setIsInPlaylist(movieData.like_status);
       setReviews(movieData.review || []);
+      sessionStorage.setItem('reviews', JSON.stringify(movieData.review || []));
 
       if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
         const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
@@ -179,6 +191,7 @@ const MovieDetailPage = () => {
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
         setReviews(updatedResponse.data.review || []);
+        sessionStorage.setItem('reviews', JSON.stringify(updatedResponse.data.review || []));
         closeModal();
       } else {
         alert('리뷰 저장에 실패했습니다.');
@@ -186,7 +199,7 @@ const MovieDetailPage = () => {
     } catch (error) {
       console.error('리뷰 저장 중 오류 발생:', error);
       alert('리뷰 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-    }
+    } 
   };
 
   if (loading) return <div>로딩 중...</div>;
@@ -197,7 +210,7 @@ const MovieDetailPage = () => {
   return (
     <div className="movie-detail-page">
       <Header
-        state={{}} // state 변수가 필요하지 않다면 빈 객체로 전달하거나, 필요 없다면 삭제
+        state={{}} 
         searchActive={searchActive}
         setSearchActive={setSearchActive}
         searchResults={searchResults}

@@ -6,10 +6,10 @@ import axios from 'axios';
 
 const Kids = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({ myWatchedVods: [] });
-  const [vods, setVods] = useState([]);
+  const [state, setState] = useState({ myWatchedVods: JSON.parse(sessionStorage.getItem('myWatchedVods') || '[]') });
+  const [vods, setVods] = useState(JSON.parse(sessionStorage.getItem('kidsVods') || '[]'));
   const [loading, setLoading] = useState(false);
-  const [sortOption, setSortOption] = useState('popular'); // 기본 정렬 옵션을 인기순으로 설정
+  const [sortOption, setSortOption] = useState('popular');
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -22,6 +22,7 @@ const Kids = () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/kids/${sortOption === 'popular' ? 'popularlist' : 'recentlylist'}`);
       setVods(response.data || []);
+      sessionStorage.setItem('kidsVods', JSON.stringify(response.data));
     } catch (error) {
       console.error('Failed to fetch VODs:', error);
     } finally {
@@ -52,17 +53,6 @@ const Kids = () => {
     }
   };
 
-  // const handleSearchIconClick = () => {
-  //   setSearchActive(true);
-  //   searchInputRef.current.focus();
-  // };
-
-  // const handleCloseIconClick = () => {
-  //   setSearchActive(false);
-  //   setSearchQuery('');
-  //   setSearchResults([]);
-  // };
-
   const handleSearchResultClick = (vod_id) => {
     navigate(`/MovieDetail/${vod_id}`);
   };
@@ -74,10 +64,6 @@ const Kids = () => {
   const togglePlaylistVisibility = () => {
     setPlaylistVisible(!playlistVisible);
   };
-
-  // const handleUserChange = (user_id, user_name) => {
-  //   // 사용자 변경 기능 추가
-  // };
 
   const handleSortOptionChange = (option) => {
     setSortOption(option);
@@ -126,12 +112,16 @@ const Kids = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            vods.map((vod) => (
-              <div key={vod.VOD_ID} className='movie-item' onClick={() => handlePosterClick(vod.VOD_ID)}>
-                <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} />
-                <p>{vod.TITLE}</p>
-              </div>
-            ))
+            vods.length === 0 ? (
+              <p>찜한 영화가 없습니다.</p>
+            ) : (
+              vods.map((vod) => (
+                <div key={vod.VOD_ID} className='movie-item' onClick={() => handlePosterClick(vod.VOD_ID)}>
+                  <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} />
+                  <p>{vod.TITLE}</p>
+                </div>
+              ))
+            )
           )}
         </div>
       </div>

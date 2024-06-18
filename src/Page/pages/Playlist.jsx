@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../CSS/Playlist.css';
 import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const Playlist = () => {
   const navigate = useNavigate();
-  const [vods, setVods] = useState([]);
+  const [vods, setVods] = useState(JSON.parse(sessionStorage.getItem('playlistVods') || '[]'));
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,15 +14,14 @@ const Playlist = () => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
-  // 사용자 ID를 localStorage에서 가져오기
-  const user_id = localStorage.getItem('selectedUserId'); // 기본 값으로 대체
+  const user_id = sessionStorage.getItem('selectedUserId');
 
-  // 찜 목록 데이터를 가져오는 함수
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
       setVods(response.data || []);
+      sessionStorage.setItem('playlistVods', JSON.stringify(response.data));
     } catch (error) {
       console.error('찜 목록을 가져오는 데 실패했습니다:', error);
     } finally {
@@ -57,7 +56,7 @@ const Playlist = () => {
         }
       });
       if (response.data.response === "FINISH INSERT REVIEW") {
-        fetchData(); // Refresh the VODs list
+        fetchData();
       }
     } catch (error) {
       console.error('Failed to like the VOD:', error);
@@ -73,7 +72,8 @@ const Playlist = () => {
         }
       });
       if (response.data.response === "FINISH UPDATE REVIEW") {
-        setVods(vods.filter(vod => vod.VOD_ID !== vodId)); // Update the list
+        setVods(vods.filter(vod => vod.VOD_ID !== vodId));
+        sessionStorage.setItem('playlistVods', JSON.stringify(vods.filter(vod => vod.VOD_ID !== vodId)));
       }
     } catch (error) {
       console.error('Failed to delete the VOD from likes:', error);
@@ -93,7 +93,7 @@ const Playlist = () => {
       <Header 
         state={{}}
         setState={() => {}}
-        users={[]}
+        users={[]} 
         setUsers={() => {}}
         searchActive={false}
         setSearchActive={() => {}}
