@@ -60,7 +60,6 @@ function SearchBar() {
         setErrorMessage('');
         sessionStorage.setItem('searchResults', JSON.stringify(response.data));
         sessionStorage.setItem('searchQuery', searchTerm);
-        navigate('/SearchBar', { state: { searchResults: response.data, searchQuery: searchTerm } });
       } else {
         setErrorMessage('No VODs found for the search term.');
         setSearchResults([]);
@@ -72,7 +71,7 @@ function SearchBar() {
       setErrorMessage('Please enter a valid search term.');
     }
     setIsLoading(false);
-  }, [searchTerm, navigate, updateSearchHistory]);
+  }, [searchTerm, updateSearchHistory]);
 
   useEffect(() => {
     fetchHistory();
@@ -99,7 +98,7 @@ function SearchBar() {
     }
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}/${userId}`);
-      const vodData = response.data;
+      sessionStorage.setItem('vodDetail', JSON.stringify(response.data));
       navigate('/MovieDetailPage', { state: { vod_id: vod_id, user_id: userId } });
     } catch (error) {
       console.error('Error fetching VOD data:', error);
