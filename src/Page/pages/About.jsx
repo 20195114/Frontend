@@ -57,6 +57,8 @@ function About() {
       setMsg("셋탑 번호를 찾을 수 없습니다.");
       console.error("셋탑 번호를 찾을 수 없습니다.");
     }
+
+    
   }, []);
 
   const fetchUsers = async (settopnum) => {
