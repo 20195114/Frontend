@@ -6,6 +6,7 @@ import axios from 'axios';
 import { IoLogoOctocat } from "react-icons/io";
 import { FaPlus } from "react-icons/fa";
 import logo from '../URL/logoHelloD.png';
+import Cookies from 'js-cookie';
 
 const Background = styled.div`
   background-color: black;
@@ -40,7 +41,7 @@ const AddUserButton = styled(FaPlus)`
 `;
 
 function About() {
-  const [users, setUsers] = useState(JSON.parse(sessionStorage.getItem('user_list')) || []);
+  const [users, setUsers] = useState(JSON.parse(Cookies.get('user_list') || '[]'));
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [USER_NAME, setUSER_NAME] = useState("");
   const [GENDER, setGENDER] = useState("");
@@ -50,15 +51,13 @@ function About() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const settopnum = sessionStorage.getItem('settop_num');
+    const settopnum = Cookies.get('settop_num');
     if (settopnum) {
       fetchUsers(settopnum);
     } else {
       setMsg("셋탑 번호를 찾을 수 없습니다.");
       console.error("셋탑 번호를 찾을 수 없습니다.");
     }
-
-    
   }, []);
 
   const fetchUsers = async (settopnum) => {
@@ -66,7 +65,7 @@ function About() {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopnum}`);
       if (response.status === 200) {
         setUsers(response.data);
-        sessionStorage.setItem('user_list', JSON.stringify(response.data));
+        Cookies.set('user_list', JSON.stringify(response.data), { expires: 1 });
       } else {
         console.error('예상치 못한 응답 상태:', response.status);
         setMsg('사용자 데이터를 가져오는 중 오류 발생');
@@ -78,8 +77,8 @@ function About() {
   };
 
   const handleUserClick = (user_id, user_name) => {
-    sessionStorage.setItem('selectedUserId', user_id);
-    sessionStorage.setItem('selectedUserName', user_name);
+    Cookies.set('selectedUserId', user_id, { expires: 1 });
+    Cookies.set('selectedUserName', user_name, { expires: 1 });
     navigate('/Main');
   };
 
@@ -88,7 +87,7 @@ function About() {
   };
 
   const handleSignup = async () => {
-    const settopnum = sessionStorage.getItem('settop_num');
+    const settopnum = Cookies.get('settop_num');
 
     if (!USER_NAME || !GENDER || !AGE) {
       alert('모든 필드를 입력하세요.');
@@ -102,14 +101,8 @@ function About() {
       AGE: parseInt(AGE)
     };
 
-    console.log('전송할 데이터:', newUser);
-
-    console.log('url:', `${process.env.REACT_APP_CUD_ADDRESS}/user/`);
-
     try {
       const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/user/`, newUser);
-      console.log('서버 응답:', response);
-
       if (response.status === 200) {
         fetchUsers(settopnum);
         setIsSignupModalOpen(false);

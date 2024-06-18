@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../CSS/Playlist.css';
 import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Playlist = () => {
   const navigate = useNavigate();
-  const [vods, setVods] = useState(JSON.parse(sessionStorage.getItem('playlistVods') || '[]'));
+  const [vods, setVods] = useState(JSON.parse(Cookies.get('playlistVods') || '[]'));
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,14 +15,14 @@ const Playlist = () => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
-  const user_id = sessionStorage.getItem('selectedUserId');
+  const user_id = Cookies.get('selectedUserId');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
       setVods(response.data || []);
-      sessionStorage.setItem('playlistVods', JSON.stringify(response.data));
+      Cookies.set('playlistVods', JSON.stringify(response.data), { expires: 1 });
     } catch (error) {
       console.error('찜 목록을 가져오는 데 실패했습니다:', error);
     } finally {
@@ -72,8 +73,9 @@ const Playlist = () => {
         }
       });
       if (response.data.response === "FINISH UPDATE REVIEW") {
-        setVods(vods.filter(vod => vod.VOD_ID !== vodId));
-        sessionStorage.setItem('playlistVods', JSON.stringify(vods.filter(vod => vod.VOD_ID !== vodId)));
+        const updatedVods = vods.filter(vod => vod.VOD_ID !== vodId);
+        setVods(updatedVods);
+        Cookies.set('playlistVods', JSON.stringify(updatedVods), { expires: 1 });
       }
     } catch (error) {
       console.error('Failed to delete the VOD from likes:', error);

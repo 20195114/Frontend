@@ -3,11 +3,12 @@ import '../CSS/Kids.css';
 import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Kids = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({ myWatchedVods: JSON.parse(sessionStorage.getItem('myWatchedVods') || '[]') });
-  const [vods, setVods] = useState(JSON.parse(sessionStorage.getItem('kidsVods') || '[]'));
+  const [state, setState] = useState({ myWatchedVods: JSON.parse(Cookies.get('myWatchedVods') || '[]') });
+  const [vods, setVods] = useState(JSON.parse(Cookies.get('kidsVods') || '[]'));
   const [loading, setLoading] = useState(false);
   const [sortOption, setSortOption] = useState('popular');
   const [searchActive, setSearchActive] = useState(false);
@@ -22,7 +23,7 @@ const Kids = () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/kids/${sortOption === 'popular' ? 'popularlist' : 'recentlylist'}`);
       setVods(response.data || []);
-      sessionStorage.setItem('kidsVods', JSON.stringify(response.data));
+      Cookies.set('kidsVods', JSON.stringify(response.data), { expires: 1 });
     } catch (error) {
       console.error('Failed to fetch VODs:', error);
     } finally {

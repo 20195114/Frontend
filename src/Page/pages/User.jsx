@@ -2,15 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "../CSS/User.css";
 import { IoLogoOctocat } from "react-icons/io5";
+import Cookies from 'js-cookie';
 
 function User() {
   const [user, setUser] = useState(() => {
-    const savedUser = sessionStorage.getItem('userInfo');
+    const savedUser = Cookies.get('userInfo');
     return savedUser ? JSON.parse(savedUser) : { USER_NAME: "", GENDER: "", AGE: "" };
   });
   const [editMode, setEditMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const userId = sessionStorage.getItem('selectedUserId');
+  const userId = Cookies.get('selectedUserId');
 
   const nameInputRef = useRef(null);
   const ageInputRef = useRef(null);
@@ -26,7 +27,7 @@ function User() {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/user/${userId}`);
         if (response.status === 200) {
           setUser(response.data);
-          sessionStorage.setItem('userInfo', JSON.stringify(response.data));
+          Cookies.set('userInfo', JSON.stringify(response.data), { expires: 1 });
         } else {
           setErrorMessage('사용자 데이터를 가져오는 데 실패했습니다.');
         }
@@ -39,7 +40,7 @@ function User() {
   }, [userId]);
 
   const handleUserInfoUpdate = async () => {
-    const SETTOP_NUM = sessionStorage.getItem('settop_num');
+    const SETTOP_NUM = Cookies.get('settop_num');
 
     const updatedUserInfo = {
       SETTOP_NUM,
@@ -54,7 +55,7 @@ function User() {
         setEditMode(false);
         setUser(response.data);
         setErrorMessage('');
-        sessionStorage.setItem('userInfo', JSON.stringify(response.data));
+        Cookies.set('userInfo', JSON.stringify(response.data), { expires: 1 });
       } else {
         setErrorMessage('회원정보 수정에 실패했습니다.');
       }

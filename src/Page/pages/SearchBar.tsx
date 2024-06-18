@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../CSS/SearchBar.css';
+import Cookies from 'js-cookie';
 
 interface SearchResult {
   VOD_ID: string;
@@ -16,8 +17,8 @@ interface SearchHistoryEntry {
 
 function SearchBar() {
   const navigate = useNavigate();
-  const initialResults: SearchResult[] = JSON.parse(sessionStorage.getItem('searchResults') || '[]');
-  const initialQuery: string = sessionStorage.getItem('searchQuery') || '';
+  const initialResults: SearchResult[] = JSON.parse(Cookies.get('searchResults') || '[]');
+  const initialQuery: string = Cookies.get('searchQuery') || '';
   const [searchTerm, setSearchTerm] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(initialResults);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ function SearchBar() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
 
   const fetchHistory = useCallback(() => {
-    const historyRaw = sessionStorage.getItem('searchLog');
+    const historyRaw = Cookies.get('searchLog');
     if (historyRaw) {
       try {
         const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
@@ -43,7 +44,7 @@ function SearchBar() {
       if (newHistory.length > 6) {
         newHistory.shift();
       }
-      sessionStorage.setItem('searchLog', JSON.stringify(newHistory));
+      Cookies.set('searchLog', JSON.stringify(newHistory), { expires: 1 });
       return newHistory;
     });
   }, []);
@@ -57,12 +58,12 @@ function SearchBar() {
       if (response.status === 200 && response.data.length > 0) {
         setSearchResults(response.data);
         setErrorMessage('');
-        sessionStorage.setItem('searchResults', JSON.stringify(response.data));
-        sessionStorage.setItem('searchQuery', searchTerm);
+        Cookies.set('searchResults', JSON.stringify(response.data), { expires: 1 });
+        Cookies.set('searchQuery', searchTerm, { expires: 1 });
       } else {
         setErrorMessage('No VODs found for the search term.');
         setSearchResults([]);
-        sessionStorage.removeItem('searchResults');
+        Cookies.remove('searchResults');
       }
       updateSearchHistory(searchTerm);
     } catch (error) {
@@ -90,14 +91,14 @@ function SearchBar() {
   };
 
   const handleSearchResultClick = async (vod_id: string) => {
-    const userId = sessionStorage.getItem('selectedUserId'); // Retrieve user_id from sessionStorage
+    const userId = Cookies.get('selectedUserId');
     if (!userId) {
-      console.error('No user ID found in sessionStorage.');
+      console.error('No user ID found in cookies.');
       return;
     }
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}/${userId}`);
-      sessionStorage.setItem('vodDetail', JSON.stringify(response.data));
+      Cookies.set('vodDetail', JSON.stringify(response.data), { expires: 1 });
       navigate('/MovieDetailPage', { state: { vod_id: vod_id, user_id: userId } });
     } catch (error) {
       console.error('Error fetching VOD data:', error);

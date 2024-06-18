@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import '../CSS/ReviewPage.css';
+import Cookies from 'js-cookie';
 
 const ReviewPage = () => {
-  const [reviewData, setReviewData] = useState(JSON.parse(sessionStorage.getItem('reviewData') || '[]'));
+  const [reviewData, setReviewData] = useState(JSON.parse(Cookies.get('reviewData') || '[]'));
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user_id = sessionStorage.getItem('selectedUserId');
+  const user_id = Cookies.get('selectedUserId');
 
   useEffect(() => {
     const fetchUserReviews = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(response.data);
-        sessionStorage.setItem('reviewData', JSON.stringify(response.data));
+        Cookies.set('reviewData', JSON.stringify(response.data), { expires: 1 });
       } catch (error) {
         console.error('Error fetching user reviews:', error);
       }
@@ -44,7 +45,7 @@ const ReviewPage = () => {
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
-        sessionStorage.setItem('reviewData', JSON.stringify(updatedResponse.data));
+        Cookies.set('reviewData', JSON.stringify(updatedResponse.data), { expires: 1 });
         closeModal();
       }
     } catch (error) {
@@ -58,7 +59,7 @@ const ReviewPage = () => {
       if (response.data.response === "FINISH DELETE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
-        sessionStorage.setItem('reviewData', JSON.stringify(updatedResponse.data));
+        Cookies.set('reviewData', JSON.stringify(updatedResponse.data), { expires: 1 });
       }
     } catch (error) {
       console.error('Error deleting review:', error);

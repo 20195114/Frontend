@@ -1,23 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import '../CSS/Movie.css';
-import Header from '../Component/Header';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
+import '../CSS/Movie.css';
+import Cookies from 'js-cookie';
 
 const Movie = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({ myWatchedVods: JSON.parse(sessionStorage.getItem('myWatchedVods') || '[]') });
-  const [users, setUsers] = useState(JSON.parse(sessionStorage.getItem('user_list') || '[]'));
+  const [state, setState] = useState({ myWatchedVods: JSON.parse(Cookies.get('myWatchedVods') || '[]') });
   const [vodsByCategory, setVodsByCategory] = useState({
-    SF: JSON.parse(sessionStorage.getItem('SF') || '[]'),
-    Education: JSON.parse(sessionStorage.getItem('Education') || '[]'),
-    Family: JSON.parse(sessionStorage.getItem('Family') || '[]'),
-    Horror: JSON.parse(sessionStorage.getItem('Horror') || '[]'),
-    Drama: JSON.parse(sessionStorage.getItem('Drama') || '[]'),
-    Romance: JSON.parse(sessionStorage.getItem('Romance') || '[]'),
-    Action: JSON.parse(sessionStorage.getItem('Action') || '[]'),
-    Animation: JSON.parse(sessionStorage.getItem('Animation') || '[]'),
+    SF: JSON.parse(Cookies.get('SF') || '[]'),
+    Education: JSON.parse(Cookies.get('Education') || '[]'),
+    Family: JSON.parse(Cookies.get('Family') || '[]'),
+    Horror: JSON.parse(Cookies.get('Horror') || '[]'),
+    Drama: JSON.parse(Cookies.get('Drama') || '[]'),
+    Romance: JSON.parse(Cookies.get('Romance') || '[]'),
+    Action: JSON.parse(Cookies.get('Action') || '[]'),
+    Animation: JSON.parse(Cookies.get('Animation') || '[]'),
   });
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,20 +26,20 @@ const Movie = () => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchVods = async (category, endpoint) => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${endpoint}`);
-        setVodsByCategory(prevState => ({
-          ...prevState,
-          [category]: response.data
-        }));
-        sessionStorage.setItem(category, JSON.stringify(response.data));
-      } catch (error) {
-        console.error(`Failed to fetch VODs for ${category}:`, error);
-      }
-    };
+  const fetchVods = useCallback(async (category, endpoint) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${endpoint}`);
+      setVodsByCategory(prevState => ({
+        ...prevState,
+        [category]: response.data
+      }));
+      Cookies.set(category, JSON.stringify(response.data), { expires: 1 });
+    } catch (error) {
+      console.error(`Failed to fetch VODs for ${category}:`, error);
+    }
+  }, []);
 
+  useEffect(() => {
     fetchVods('SF', '/mainpage/movie/SF-fantasy');
     fetchVods('Education', '/mainpage/movie/Liberal-Arts-Others');
     fetchVods('Family', '/mainpage/movie/family');
@@ -48,7 +48,7 @@ const Movie = () => {
     fetchVods('Romance', '/mainpage/movie/romance');
     fetchVods('Action', '/mainpage/movie/action');
     fetchVods('Animation', '/mainpage/movie/animations');
-  }, []);
+  }, [fetchVods]);
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -73,8 +73,8 @@ const Movie = () => {
       <Header 
         state={state} 
         setState={setState} 
-        users={users} 
-        setUsers={setUsers}
+        users={[]} 
+        setUsers={() => {}}
         searchActive={searchActive}
         setSearchActive={setSearchActive}
         searchQuery={searchQuery}

@@ -5,6 +5,7 @@ import YouTube from 'react-youtube';
 import Header from '../Component/Header';
 import { FaRegPlayCircle, FaRegHeart, FaHeart, FaRegStar } from 'react-icons/fa';
 import Modal from 'react-modal';
+import Cookies from 'js-cookie'; // 쿠키를 사용하기 위해 추가
 import '../CSS/MovieDetailPage.css';
 
 Modal.setAppElement('#root');
@@ -12,26 +13,26 @@ Modal.setAppElement('#root');
 const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const vodId = location.state?.vod_id || sessionStorage.getItem('vodId');
-  const userId = sessionStorage.getItem('selectedUserId');
+  const vodId = location.state?.vod_id || Cookies.get('vodId');
+  const userId = Cookies.get('selectedUserId');
 
   const [movie, setMovie] = useState(() => {
-    const savedMovie = sessionStorage.getItem('movieDetail');
+    const savedMovie = Cookies.get('movieDetail');
     return savedMovie ? JSON.parse(savedMovie) : null;
   });
-  const [castData, setCastData] = useState(() => JSON.parse(sessionStorage.getItem('castData') || '[]'));
-  const [recommendList, setRecommendList] = useState(() => JSON.parse(sessionStorage.getItem('recommendList') || '[]'));
-  const [reviews, setReviews] = useState(() => JSON.parse(sessionStorage.getItem('reviews') || '[]'));
+  const [castData, setCastData] = useState(() => JSON.parse(Cookies.get('castData') || '[]'));
+  const [recommendList, setRecommendList] = useState(() => JSON.parse(Cookies.get('recommendList') || '[]'));
+  const [reviews, setReviews] = useState(() => JSON.parse(Cookies.get('reviews') || '[]'));
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
 
-  const [seasonList, setSeasonList] = useState(() => JSON.parse(sessionStorage.getItem('seasonList') || '[]'));
+  const [seasonList, setSeasonList] = useState(() => JSON.parse(Cookies.get('seasonList') || '[]'));
   const [selectedSeasonId, setSelectedSeasonId] = useState(null);
   const [selectedSeasonName, setSelectedSeasonName] = useState('');
-  const [episodeList, setEpisodeList] = useState(() => JSON.parse(sessionStorage.getItem('episodeList') || '[]'));
+  const [episodeList, setEpisodeList] = useState(() => JSON.parse(Cookies.get('episodeList') || '[]'));
 
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,7 +62,7 @@ const MovieDetailPage = () => {
       const response = await axios.get(endpoint);
       const episodeData = response.data;
       setEpisodeList(episodeData);
-      sessionStorage.setItem('episodeList', JSON.stringify(episodeData));
+      Cookies.set('episodeList', JSON.stringify(episodeData), { expires: 1 });
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
@@ -76,7 +77,7 @@ const MovieDetailPage = () => {
       const response = await axios.get(endpoint);
       const seasonData = response.data;
       setSeasonList(seasonData);
-      sessionStorage.setItem('seasonList', JSON.stringify(seasonData));
+      Cookies.set('seasonList', JSON.stringify(seasonData), { expires: 1 });
 
       if (seasonData.length > 0) {
         const { SEASON_ID: firstSeasonId, SEASON_NUM: firstSeasonNum } = seasonData[0];
@@ -109,18 +110,19 @@ const MovieDetailPage = () => {
       };
 
       setMovie(movieDetails);
-      sessionStorage.setItem('movieDetail', JSON.stringify(movieDetails));
-      sessionStorage.setItem('vodId', vodId);
+      Cookies.set('movieDetail', JSON.stringify(movieDetails), { expires: 1 });
+      Cookies.set('vodId', vodId, { expires: 1 });
 
-      setCastData(movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name })));
-      sessionStorage.setItem('castData', JSON.stringify(movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }))));
+      const castDetails = movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }));
+      setCastData(castDetails);
+      Cookies.set('castData', JSON.stringify(castDetails), { expires: 1 });
 
       setRecommendList(movieData.recommend_list || []);
-      sessionStorage.setItem('recommendList', JSON.stringify(movieData.recommend_list || []));
+      Cookies.set('recommendList', JSON.stringify(movieData.recommend_list || []), { expires: 1 });
 
       setIsInPlaylist(movieData.like_status);
       setReviews(movieData.review || []);
-      sessionStorage.setItem('reviews', JSON.stringify(movieData.review || []));
+      Cookies.set('reviews', JSON.stringify(movieData.review || []), { expires: 1 });
 
       if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
         const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
@@ -191,7 +193,7 @@ const MovieDetailPage = () => {
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
         setReviews(updatedResponse.data.review || []);
-        sessionStorage.setItem('reviews', JSON.stringify(updatedResponse.data.review || []));
+        Cookies.set('reviews', JSON.stringify(updatedResponse.data.review || []), { expires: 1 });
         closeModal();
       } else {
         alert('리뷰 저장에 실패했습니다.');

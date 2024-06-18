@@ -4,13 +4,14 @@ import axios from 'axios';
 import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
+import Cookies from 'js-cookie';
 
 const Series = () => {
   const [state, setState] = useState({
-    actionFantasy: JSON.parse(sessionStorage.getItem('actionFantasy') || '[]'),
-    familyComedy: JSON.parse(sessionStorage.getItem('familyComedy') || '[]'),
-    drama: JSON.parse(sessionStorage.getItem('drama') || '[]'),
-    reality: JSON.parse(sessionStorage.getItem('reality') || '[]'),
+    actionFantasy: JSON.parse(Cookies.get('actionFantasy') || '[]'),
+    familyComedy: JSON.parse(Cookies.get('familyComedy') || '[]'),
+    drama: JSON.parse(Cookies.get('drama') || '[]'),
+    reality: JSON.parse(Cookies.get('reality') || '[]'),
   });
 
   const [loading, setLoading] = useState({
@@ -34,7 +35,7 @@ const Series = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}`);
       const data = Array.isArray(response.data) ? response.data : [];
       setState(prevState => ({ ...prevState, [key]: data }));
-      sessionStorage.setItem(key, JSON.stringify(data));
+      Cookies.set(key, JSON.stringify(data), { expires: 1 });
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
       setState(prevState => ({ ...prevState, [key]: [] }));

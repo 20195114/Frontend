@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import Header from '../Component/Header';
 import MyWatchedVods from '../Component/MyWatchedVods';
 import YouTubeTrends from '../Component/YouTubeTrends';
@@ -7,18 +9,28 @@ import PopularVods from '../Component/PopularVods';
 import RatingBasedVods from '../Component/RatingBasedVods';
 import Spotify from '../Component/Spotify';
 import '../CSS/Main.css';
-import axios from 'axios';
 
 const Main = () => {
+  // 쿠키에서 데이터를 가져올 때 기본 값을 사용
+  const getCookieData = (key, defaultValue) => {
+    const value = Cookies.get(key);
+    try {
+      return value ? JSON.parse(value) : defaultValue;
+    } catch (error) {
+      console.error(`Error parsing cookie data for ${key}:`, error);
+      return defaultValue;
+    }
+  };
+
   const [state, setState] = useState({
-    myWatchedVods: [],
-    youtubeTrendsVods: [],
-    popularVods: [],
-    searchBasedVods: [],
-    ratingBasedVods: [],
-    spotifyVods: [],
+    myWatchedVods: getCookieData('myWatchedVods', []),
+    youtubeTrendsVods: getCookieData('youtubeTrendsVods', []),
+    popularVods: getCookieData('popularVods', []),
+    searchBasedVods: getCookieData('searchBasedVods', []),
+    ratingBasedVods: getCookieData('ratingBasedVods', []),
+    spotifyVods: getCookieData('spotifyVods', []),
     isSpotifyLinked: false,
-    user_name: 'User Name'
+    user_name: Cookies.get('selectedUserName') || 'User Name'
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -58,9 +70,11 @@ const Main = () => {
           }, 1000);
         } else {
           setState(prevState => ({ ...prevState, [key]: response.data.vods }));
+          Cookies.set(key, JSON.stringify(response.data.vods), { expires: 1 });
         }
       } else {
         setState(prevState => ({ ...prevState, [key]: response.data }));
+        Cookies.set(key, JSON.stringify(response.data), { expires: 1 });
       }
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
@@ -78,9 +92,9 @@ const Main = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    const user_name = localStorage.getItem('selectedUserName');
-    const user_id = localStorage.getItem('selectedUserId');
-    const storedUsers = JSON.parse(localStorage.getItem('user_list') || '[]');
+    const user_name = Cookies.get('selectedUserName');
+    const user_id = Cookies.get('selectedUserId');
+    const storedUsers = getCookieData('user_list', []);
     setUsers(storedUsers);
 
     if (user_id) {
@@ -92,7 +106,7 @@ const Main = () => {
   }, [loadUserData]);
 
   const handlePosterClick = (vod_id) => {
-    const user_id = localStorage.getItem('selectedUserId');
+    const user_id = Cookies.get('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -100,7 +114,7 @@ const Main = () => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    const user_id = localStorage.getItem('selectedUserId');
+    const user_id = Cookies.get('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -108,7 +122,7 @@ const Main = () => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
-        const user_id = localStorage.getItem('selectedUserId');
+        const user_id = Cookies.get('selectedUserId');
         navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
         console.error('Error searching VODs:', error);
@@ -125,8 +139,8 @@ const Main = () => {
   };
 
   const handleUserChange = (user_id, user_name) => {
-    localStorage.setItem('selectedUserId', user_id);
-    localStorage.setItem('selectedUserName', user_name);
+    Cookies.set('selectedUserId', user_id, { expires: 1 });
+    Cookies.set('selectedUserName', user_name, { expires: 1 });
     setState(prevState => ({ ...prevState, user_name }));
     setUserMenuVisible(false);
     loadUserData(user_id);
@@ -202,12 +216,3 @@ const Main = () => {
 };
 
 export default Main;
-
-
-
-
-
-
-
-
-
