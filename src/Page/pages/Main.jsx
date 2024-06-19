@@ -37,7 +37,7 @@ const Main = () => {
     spotifyVods: getLocalStorageData('spotifyVods', []),
     isSpotifyLinked: false,
     user_name: localStorage.getItem('selectedUserName') || 'User Name',
-    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) // LIKE_STATUS 가져오기
+    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false, // LIKE_STATUS 가져오기
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -95,7 +95,7 @@ const Main = () => {
     (user_id) => {
       fetchData('/mainpage/home/watch', 'myWatchedVods', user_id);
       fetchData('/mainpage/home/youtube', 'youtubeTrendsVods', user_id);
-      fetchData('/mainpage/home/popular', 'popularVods');
+      fetchData('/mainpage/home/popular', 'popularVods', user_id);
       fetchData('/mainpage/home/rating', 'ratingBasedVods', user_id);
       fetchData('/mainpage/home/spotify', 'spotifyVods', user_id);
     },
@@ -150,21 +150,19 @@ const Main = () => {
   };
 
   const handleUserChange = (user) => {
-    const { userId, userName, likeStatus, vods } = user;
+    const { userId, userName, likeStatus } = user;
 
     localStorage.setItem('selectedUserId', userId);
     localStorage.setItem('selectedUserName', userName);
     localStorage.setItem('likeStatus', JSON.stringify(likeStatus));
 
-    setState({
-      myWatchedVods: vods.myWatchedVods,
-      youtubeTrendsVods: vods.youtubeTrendsVods,
-      popularVods: vods.popularVods,
-      ratingBasedVods: vods.ratingBasedVods,
-      spotifyVods: vods.spotifyVods,
+    setState((prevState) => ({
+      ...prevState,
       user_name: userName,
       likeStatus: likeStatus
-    });
+    }));
+
+    loadUserData(userId);
   };
 
   const handleCategoryClick = () => {
@@ -266,4 +264,3 @@ const Main = () => {
 };
 
 export default Main;
-//유저 별로 다른 vod 가 뜨는지 모르겠음 확인해보고싶은데 데이터가 다 들어가

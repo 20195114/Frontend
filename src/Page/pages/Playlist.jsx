@@ -3,11 +3,30 @@ import '../CSS/Playlist.css';
 import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+
+// Helper function to get data from local storage
+const getLocalStorageData = (key, defaultValue) => {
+  const value = localStorage.getItem(key);
+  try {
+    return value ? JSON.parse(value) : defaultValue;
+  } catch (error) {
+    console.error(`Error parsing local storage data for ${key}:`, error);
+    return defaultValue;
+  }
+};
+
+// Helper function to set data in local storage
+const setLocalStorageData = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error setting local storage data for ${key}:`, error);
+  }
+};
 
 const Playlist = () => {
   const navigate = useNavigate();
-  const [vods, setVods] = useState(JSON.parse(Cookies.get('playlistVods') || '[]'));
+  const [vods, setVods] = useState(getLocalStorageData('playlistVods', []));
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,16 +34,17 @@ const Playlist = () => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
-  const user_id = Cookies.get('selectedUserId');
+  const user_id = localStorage.getItem('selectedUserId');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
-      setVods(response.data || []);
-      Cookies.set('playlistVods', JSON.stringify(response.data), { expires: 1 });
+      const vodsData = response.data || [];
+      setVods(vodsData);
+      setLocalStorageData('playlistVods', vodsData);
     } catch (error) {
-      console.error('찜 목록을 가져오는 데 실패했습니다:', error);
+      console.error('Failed to fetch playlist:', error);
     } finally {
       setLoading(false);
     }
@@ -75,10 +95,10 @@ const Playlist = () => {
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedVods = vods.filter(vod => vod.VOD_ID !== vodId);
         setVods(updatedVods);
-        Cookies.set('playlistVods', JSON.stringify(updatedVods), { expires: 1 });
+        setLocalStorageData('playlistVods', updatedVods);
       }
     } catch (error) {
-      console.error('Failed to delete the VOD from likes:', error);
+      console.error('Failed to delete the VOD from playlist:', error);
     }
   };
 
