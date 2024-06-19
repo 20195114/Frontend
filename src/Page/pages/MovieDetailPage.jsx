@@ -389,7 +389,7 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
           <ul className="episode-list">
             {episodeList.map((episode) => (
               <li key={episode.EPISODE_ID || episode.K_EPISODE_ID} className="episode-item">
-                <img src={episode.EPISODE_STILL || 'default-poster.png'} alt={episode.EPISODE_NAME} className="episode-thumbnail" loading="lazy" />
+                <img src={episode.EPISODE_STILL || '../URL/defaultPoster.png'} alt={episode.EPISODE_NAME} className="episode-thumbnail" loading="lazy" />
                 <div className="episode-info">
                   <h5>{episode.EPISODE_NAME || '제목이 없습니다.'}</h5>
                   <p>{episode.EPISODE_OVERVIEW || '설명이 없습니다.'}</p>

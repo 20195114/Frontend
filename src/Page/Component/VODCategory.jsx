@@ -9,7 +9,7 @@ const VODCategory = ({ title, vods, handlePosterClick }) => {
         {vods.length > 0 ? (
           vods.map((vod) => (
             <div key={vod.VOD_ID} className="vod-item" onClick={() => handlePosterClick(vod.VOD_ID)}>
-              <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} />
+              <img src={vod.POSTER || '../URL/defaultPoster.png'} alt={vod.TITLE} />
               <p>{vod.TITLE}</p>
             </div>
           ))

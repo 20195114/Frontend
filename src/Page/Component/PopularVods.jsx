@@ -7,7 +7,7 @@ const PopularVods = ({ vods, handlePosterClick }) => {
       <div className="vod-slider">
         {vods.map((vod, index) => (
           <div key={index} className="vod-item" onClick={() => handlePosterClick(vod.VOD_ID)}>
-            <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} />
+            <img src={vod.POSTER || '../URL/defaultPoster.png'} alt={vod.TITLE} />
             <p>{vod.TITLE}</p>
           </div>
         ))}

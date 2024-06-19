@@ -147,7 +147,7 @@ const Playlist = () => {
               vods.map((vod) => (
                 <div key={vod.VOD_ID} className='movie-item'>
                   <img 
-                    src={vod.POSTER || 'default-poster.jpg'} 
+                    src={vod.POSTER || '../URL/defaultPoster.png'} 
                     alt={vod.TITLE} 
                     onClick={() => handlePosterClick(vod.VOD_ID)} 
                   />
