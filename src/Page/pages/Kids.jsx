@@ -4,7 +4,7 @@ import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// localStorage에서 데이터를 가져오고 기본 값을 설정하는 함수
+// Helper functions for localStorage
 const getLocalStorageData = (key, defaultValue) => {
   const value = localStorage.getItem(key);
   try {
@@ -15,7 +15,6 @@ const getLocalStorageData = (key, defaultValue) => {
   }
 };
 
-// localStorage에 데이터를 설정하는 함수
 const setLocalStorageData = (key, data) => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
@@ -26,7 +25,10 @@ const setLocalStorageData = (key, data) => {
 
 const Kids = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState({ myWatchedVods: getLocalStorageData('myWatchedVods', []) });
+  const [state, setState] = useState({
+    myWatchedVods: getLocalStorageData('myWatchedVods', []),
+    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false, // 추가된 상태
+  });
   const [vods, setVods] = useState(getLocalStorageData('kidsVods', []));
   const [loading, setLoading] = useState(false);
   const [sortOption, setSortOption] = useState('popular');
@@ -36,13 +38,14 @@ const Kids = () => {
   const searchInputRef = useRef(null);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
+  const [likeVisible, setLikeVisible] = useState(false); // 추가된 상태
 
-  // 데이터 가져오기 함수
+  // Function to fetch data from API
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/kids/${sortOption === 'popular' ? 'popularlist' : 'recentlylist'}`);
-      const vodsData = response.data || [];
+      const vodsData = Array.isArray(response.data) ? response.data : [];
       setVods(vodsData);
       setLocalStorageData('kidsVods', vodsData);
     } catch (error) {
@@ -52,6 +55,7 @@ const Kids = () => {
     }
   }, [sortOption]);
 
+  // Fetch data on component mount and sortOption change
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -69,14 +73,21 @@ const Kids = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
-    if (e.key === 'Enter') {
-      navigate('/SearchBar', { state: { query: searchQuery } });
+  const handleSearchSubmit = async (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_EC2_ADDRESS}/search-vods`, { query: searchQuery });
+        const results = Array.isArray(response.data) ? response.data : [];
+        setSearchResults(results);
+        navigate('/SearchBar', { state: { searchResults: results } });
+      } catch (error) {
+        console.error('Error searching VODs:', error);
+      }
     }
   };
 
   const handleSearchResultClick = (vod_id) => {
-    navigate(`/MovieDetail/${vod_id}`);
+    navigate(`/MovieDetailPage`, { state: { vod_id } });
   };
 
   const toggleUserMenuVisibility = () => {
@@ -118,6 +129,8 @@ const Kids = () => {
         playlistVisible={playlistVisible}
         handleCategoryClick={handleCategoryClick}
         goToMainPage={goToMainPage}
+        likeVisible={likeVisible} // 추가된 프로퍼티
+        setLikeVisible={setLikeVisible} // 추가된 프로퍼티
       />
 
       <div className='vod-container'>

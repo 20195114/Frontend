@@ -31,6 +31,7 @@ const Series = () => {
     familyComedy: getLocalStorageData('familyComedy', []),
     drama: getLocalStorageData('drama', []),
     reality: getLocalStorageData('reality', []),
+    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false, // 추가된 상태
   });
 
   const [loading, setLoading] = useState({
@@ -46,6 +47,7 @@ const Series = () => {
   const searchInputRef = useRef(null);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
+  const [likeVisible, setLikeVisible] = useState(false); // 추가된 상태
   const navigate = useNavigate();
 
   // Function to fetch data from API
@@ -133,6 +135,8 @@ const Series = () => {
         playlistVisible={playlistVisible}
         handleCategoryClick={handleCategoryClick}
         goToMainPage={goToMainPage}
+        likeVisible={likeVisible} // 추가된 프로퍼티
+        setLikeVisible={setLikeVisible} // 추가된 프로퍼티
       />
 
       <div className='vod-container'>

@@ -5,7 +5,6 @@ import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
 
-// localStorage에서 데이터를 가져오고 기본 값을 설정하는 함수
 const getLocalStorageData = (key, defaultValue) => {
   const value = localStorage.getItem(key);
   try {
@@ -16,7 +15,6 @@ const getLocalStorageData = (key, defaultValue) => {
   }
 };
 
-// localStorage에 데이터를 설정하는 함수
 const setLocalStorageData = (key, data) => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
@@ -29,7 +27,8 @@ const Movie = () => {
   const navigate = useNavigate();
 
   const [state, setState] = useState({
-    myWatchedVods: getLocalStorageData('myWatchedVods', [])
+    myWatchedVods: getLocalStorageData('myWatchedVods', []),
+    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false,
   });
 
   const [vodsByCategory, setVodsByCategory] = useState({
@@ -49,6 +48,7 @@ const Movie = () => {
   const searchInputRef = useRef(null);
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
+  const [likeVisible, setLikeVisible] = useState(false); // 추가된 상태
 
   const fetchVods = useCallback(async (category, endpoint) => {
     try {
@@ -79,9 +79,14 @@ const Movie = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
-    if (e.key === 'Enter') {
-      navigate('/SearchBar', { state: { query: searchQuery } });
+  const handleSearchSubmit = async (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/search-vods`, { query: searchQuery });
+        navigate('/SearchBar', { state: { searchResults: response.data } });
+      } catch (error) {
+        console.error('Error searching VODs:', error);
+      }
     }
   };
 
@@ -96,8 +101,8 @@ const Movie = () => {
   return (
     <div className='movie-page'>
       <Header 
-        state={state} 
-        setState={setState} 
+        state={state}
+        setState={setState}
         users={[]} 
         setUsers={() => {}}
         searchActive={searchActive}
@@ -116,6 +121,8 @@ const Movie = () => {
         playlistVisible={playlistVisible}
         handleCategoryClick={(e) => navigate(`/${e.target.textContent}`)}
         goToMainPage={goToMainPage}
+        likeVisible={likeVisible} // 추가된 프로퍼티
+        setLikeVisible={setLikeVisible} // 추가된 프로퍼티
       />
 
       <div className='vod-container'>
