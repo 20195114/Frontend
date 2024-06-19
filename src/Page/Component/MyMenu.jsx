@@ -73,7 +73,7 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
           <div className="user-menu-item" onClick={() => navigate('/ReviewPage')}>
             <div style={{ fontSize: '20px' }}>내가 쓴 리뷰 및 별점</div>
           </div>
-          <div className="user-menu-item" onClick={() => navigate('/LoginComponent')}>
+          <div className="user-menu-item" onClick={() => navigate('/')}>
             <div style={{ fontSize: '20px' }}>로그아웃</div>
           </div>
         </div>

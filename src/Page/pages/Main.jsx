@@ -37,7 +37,7 @@ const Main = () => {
     spotifyVods: getLocalStorageData('spotifyVods', []),
     isSpotifyLinked: false,
     user_name: localStorage.getItem('selectedUserName') || 'User Name',
-    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false, // LIKE_STATUS 가져오기
+    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false,
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -58,29 +58,56 @@ const Main = () => {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
+  const fetchSpotifyStatus = async (user_id) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/home/spotify/${user_id}`);
+      const data = response.data;
+
+      if (data.status && data.response !== false) {
+        // Spotify is already linked and VOD data is available
+        setState((prevState) => ({
+          ...prevState,
+          spotifyVods: data.response,
+          isSpotifyLinked: true,
+        }));
+        setLocalStorageData('spotifyVods', data.response);
+      } else if (data.status && data.response === false) {
+        // Spotify needs to be linked
+        const authResponse = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/mainpage/spotify/${user_id}`);
+        const spotifyAuthUrl = authResponse.data.response;
+        const newWindow = window.open(spotifyAuthUrl, '_blank', 'width=500,height=600');
+
+        const checkAuthStatus = setInterval(async () => {
+          if (newWindow.closed) {
+            clearInterval(checkAuthStatus);
+            // Check if the user has completed the Spotify linking process
+            const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/home/spotify/${user_id}`);
+            const updatedData = updatedResponse.data;
+            if (updatedData.status && updatedData.response !== false) {
+              setState((prevState) => ({
+                ...prevState,
+                spotifyVods: updatedData.response,
+                isSpotifyLinked: true,
+              }));
+              setLocalStorageData('spotifyVods', updatedData.response);
+            } else {
+              console.error('Spotify authorization failed or not completed.');
+            }
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Error checking Spotify status:', error);
+    }
+  };
+
   const fetchData = useCallback(async (url, key, user_id = null) => {
     setLoading((prevState) => ({ ...prevState, [key]: true }));
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}${user_id ? `/${user_id}` : ''}`);
       const data = response.data;
 
-      if (key === 'spotifyVods') {
-        if (data.status === false) {
-          const spotifyAuthResponse = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/mainpage/spotify/${user_id}`);
-          const spotifyAuthUrl = spotifyAuthResponse.data.response;
-          const newWindow = window.open(spotifyAuthUrl, '_blank', 'width=500,height=600');
-
-          const interval = setInterval(() => {
-            if (newWindow.closed) {
-              clearInterval(interval);
-              fetchData('/mainpage/home/spotify', 'spotifyVods', user_id);
-            }
-          }, 1000);
-        } else {
-          setState((prevState) => ({ ...prevState, [key]: data.vods, isSpotifyLinked: true }));
-          setLocalStorageData(key, data.vods);
-        }
-      } else {
+      if (key !== 'spotifyVods') {
         setState((prevState) => ({ ...prevState, [key]: data }));
         setLocalStorageData(key, data);
       }
@@ -97,9 +124,9 @@ const Main = () => {
       fetchData('/mainpage/home/youtube', 'youtubeTrendsVods', user_id);
       fetchData('/mainpage/home/popular', 'popularVods', user_id);
       fetchData('/mainpage/home/rating', 'ratingBasedVods', user_id);
-      fetchData('/mainpage/home/spotify', 'spotifyVods', user_id);
+      fetchSpotifyStatus(user_id);
     },
-    [fetchData]
+    [fetchData, fetchSpotifyStatus]
   );
 
   useEffect(() => {

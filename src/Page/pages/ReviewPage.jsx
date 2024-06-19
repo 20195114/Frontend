@@ -2,42 +2,68 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import '../CSS/ReviewPage.css';
-import Cookies from 'js-cookie';
+
+// Helper function to get data from local storage
+const getLocalStorageData = (key, defaultValue) => {
+  const value = localStorage.getItem(key);
+  try {
+    return value ? JSON.parse(value) : defaultValue;
+  } catch (error) {
+    console.error(`Error parsing local storage data for ${key}:`, error);
+    return defaultValue;
+  }
+};
+
+// Helper function to set data in local storage
+const setLocalStorageData = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error setting local storage data for ${key}:`, error);
+  }
+};
 
 const ReviewPage = () => {
-  const [reviewData, setReviewData] = useState(JSON.parse(Cookies.get('reviewData') || '[]'));
+  const [reviewData, setReviewData] = useState(getLocalStorageData('reviewData', []));
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user_id = Cookies.get('selectedUserId');
+  const user_id = localStorage.getItem('selectedUserId'); // Get user ID from local storage
 
+  // Fetch user reviews
   useEffect(() => {
     const fetchUserReviews = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(response.data);
-        Cookies.set('reviewData', JSON.stringify(response.data), { expires: 1 });
+        setLocalStorageData('reviewData', response.data); // Save data to local storage
       } catch (error) {
         console.error('Error fetching user reviews:', error);
       }
     };
 
-    fetchUserReviews();
+    if (user_id) {
+      fetchUserReviews();
+    }
   }, [user_id]);
 
+  // Handle star rating click for review editing
   const handleEditStarClick = (rating) => {
     setEditReview({ ...editReview, RATING: rating });
   };
 
+  // Open modal for editing review
   const openModal = (review) => {
     setEditReview(review);
     setIsModalOpen(true);
   };
 
+  // Close modal
   const closeModal = () => {
     setEditReview(null);
     setIsModalOpen(false);
   };
 
+  // Update review
   const updateReview = async (e) => {
     e.preventDefault();
     try {
@@ -45,7 +71,7 @@ const ReviewPage = () => {
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
-        Cookies.set('reviewData', JSON.stringify(updatedResponse.data), { expires: 1 });
+        setLocalStorageData('reviewData', updatedResponse.data); // Update local storage
         closeModal();
       }
     } catch (error) {
@@ -53,13 +79,14 @@ const ReviewPage = () => {
     }
   };
 
+  // Delete review
   const deleteReview = async (reviewId) => {
     try {
       const response = await axios.delete(`${process.env.REACT_APP_EUD_ADDRESS}/review/${reviewId}`);
       if (response.data.response === "FINISH DELETE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
-        Cookies.set('reviewData', JSON.stringify(updatedResponse.data), { expires: 1 });
+        setLocalStorageData('reviewData', updatedResponse.data); // Update local storage
       }
     } catch (error) {
       console.error('Error deleting review:', error);
