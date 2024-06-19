@@ -242,22 +242,22 @@ const MovieDetailPage = () => {
     clearTimeout(eventTimerRef.current);
   };
 
-  const handleEventTimer = useEffect(() => {
-    if (isEventPlaying) {
-      const interval = setInterval(() => {
-        setEventTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            closeEventModal();
-            setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [isEventPlaying]);
+  // const handleEventTimer = useEffect(() => {
+  //   if (isEventPlaying) {
+  //     const interval = setInterval(() => {
+  //       setEventTimeLeft((prev) => {
+  //         if (prev <= 1) {
+  //           clearInterval(interval);
+  //           closeEventModal();
+  //           setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
+  //           return 0;
+  //         }
+  //         return prev - 1;
+  //       });
+  //     }, 1000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [isEventPlaying]);
 
   if (loading) return <div>로딩 중...</div>;
   if (!movie) return <div>영화를 찾을 수 없습니다.</div>;
