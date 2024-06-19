@@ -58,7 +58,7 @@ const MovieDetailPage = () => {
     try {
       setSelectedSeasonId(seasonId);
 
-      const cleanSeasonId = seasonId.toString().split(':')[0];
+      const cleanSeasonId = seasonId;
       let endpoint;
       if (contentType === 'kids') {
         endpoint = `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${cleanSeasonId}`;
@@ -79,7 +79,7 @@ const MovieDetailPage = () => {
     if (!seriesId || !contentType) return;
 
     try {
-      const cleanSeriesId = seriesId.toString().split(':')[0];
+      const cleanSeriesId = seriesId;
       const endpoint = contentType === 'kids'
         ? `${baseAPI}/detailpage/kids_season_detail/${cleanSeriesId}`
         : `${baseAPI}/detailpage/season_detail/${cleanSeriesId}`;
