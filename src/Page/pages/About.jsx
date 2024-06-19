@@ -85,7 +85,6 @@ function About() {
   // 현재 URL로 재요청하는 함수
   const reFetchCurrentURL = async () => {
     try {
-      const currentPath = window.location.pathname;
       const settopNum = localStorage.getItem('settop_num');
       
       if (!settopNum) {
@@ -94,9 +93,9 @@ function About() {
         return;
       }
       
-      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${currentPath}?settop_num=${settopNum}`);
+      // URL이 변경된 후 데이터를 다시 요청합니다.
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopNum}`);
       console.log('재요청 성공:', response.data);
-      setMsg('페이지를 다시 로드했습니다.');
       setUsers(response.data);
     } catch (error) {
       console.error('페이지를 다시 로드하는 중 오류 발생:', error);
