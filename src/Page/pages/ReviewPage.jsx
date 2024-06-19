@@ -67,7 +67,7 @@ const ReviewPage = () => {
   const updateReview = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`${process.env.REACT_APP_EUD_ADDRESS}/review/${editReview.REVIEW_ID}`, editReview);
+      const response = await axios.put(`${process.env.REACT_APP_CUD_ADDRESS}/review/${editReview.REVIEW_ID}`, editReview);
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
@@ -82,7 +82,7 @@ const ReviewPage = () => {
   // Delete review
   const deleteReview = async (reviewId) => {
     try {
-      const response = await axios.delete(`${process.env.REACT_APP_EUD_ADDRESS}/review/${reviewId}`);
+      const response = await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/review/${reviewId}`);
       if (response.data.response === "FINISH DELETE REVIEW") {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
         setReviewData(updatedResponse.data);
