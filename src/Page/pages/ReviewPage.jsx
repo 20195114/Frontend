@@ -104,7 +104,6 @@ const ReviewPage = () => {
               <p><strong>제목:</strong> {review.TITLE}</p>
               <p><strong>리뷰:</strong> {review.COMMENT}</p>
               <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
-              <p className="review-date">({review.REVIEW_WDATE})</p>
               <div className="review-actions">
                 <button onClick={() => openModal(review)}>수정</button>
                 <button onClick={() => deleteReview(review.REVIEW_ID)}>삭제</button>

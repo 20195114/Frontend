@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: flex-start; /* 상단부터 시작 */
   padding: 30px;
-  background-color: #030202;
+  background-color: #000000;
   color: #fff;
   margin: 0;
   border-radius: 8px;
@@ -32,7 +32,7 @@
 
 .search-bar-wrapper button {
   padding: 10px 20px;
-  background-color: #d731b9;
+  background-color: #e50914;
   border: none;
   border-radius: 0 4px 4px 0; /* 오른쪽 상단과 하단만 둥글게 */
   color: #fff;
@@ -47,7 +47,7 @@
 }
 
 .search-bar-wrapper button:hover:not(:disabled) {
-  background-color: #b42699;
+  background-color: #e50914;
 }
 
 /* 검색 결과 스타일 */

@@ -422,6 +422,10 @@
   .review-rating {
     font-size: 1rem;
   }
+  .review-section ul {
+    list-style: none;
+    padding: 0px;
+  }
   .episode-thumbnail {
     max-width: 150px; /* 화면 크기에 맞게 크기 조정 */
     aspect-ratio: 4/3; /* 비율을 4:3으로 변경 */

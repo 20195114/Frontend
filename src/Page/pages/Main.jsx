@@ -258,14 +258,6 @@ const Main = () => {
             handlePosterClick={handlePosterClick}
             loading={loading.ratingBasedVods}
           />
-          <Like
-            isVisible={likeVisible}
-            setIsVisible={setLikeVisible}
-            closeOthers={() => { setPlaylistVisible(false); setUserMenuVisible(false); }}
-            state={state}
-            playlistVisible={playlistVisible}
-            togglePlaylistVisibility={togglePlaylistVisibility}
-          />
         </>
       ) : (
         <>

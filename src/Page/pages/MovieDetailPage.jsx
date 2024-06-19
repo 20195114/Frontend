@@ -314,10 +314,9 @@ const ReviewSection = ({ reviews }) => (
     <ul className="review-list">
       {reviews.map((review, index) => (
         <li key={index} className="review-item">
-          <p><strong>이름:</strong> {review.USER_NAME}</p>
-          <p><strong>리뷰:</strong> {review.COMMENT}</p>
-          <p><strong>별점:</strong> {Array(review.RATING).fill('★').join(' ')}</p>
-          <p className="review-date">({review.REVIEW_WDATE})</p>
+          <p><strong>이름:</strong>{review.USER_NAME}</p>
+          <p><strong>&nbsp;&nbsp;&nbsp;리뷰:</strong>{review.COMMENT}</p>
+          <p><strong>&nbsp;&nbsp;&nbsp;별점:</strong>{Array(review.RATING).fill('★').join(' ')}</p>
         </li>
       ))}
     </ul>
