@@ -7,7 +7,6 @@ import { IoLogoOctocat } from "react-icons/io";
 import { FaPlus } from "react-icons/fa";
 import logo from '../URL/logoHelloD.png';
 
-// 배경 스타일 설정
 const Background = styled.div`
   background-color: black;
 `;
@@ -61,6 +60,50 @@ function About() {
     }
   }, []);
 
+  // URL 변경 감지 및 재요청
+  useEffect(() => {
+    const handlePopState = () => {
+      reFetchCurrentURL();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // 페이지가 새로고침되거나 URL 변경 시 데이터 다시 가져오기
+  useEffect(() => {
+    window.addEventListener('load', reFetchCurrentURL);
+
+    return () => {
+      window.removeEventListener('load', reFetchCurrentURL);
+    };
+  }, []);
+
+  // 현재 URL로 재요청하는 함수
+  const reFetchCurrentURL = async () => {
+    try {
+      const currentPath = window.location.pathname;
+      const settopNum = localStorage.getItem('settop_num');
+      
+      if (!settopNum) {
+        setMsg("셋탑 번호를 찾을 수 없습니다.");
+        console.error("셋탑 번호를 찾을 수 없습니다.");
+        return;
+      }
+      
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${currentPath}?settop_num=${settopNum}`);
+      console.log('재요청 성공:', response.data);
+      setMsg('페이지를 다시 로드했습니다.');
+      setUsers(response.data);
+    } catch (error) {
+      console.error('페이지를 다시 로드하는 중 오류 발생:', error);
+      setMsg('페이지를 다시 로드하는 중 오류 발생.');
+    }
+  };
+
   // 사용자 목록을 백엔드에서 가져오는 함수
   const fetchUsers = async (settopNum) => {
     try {
@@ -83,6 +126,14 @@ function About() {
     localStorage.setItem('selectedUserName', userName);
     localStorage.setItem('likeStatus', JSON.stringify(likeStatus)); // LIKE_STATUS 저장
     navigate('/Main'); // Main 페이지로 이동
+
+    // 페이지 이동 후 URL이 변경되었음을 감지하고 데이터 다시 가져오기
+    setTimeout(() => {
+      const settopNum = localStorage.getItem('settop_num');
+      if (settopNum) {
+        fetchUsers(settopNum);
+      }
+    }, 1000);
   };
 
   // 사용자 추가 버튼 클릭 시 실행

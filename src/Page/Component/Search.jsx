@@ -46,7 +46,8 @@ const Search = ({
         localStorage.setItem('searchResults', JSON.stringify(results));
         localStorage.setItem('searchQuery', searchQuery.trim());
         
-        navigate('/SearchBar');
+        // 이동 경로를 수정합니다.
+        navigate('/SearchBar', { state: { searchResults: results } });
       } catch (error) {
         console.error('VOD 검색 중 오류:', error);
       }

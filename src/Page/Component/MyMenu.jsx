@@ -47,7 +47,7 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
 
       try {
         // 백엔드에서 유저의 VOD 데이터를 가져옵니다.
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/user/${user_id}/vods`);
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}}/user/${user_id}/vods`);
         const userVods = response.data;
 
         // 메인 페이지의 상태를 업데이트하기 위해 handleUserChange를 호출합니다.

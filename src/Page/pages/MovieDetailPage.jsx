@@ -53,6 +53,8 @@ const MovieDetailPage = () => {
   };
 
   const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
+    if (!seasonId || !contentType) return;
+
     try {
       setSelectedSeasonId(seasonId);
       const endpoint = contentType === 'kids'
@@ -60,7 +62,7 @@ const MovieDetailPage = () => {
         : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
       const response = await axios.get(endpoint);
       const episodeData = response.data;
-      setEpisodeList(episodeData);
+      setEpisodeList(episodeData);  // 에피소드 목록 상태 업데이트
       localStorage.setItem('episodeList', JSON.stringify(episodeData));
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
@@ -69,13 +71,15 @@ const MovieDetailPage = () => {
   }, [baseAPI]);
 
   const fetchSeasonList = useCallback(async (seriesId, contentType) => {
+    if (!seriesId || !contentType) return;
+
     try {
       const endpoint = contentType === 'kids'
         ? `${baseAPI}/detailpage/kids_season_detail/${seriesId}`
         : `${baseAPI}/detailpage/season_detail/${seriesId}`;
       const response = await axios.get(endpoint);
       const seasonData = response.data;
-      setSeasonList(seasonData);
+      setSeasonList(seasonData);  // 시즌 목록 상태 업데이트
       localStorage.setItem('seasonList', JSON.stringify(seasonData));
 
       if (seasonData.length > 0) {
@@ -93,6 +97,7 @@ const MovieDetailPage = () => {
 
   const fetchMovieData = useCallback(async () => {
     if (!vodId) return;
+
     try {
       const response = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
       const movieData = response.data;
@@ -163,7 +168,6 @@ const MovieDetailPage = () => {
       );
     }
   };
-
   const getYouTubeId = (url) => {
     if (!url) return null;
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|.*v=|.*\/)([\w-]{11}))/);
@@ -351,9 +355,11 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
   };
 
   const handleSeasonSelect = async (seasonId, seasonNum) => {
+    if (!seasonId) return;
+
     setIsDropdownOpen(false);
     setSelectedSeasonName(`시즌 ${seasonNum}`);
-    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series'; // 시즌 ID가 'K'로 시작하면 키즈 콘텐츠로 간주
+    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series';
     await onSeasonClick(seasonId, contentType);
   };
 
