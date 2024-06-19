@@ -58,7 +58,7 @@ const Main = () => {
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const fetchSpotifyStatus = async (user_id) => {
+  const fetchSpotifyStatus = useCallback(async (user_id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/home/spotify/${user_id}`);
       const data = response.data;
@@ -99,7 +99,7 @@ const Main = () => {
     } catch (error) {
       console.error('Error checking Spotify status:', error);
     }
-  };
+  }, []);
 
   const fetchData = useCallback(async (url, key, user_id = null) => {
     setLoading((prevState) => ({ ...prevState, [key]: true }));
