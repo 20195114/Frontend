@@ -80,9 +80,12 @@ const MovieDetailPage = () => {
 
     try {
       const cleanSeriesId = seriesId;
-      const endpoint = contentType === 'kids'
-        ? `${baseAPI}/detailpage/kids_season_detail/${cleanSeriesId}`
-        : `${baseAPI}/detailpage/season_detail/${cleanSeriesId}`;
+      let endpoint;
+      if (contentType === 'kids') {
+        endpoint = `${baseAPI}/detailpage/kids_season_detail/${cleanSeriesId}`;
+      } else {
+        endpoint = `${baseAPI}/detailpage/season_detail/${cleanSeriesId}`;
+      }
       const response = await axios.get(endpoint);
       const seasonData = response.data;
       setSeasonList(seasonData);
@@ -153,6 +156,13 @@ const MovieDetailPage = () => {
       fetchMovieData();
     }
   }, [vodId, fetchMovieData]);
+
+  // 추가된 부분: vodId 변경 시 페이지 상단으로 스크롤
+  useEffect(() => {
+    if (vodId) {
+      window.scrollTo(0, 0);
+    }
+  }, [vodId]);
 
   const togglePlaylist = async () => {
     try {
@@ -241,23 +251,6 @@ const MovieDetailPage = () => {
     setIsEventPlaying(false);
     clearTimeout(eventTimerRef.current);
   };
-
-  // const handleEventTimer = useEffect(() => {
-  //   if (isEventPlaying) {
-  //     const interval = setInterval(() => {
-  //       setEventTimeLeft((prev) => {
-  //         if (prev <= 1) {
-  //           clearInterval(interval);
-  //           closeEventModal();
-  //           setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
-  //           return 0;
-  //         }
-  //         return prev - 1;
-  //       });
-  //     }, 1000);
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [isEventPlaying]);
 
   if (loading) return <div>로딩 중...</div>;
   if (!movie) return <div>영화를 찾을 수 없습니다.</div>;
@@ -398,28 +391,23 @@ const ReviewSection = ({ reviews }) => (
   </div>
 );
 
-const RelatedMoviesSection = ({ recommendList, onMovieClick }) => {
-  const getRandomMovies = (movies, count) => {
-    const shuffled = [...movies].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-  };
-
-  const randomRecommendList = getRandomMovies(recommendList, 8);
-
-  return (
-    <div className="related-movies-section">
-      <h3>추천 영화</h3>
-      <ul className="related-movies-list">
-        {randomRecommendList.map((relatedMovie, index) => (
-          <li key={index} className="related-movie-item" onClick={() => onMovieClick(relatedMovie.VOD_ID)}>
-            <img src={relatedMovie.POSTER} alt={relatedMovie.TITLE} loading="lazy" />
-            <p>{relatedMovie.TITLE}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+const RelatedMoviesSection = ({ recommendList, onMovieClick }) => (
+  <div className="related-movies-section">
+    <h3>추천 영화</h3>
+    <ul className="related-movies-list">
+      {recommendList.map((relatedMovie, index) => (
+        <li 
+          key={index} 
+          className="related-movie-item" 
+          onClick={() => onMovieClick(relatedMovie.VOD_ID)}
+        >
+          <img src={relatedMovie.POSTER} alt={relatedMovie.TITLE} loading="lazy" />
+          <p>{relatedMovie.TITLE}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, setSelectedSeasonName, onSeasonClick, episodeList }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
