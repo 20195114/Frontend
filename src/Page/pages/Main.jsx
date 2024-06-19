@@ -7,7 +7,7 @@ import YouTubeTrends from '../Component/YouTubeTrends';
 import PopularVods from '../Component/PopularVods';
 import RatingBasedVods from '../Component/RatingBasedVods';
 import Spotify from '../Component/Spotify';
-import Like from '../Component/Like';
+// import Like from '../Component/Like'; // 사용되지 않으므로 제거
 import '../CSS/Main.css';
 
 const getLocalStorageData = (key, defaultValue) => {
@@ -53,7 +53,7 @@ const Main = () => {
     ratingBasedVods: false,
     spotifyVods: false,
   });
-  const [likeVisible, setLikeVisible] = useState(false);
+  // const [likeVisible, setLikeVisible] = useState(false); // 사용되지 않으므로 제거
 
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
