@@ -7,7 +7,7 @@ import YouTubeTrends from '../Component/YouTubeTrends';
 import PopularVods from '../Component/PopularVods';
 import RatingBasedVods from '../Component/RatingBasedVods';
 import Spotify from '../Component/Spotify';
-import Like from '../Component/Like';
+// Like 컴포넌트를 임포트에서 제거했습니다.
 import '../CSS/Main.css';
 
 const getLocalStorageData = (key, defaultValue) => {
@@ -53,8 +53,8 @@ const Main = () => {
     ratingBasedVods: false,
     spotifyVods: false,
   });
-  const [likeVisible, setLikeVisible] = useState(false);
-
+  // likeVisible과 setLikeVisible을 제거했습니다.
+  
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -186,7 +186,7 @@ const Main = () => {
     setState((prevState) => ({
       ...prevState,
       user_name: userName,
-      likeStatus: likeStatus
+      likeStatus: likeStatus,
     }));
 
     loadUserData(userId);
@@ -257,7 +257,7 @@ const Main = () => {
             vods={state.ratingBasedVods}
             handlePosterClick={handlePosterClick}
             loading={loading.ratingBasedVods}
-          />s
+          />
         </>
       ) : (
         <>
