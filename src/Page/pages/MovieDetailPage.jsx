@@ -24,7 +24,7 @@ const MovieDetailPage = () => {
   const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem('reviews') || '[]'));
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
 
@@ -57,12 +57,17 @@ const MovieDetailPage = () => {
 
     try {
       setSelectedSeasonId(seasonId);
-      const endpoint = contentType === 'kids'
-        ? `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${seasonId}`
-        : `${baseAPI}/detailpage/season_detail/episode_detail/${seasonId}`;
+
+      const cleanSeasonId = seasonId.toString().split(':')[0];
+      let endpoint;
+      if (contentType === 'kids') {
+        endpoint = `${baseAPI}/detailpage/kids_season_detail/kids_episode_detail/${cleanSeasonId}`;
+      } else {
+        endpoint = `${baseAPI}/detailpage/season_detail/episode_detail/${cleanSeasonId}`;
+      }
       const response = await axios.get(endpoint);
       const episodeData = response.data;
-      setEpisodeList(episodeData);  // 에피소드 목록 상태 업데이트
+      setEpisodeList(episodeData);
       localStorage.setItem('episodeList', JSON.stringify(episodeData));
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
@@ -74,12 +79,13 @@ const MovieDetailPage = () => {
     if (!seriesId || !contentType) return;
 
     try {
+      const cleanSeriesId = seriesId.toString().split(':')[0];
       const endpoint = contentType === 'kids'
-        ? `${baseAPI}/detailpage/kids_season_detail/${seriesId}`
-        : `${baseAPI}/detailpage/season_detail/${seriesId}`;
+        ? `${baseAPI}/detailpage/kids_season_detail/${cleanSeriesId}`
+        : `${baseAPI}/detailpage/season_detail/${cleanSeriesId}`;
       const response = await axios.get(endpoint);
       const seasonData = response.data;
-      setSeasonList(seasonData);  // 시즌 목록 상태 업데이트
+      setSeasonList(seasonData);
       localStorage.setItem('seasonList', JSON.stringify(seasonData));
 
       if (seasonData.length > 0) {
@@ -163,11 +169,10 @@ const MovieDetailPage = () => {
       await fetchMovieData();
     } catch (error) {
       console.error('플레이리스트 상태를 업데이트하는 중 오류 발생:', error);
-      alert(
-        '플레이리스트 상태를 업데이트하는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.'
-      );
+      alert('플레이리스트 상태를 업데이트하는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   };
+
   const getYouTubeId = (url) => {
     if (!url) return null;
     const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|.*v=|.*\/)([\w-]{11}))/);
@@ -178,8 +183,7 @@ const MovieDetailPage = () => {
     navigate('/MovieDetailPage', { state: { vod_id: movieId } });
   };
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeReviewModal = () => setIsReviewModalOpen(false);
 
   const handleReviewSave = async () => {
     if (reviewText.trim() === '' || reviewRating === 0) {
@@ -199,7 +203,7 @@ const MovieDetailPage = () => {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
         setReviews(updatedResponse.data.review || []);
         localStorage.setItem('reviews', JSON.stringify(updatedResponse.data.review || []));
-        closeModal();
+        closeReviewModal();
       } else {
         alert('리뷰 저장에 실패했습니다.');
       }
@@ -208,6 +212,52 @@ const MovieDetailPage = () => {
       alert('리뷰 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.');
     }
   };
+
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [eventTimeLeft, setEventTimeLeft] = useState(10); // 이벤트 시간 10초로 설정
+  const [isEventPlaying, setIsEventPlaying] = useState(false);
+  const eventTimerRef = useRef(null);
+
+  const openEventModal = () => {
+    setIsEventModalOpen(true);
+    setEventTimeLeft(10); // 시간 초기화
+    setIsEventPlaying(false);
+  };
+
+  const closeEventModal = () => {
+    setIsEventModalOpen(false);
+    clearTimeout(eventTimerRef.current);
+  };
+
+  const startEvent = () => {
+    setIsEventPlaying(true);
+    eventTimerRef.current = setTimeout(() => {
+      closeEventModal();
+      setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
+    }, eventTimeLeft * 1000); // 남은 시간을 밀리초로 변환
+  };
+
+  const pauseEvent = () => {
+    setIsEventPlaying(false);
+    clearTimeout(eventTimerRef.current);
+  };
+
+  const handleEventTimer = useEffect(() => {
+    if (isEventPlaying) {
+      const interval = setInterval(() => {
+        setEventTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            closeEventModal();
+            setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isEventPlaying]);
 
   if (loading) return <div>로딩 중...</div>;
   if (!movie) return <div>영화를 찾을 수 없습니다.</div>;
@@ -247,7 +297,7 @@ const MovieDetailPage = () => {
           <img src={movie.posterURL} alt={movie.title} className="movie-poster" loading="lazy" />
           <div className="movie-info">
             <h1>{movie.title}
-              <FaRegPlayCircle className="play-button" onClick={openModal} />
+              <FaRegPlayCircle className="play-button" onClick={openEventModal} />
             </h1>
             <p>개봉일: {movie.releaseDate}</p>
             <p>장르: {movie.genres}</p>
@@ -270,8 +320,8 @@ const MovieDetailPage = () => {
       </div>
 
       <ReviewModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
+        isOpen={isReviewModalOpen}
+        onClose={closeReviewModal}
         movie={movie}
         reviewText={reviewText}
         setReviewText={setReviewText}
@@ -279,9 +329,34 @@ const MovieDetailPage = () => {
         setReviewRating={setReviewRating}
         onSave={handleReviewSave}
       />
+
+      <EventModal
+        isOpen={isEventModalOpen}
+        onClose={closeEventModal}
+        onPlay={startEvent}
+        onPause={pauseEvent}
+        timeLeft={eventTimeLeft}
+        isPlaying={isEventPlaying}
+      />
     </div>
   );
 };
+
+const EventModal = ({ isOpen, onClose, onPlay, onPause, timeLeft, isPlaying }) => (
+  <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay">
+    <div className="modal-content">
+      <p>이벤트 화면입니다. {timeLeft}초 남았습니다.</p>
+      <div className="modal-buttons">
+        {isPlaying ? (
+          <button onClick={onPause} className="modal-button pause">정지</button>
+        ) : (
+          <button onClick={onPlay} className="modal-button play">재생</button>
+        )}
+        <button onClick={onClose} className="modal-button close">닫기</button>
+      </div>
+    </div>
+  </Modal>
+);
 
 const TrailerSection = ({ videoId }) => (
   <div className="trailer-section">
