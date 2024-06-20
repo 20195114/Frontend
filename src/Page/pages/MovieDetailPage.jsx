@@ -234,10 +234,6 @@ const MovieDetailPage = () => {
     try {
       const url = `${process.env.REACT_APP_LOG_ADDRESS}/watch/${userId}?vod_id=${vodId}`;
       await axios.post(url, null, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
       });
     } catch (error) {
       console.error('POST 요청 중 오류 발생:', error);
