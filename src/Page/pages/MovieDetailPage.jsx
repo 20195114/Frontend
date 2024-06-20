@@ -169,7 +169,7 @@ const MovieDetailPage = () => {
     try {
       const baseURL = process.env.REACT_APP_CUD_ADDRESS;
       const url = `${baseURL}/like/${userId}?VOD_ID=${vodId}`;
-
+      console.log(isInPlaylist)
       if (isInPlaylist) {
         await axios.delete(url);
       } else {
