@@ -469,7 +469,7 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
                 className={`season-item ${season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
                 onClick={() => handleSeasonSelect(season.SEASON_ID, season.SEASON_NUM)}
               >
-                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_} 에피소드)`}
+                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_COUNT || 0} 개의 에피소드)`}
               </li>
             ))}
           </ul>
