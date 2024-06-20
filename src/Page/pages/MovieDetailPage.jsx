@@ -245,7 +245,6 @@ const MovieDetailPage = () => {
     setIsEventModalOpen(true);
     setEventTimeLeft(10); // 시간 초기화
     setIsEventPlaying(false);
-    sendPostRequest(); // 모달 열릴 때 POST 요청 전송
   };
 
   const closeEventModal = () => {
@@ -265,7 +264,6 @@ const MovieDetailPage = () => {
   const pauseEvent = () => {
     setIsEventPlaying(false);
     clearTimeout(eventTimerRef.current);
-    sendPostRequest(); // 정지 버튼 클릭 시 POST 요청 전송
   };
 
   // 이벤트 타이머 관리
