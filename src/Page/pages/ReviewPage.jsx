@@ -27,13 +27,13 @@ const ReviewPage = () => {
   const [reviewData, setReviewData] = useState(getLocalStorageData('reviewData', []));
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user_id = localStorage.getItem('selectedUserId'); // Get user ID from local storage
+  const userId = localStorage.getItem('selectedUserId'); // Get user ID from local storage
 
   // Fetch user reviews
   useEffect(() => {
     const fetchUserReviews = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
         setReviewData(response.data);
         setLocalStorageData('reviewData', response.data); // Save data to local storage
       } catch (error) {
@@ -41,14 +41,14 @@ const ReviewPage = () => {
       }
     };
 
-    if (user_id) {
+    if (userId) {
       fetchUserReviews();
     }
-  }, [user_id]);
+  }, [userId]);
 
   // Handle star rating click for review editing
   const handleEditStarClick = (rating) => {
-    setEditReview({ ...editReview, RATING: rating });
+    setEditReview((prev) => ({ ...prev, RATING: rating }));
   };
 
   // Open modal for editing review
@@ -66,10 +66,22 @@ const ReviewPage = () => {
   // Update review
   const updateReview = async (e) => {
     e.preventDefault();
+    if (!editReview) return;
+
+    const updatedReview = {
+      VOD_ID: editReview.VOD_ID,
+      RATING: editReview.RATING.toString(), // Ensure RATING is a string
+      COMMENT: editReview.COMMENT,
+    };
+
     try {
-      const response = await axios.put(`${process.env.REACT_APP_CUD_ADDRESS}/review/${editReview.REVIEW_ID}`, editReview);
-      if (response.data.response === "FINISH UPDATE REVIEW") {
-        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
+      const response = await axios.put(
+        `${process.env.REACT_APP_CUD_ADDRESS}/review/${editReview.REVIEW_ID}`, // Use REVIEW_ID for update
+        updatedReview
+      );
+
+      if (response.data.response === 'FINISH UPDATE REVIEW') {
+        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
         setReviewData(updatedResponse.data);
         setLocalStorageData('reviewData', updatedResponse.data); // Update local storage
         closeModal();
@@ -82,9 +94,9 @@ const ReviewPage = () => {
   // Delete review
   const deleteReview = async (reviewId) => {
     try {
-      const response = await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/review/${reviewId}`);
-      if (response.data.response === "FINISH DELETE REVIEW") {
-        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${user_id}`);
+      const response = await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/review/${reviewId}`); // Use REVIEW_ID for delete
+      if (response.data.response === 'FINISH DELETE REVIEW') {
+        const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
         setReviewData(updatedResponse.data);
         setLocalStorageData('reviewData', updatedResponse.data); // Update local storage
       }

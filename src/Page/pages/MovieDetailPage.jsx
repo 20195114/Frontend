@@ -52,10 +52,13 @@ const MovieDetailPage = () => {
     setUserMenuVisible(false);
   };
 
-  const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
+ const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
     if (!seasonId || !contentType) return;
 
     try {
+      console.log('seasonId:', seasonId);
+      console.log('contentType:', contentType);
+
       setSelectedSeasonId(seasonId);
 
       const cleanSeasonId = seasonId;
@@ -65,6 +68,8 @@ const MovieDetailPage = () => {
       } else {
         endpoint = `${baseAPI}/detailpage/season_detail/episode_detail/${cleanSeasonId}`;
       }
+      console.log('endpoint:', endpoint);
+
       const response = await axios.get(endpoint);
       const episodeData = response.data;
       setEpisodeList(episodeData);
@@ -74,6 +79,7 @@ const MovieDetailPage = () => {
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }, [baseAPI]);
+
 
   const fetchSeasonList = useCallback(async (seriesId, contentType) => {
     if (!seriesId || !contentType) return;
