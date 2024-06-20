@@ -395,7 +395,7 @@ const RelatedMoviesSection = ({ recommendList, onMovieClick }) => (
   <div className="related-movies-section">
     <h3>추천 영화</h3>
     <ul className="related-movies-list">
-      {recommendList.map((relatedMovie, index) => (
+      {recommendList.slice(0, 8).map((relatedMovie, index) => (
         <li 
           key={index} 
           className="related-movie-item" 
@@ -408,6 +408,7 @@ const RelatedMoviesSection = ({ recommendList, onMovieClick }) => (
     </ul>
   </div>
 );
+
 
 const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, setSelectedSeasonName, onSeasonClick, episodeList }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
