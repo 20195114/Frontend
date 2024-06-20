@@ -449,12 +449,9 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
   };
 
   const handleSeasonSelect = async (seasonId, seasonNum) => {
-    if (!seasonId) return;
-
     setIsDropdownOpen(false);
     setSelectedSeasonName(`시즌 ${seasonNum}`);
-    const contentType = seasonId.toString().startsWith('K') ? 'kids' : 'series';
-    await onSeasonClick(seasonId, contentType);
+    await onSeasonClick(seasonId);
   };
 
   return (
@@ -468,39 +465,38 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
           <ul className="season-list">
             {seasonList.map((season) => (
               <li
-                key={season.K_SEASON_ID || season.SEASON_ID}
-                className={`season-item ${season.K_SEASON_ID === selectedSeasonId || season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
-                onClick={() => handleSeasonSelect(season.K_SEASON_ID || season.SEASON_ID, season.SEASON_NUM)}
+                key={season.SEASON_ID}
+                className={`season-item ${season.SEASON_ID === selectedSeasonId ? 'selected' : ''}`}
+                onClick={() => handleSeasonSelect(season.SEASON_ID, season.SEASON_NUM)}
               >
-                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_COUNT || 0} 개의 에피소드)`}
+                {`시즌 ${season.SEASON_NUM} (${season.EPISODE_} 에피소드)`}
               </li>
             ))}
           </ul>
         )}
       </div>
-      {selectedSeasonId && episodeList.length > 0 ? (
+      {selectedSeasonId && (
         <div className="episode-container">
           <h4>에피소드</h4>
           <ul className="episode-list">
             {episodeList.map((episode) => (
               <li key={episode.EPISODE_ID || episode.K_EPISODE_ID} className="episode-item">
-                <img src={episode.EPISODE_STILL || '../URL/defaultPoster.png'} alt={episode.EPISODE_NAME} className="episode-thumbnail" loading="lazy" />
+                <img src={episode.EPISODE_STILL || 'default-poster.png'} alt={episode.EPISODE_NAME} className="episode-thumbnail" loading="lazy" />
                 <div className="episode-info">
-                  <h5>{episode.EPISODE_NAME || '제목이 없습니다.'}</h5>
+                  <h5>{episode.EPISODE_NAME}</h5>
                   <p>{episode.EPISODE_OVERVIEW || '설명이 없습니다.'}</p>
-                  <p>방영일: {episode.EPISODE_AIR_DATE || episode.AIR_DATE || '미정'}</p>
-                  <p>러닝타임: {episode.EPISODE_RTM ? `${episode.EPISODE_RTM}분` : '미정'}</p>
+                  <p>방영일: {episode.EPISODE_AIR_DATE || episode.AIR_DATE}</p>
+                  <p>러닝타임: {episode.EPISODE_RTM}분</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
-      ) : (
-        <p>선택된 시즌에 에피소드가 없습니다.</p>
       )}
     </div>
   );
 };
+
 
 const ReviewModal = ({ isOpen, onClose, movie, reviewText, setReviewText, reviewRating, setReviewRating, onSave }) => (
   <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay">
