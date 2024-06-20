@@ -52,13 +52,10 @@ const MovieDetailPage = () => {
     setUserMenuVisible(false);
   };
 
- const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
+  const fetchEpisodeList = useCallback(async (seasonId, contentType) => {
     if (!seasonId || !contentType) return;
 
     try {
-      console.log('seasonId:', seasonId);
-      console.log('contentType:', contentType);
-
       setSelectedSeasonId(seasonId);
 
       const cleanSeasonId = seasonId;
@@ -68,7 +65,6 @@ const MovieDetailPage = () => {
       } else {
         endpoint = `${baseAPI}/detailpage/season_detail/episode_detail/${cleanSeasonId}`;
       }
-      console.log('endpoint:', endpoint);
 
       const response = await axios.get(endpoint);
       const episodeData = response.data;
@@ -79,7 +75,6 @@ const MovieDetailPage = () => {
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }, [baseAPI]);
-
 
   const fetchSeasonList = useCallback(async (seriesId, contentType) => {
     if (!seriesId || !contentType) return;
@@ -234,10 +229,27 @@ const MovieDetailPage = () => {
   const [isEventPlaying, setIsEventPlaying] = useState(false);
   const eventTimerRef = useRef(null);
 
+  // POST 요청을 보내는 함수
+  const sendPostRequest = useCallback(async () => {
+    try {
+      const url = `${process.env.REACT_APP_LOG_ADDRESS}/watch/${userId}?vod_id=${vodId}`;
+      await axios.post(url, null, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('POST 요청 중 오류 발생:', error);
+      alert('POST 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }, [userId, vodId]);
+
   const openEventModal = () => {
     setIsEventModalOpen(true);
     setEventTimeLeft(10); // 시간 초기화
     setIsEventPlaying(false);
+    sendPostRequest(); // 모달 열릴 때 POST 요청 전송
   };
 
   const closeEventModal = () => {
@@ -247,6 +259,7 @@ const MovieDetailPage = () => {
 
   const startEvent = () => {
     setIsEventPlaying(true);
+    sendPostRequest(); // 재생 버튼 클릭 시 POST 요청 전송
     eventTimerRef.current = setTimeout(() => {
       closeEventModal();
       setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
@@ -256,7 +269,26 @@ const MovieDetailPage = () => {
   const pauseEvent = () => {
     setIsEventPlaying(false);
     clearTimeout(eventTimerRef.current);
+    sendPostRequest(); // 정지 버튼 클릭 시 POST 요청 전송
   };
+
+  // 이벤트 타이머 관리
+  useEffect(() => {
+    if (isEventPlaying) {
+      const interval = setInterval(() => {
+        setEventTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            closeEventModal();
+            setIsReviewModalOpen(true); // 이벤트가 끝나면 리뷰 모달을 엽니다.
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isEventPlaying]);
 
   if (loading) return <div>로딩 중...</div>;
   if (!movie) return <div>영화를 찾을 수 없습니다.</div>;
@@ -414,7 +446,6 @@ const RelatedMoviesSection = ({ recommendList, onMovieClick }) => (
     </ul>
   </div>
 );
-
 
 const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, setSelectedSeasonName, onSeasonClick, episodeList }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
