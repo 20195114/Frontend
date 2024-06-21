@@ -51,7 +51,7 @@ function About() {
 
   // 컴포넌트가 마운트될 때 실행
   useEffect(() => {
-    const settopNum = localStorage.getItem('settop_num');
+    const settopNum = sessionStorage.getItem('settop_num');
     if (settopNum) {
       fetchUsers(settopNum);
     } else {
@@ -85,7 +85,7 @@ function About() {
   // 현재 URL로 재요청하는 함수
   const reFetchCurrentURL = async () => {
     try {
-      const settopNum = localStorage.getItem('settop_num');
+      const settopNum = sessionStorage.getItem('settop_num');
       
       if (!settopNum) {
         setMsg("셋탑 번호를 찾을 수 없습니다.");
@@ -121,14 +121,14 @@ function About() {
 
   // 사용자를 선택했을 때 실행되는 함수
   const handleUserClick = (userId, userName, likeStatus) => {
-    localStorage.setItem('selectedUserId', userId);
-    localStorage.setItem('selectedUserName', userName);
-    localStorage.setItem('likeStatus', JSON.stringify(likeStatus)); // LIKE_STATUS 저장
+    sessionStorage.setItem('selectedUserId', userId);
+    sessionStorage.setItem('selectedUserName', userName);
+    sessionStorage.setItem('likeStatus', JSON.stringify(likeStatus)); // LIKE_STATUS 저장
     navigate('/Main'); // Main 페이지로 이동
 
     // 페이지 이동 후 URL이 변경되었음을 감지하고 데이터 다시 가져오기
     setTimeout(() => {
-      const settopNum = localStorage.getItem('settop_num');
+      const settopNum = sessionStorage.getItem('settop_num');
       if (settopNum) {
         fetchUsers(settopNum);
       }
@@ -142,7 +142,7 @@ function About() {
 
   // 회원가입 처리 함수
   const handleSignup = async () => {
-    const settopNum = localStorage.getItem('settop_num');
+    const settopNum = sessionStorage.getItem('settop_num');
 
     // 모든 필드가 입력되었는지 확인
     if (!userName || !gender || !age) {

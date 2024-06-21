@@ -16,8 +16,8 @@ interface SearchHistoryEntry {
 
 function SearchBar() {
   const navigate = useNavigate();
-  const initialResults: SearchResult[] = JSON.parse(localStorage.getItem('searchResults') || '[]');
-  const initialQuery: string = localStorage.getItem('searchQuery') || '';
+  const initialResults: SearchResult[] = JSON.parse(sessionStorage.getItem('searchResults') || '[]');
+  const initialQuery: string = sessionStorage.getItem('searchQuery') || '';
   const [searchTerm, setSearchTerm] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState<SearchResult[]>(initialResults);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ function SearchBar() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
 
   const fetchHistory = useCallback(() => {
-    const historyRaw = localStorage.getItem('searchLog');
+    const historyRaw = sessionStorage.getItem('searchLog');
     if (historyRaw) {
       try {
         const history: SearchHistoryEntry[] = JSON.parse(historyRaw);
@@ -43,7 +43,7 @@ function SearchBar() {
       if (newHistory.length > 6) {
         newHistory.shift();
       }
-      localStorage.setItem('searchLog', JSON.stringify(newHistory));
+      sessionStorage.setItem('searchLog', JSON.stringify(newHistory));
       return newHistory;
     });
   }, []);
@@ -57,12 +57,12 @@ function SearchBar() {
       if (response.status === 200 && response.data.length > 0) {
         setSearchResults(response.data);
         setErrorMessage('');
-        localStorage.setItem('searchResults', JSON.stringify(response.data));
-        localStorage.setItem('searchQuery', searchTerm);
+        sessionStorage.setItem('searchResults', JSON.stringify(response.data));
+        sessionStorage.setItem('searchQuery', searchTerm);
       } else {
         setErrorMessage('No VODs found for the search term.');
         setSearchResults([]);
-        localStorage.removeItem('searchResults');
+        sessionStorage.removeItem('searchResults');
       }
       updateSearchHistory(searchTerm);
     } catch (error) {
@@ -90,14 +90,14 @@ function SearchBar() {
   };
 
   const handleSearchResultClick = async (vod_id: string) => {
-    const userId = localStorage.getItem('selectedUserId');
+    const userId = sessionStorage.getItem('selectedUserId');
     if (!userId) {
-      console.error('No user ID found in localStorage.');
+      console.error('No user ID found in sessionStorage.');
       return;
     }
     try {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/detailpage/vod_detail/${vod_id}/${userId}`);
-      localStorage.setItem('vodDetail', JSON.stringify(response.data));
+      sessionStorage.setItem('vodDetail', JSON.stringify(response.data));
       navigate('/MovieDetailPage', { state: { vod_id: vod_id, user_id: userId } });
     } catch (error) {
       console.error('Error fetching VOD data:', error);

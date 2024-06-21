@@ -4,11 +4,11 @@ import '../CSS/Main.css'; // CSS 파일 경로가 올바른지 확인하세요
 
 const Spotify = ({ vods = [], handlePosterClick }) => {
   const displayVods = (vods) => {
-    console.log(vods)
+    console.log(vods);
     return (
       <div className="vod-slider">
-        {vods.map((vod, index) => (
-          <div key={index} className="vod-item" onClick={() => handlePosterClick(vod.VOD_ID)}>
+        {vods.map((vod) => (
+          <div key={vod.VOD_ID} className="vod-item" onClick={() => handlePosterClick(vod.VOD_ID)}>
             <img src={vod.POSTER || '../URL/defaultPoster.png'} alt={vod.TITLE} />
             <p>{vod.TITLE}</p>
           </div>
@@ -34,7 +34,7 @@ Spotify.propTypes = {
       POSTER: PropTypes.string,
       TITLE: PropTypes.string.isRequired,
     })
-  ),
+  ).isRequired,
   handlePosterClick: PropTypes.func.isRequired,
 };
 

@@ -4,32 +4,32 @@ import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Helper functions for localStorage
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+// Helper functions for sessionStorage
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing localStorage data for ${key}:`, error);
+    console.error(`Error parsing sessionStorage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-const setLocalStorageData = (key, data) => {
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting localStorage data for ${key}:`, error);
+    console.error(`Error setting sessionStorage data for ${key}:`, error);
   }
 };
 
 const Kids = () => {
   const navigate = useNavigate();
   const [state, setState] = useState({
-    myWatchedVods: getLocalStorageData('myWatchedVods', []),
-    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false, // 추가된 상태
+    myWatchedVods: getSessionStorageData('myWatchedVods', []),
+    likeStatus: JSON.parse(sessionStorage.getItem('likeStatus')) || false, // 추가된 상태
   });
-  const [vods, setVods] = useState(getLocalStorageData('kidsVods', []));
+  const [vods, setVods] = useState(getSessionStorageData('kidsVods', []));
   const [loading, setLoading] = useState(false);
   const [sortOption, setSortOption] = useState('popular');
   const [searchActive, setSearchActive] = useState(false);
@@ -47,7 +47,7 @@ const Kids = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/mainpage/kids/${sortOption === 'popular' ? 'popularlist' : 'recentlylist'}`);
       const vodsData = Array.isArray(response.data) ? response.data : [];
       setVods(vodsData);
-      setLocalStorageData('kidsVods', vodsData);
+      setSessionStorageData('kidsVods', vodsData);
     } catch (error) {
       console.error('Failed to fetch VODs:', error);
     } finally {

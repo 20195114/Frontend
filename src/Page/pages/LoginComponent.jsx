@@ -30,9 +30,9 @@ const LoginComponent = () => {
         if (response.status === 200 && Array.isArray(response.data)) {
           const userList = response.data;
           if (userList.length > 0) {
-            // 이전에 쿠키를 사용하던 부분을 로컬 상태 또는 다른 방식으로 저장하도록 변경
-            localStorage.setItem('user_list', JSON.stringify(userList));
-            localStorage.setItem('settop_num', settopNum);
+            // 로컬 스토리지에서 세션 스토리지로 변경
+            sessionStorage.setItem('user_list', JSON.stringify(userList));
+            sessionStorage.setItem('settop_num', settopNum);
             setMsg('');
             setSettopNum(''); // 입력 필드 지우기
             navigate('/About');

@@ -3,31 +3,31 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import '../CSS/ReviewPage.css';
 
-// Helper function to get data from local storage
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+// Helper function to get data from session storage
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing local storage data for ${key}:`, error);
+    console.error(`Error parsing session storage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// Helper function to set data in local storage
-const setLocalStorageData = (key, data) => {
+// Helper function to set data in session storage
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting local storage data for ${key}:`, error);
+    console.error(`Error setting session storage data for ${key}:`, error);
   }
 };
 
 const ReviewPage = () => {
-  const [reviewData, setReviewData] = useState(getLocalStorageData('reviewData', []));
+  const [reviewData, setReviewData] = useState(getSessionStorageData('reviewData', []));
   const [editReview, setEditReview] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const userId = localStorage.getItem('selectedUserId'); // Get user ID from local storage
+  const userId = sessionStorage.getItem('selectedUserId'); // Get user ID from session storage
 
   // Fetch user reviews
   useEffect(() => {
@@ -35,7 +35,7 @@ const ReviewPage = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
         setReviewData(response.data);
-        setLocalStorageData('reviewData', response.data); // Save data to local storage
+        setSessionStorageData('reviewData', response.data); // Save data to session storage
       } catch (error) {
         console.error('Error fetching user reviews:', error);
       }
@@ -83,7 +83,7 @@ const ReviewPage = () => {
       if (response.data.response === 'FINISH UPDATE REVIEW') {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
         setReviewData(updatedResponse.data);
-        setLocalStorageData('reviewData', updatedResponse.data); // Update local storage
+        setSessionStorageData('reviewData', updatedResponse.data); // Update session storage
         closeModal();
       }
     } catch (error) {
@@ -98,7 +98,7 @@ const ReviewPage = () => {
       if (response.data.response === 'FINISH DELETE REVIEW') {
         const updatedResponse = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/review/${userId}`);
         setReviewData(updatedResponse.data);
-        setLocalStorageData('reviewData', updatedResponse.data); // Update local storage
+        setSessionStorageData('reviewData', updatedResponse.data); // Update session storage
       }
     } catch (error) {
       console.error('Error deleting review:', error);

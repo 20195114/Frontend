@@ -4,29 +4,27 @@ import Header from '../Component/Header';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// Helper function to get data from local storage
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing local storage data for ${key}:`, error);
+    console.error(`Error parsing session storage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// Helper function to set data in local storage
-const setLocalStorageData = (key, data) => {
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting local storage data for ${key}:`, error);
+    console.error(`Error setting session storage data for ${key}:`, error);
   }
 };
 
 const Playlist = () => {
   const navigate = useNavigate();
-  const [vods, setVods] = useState(getLocalStorageData('playlistVods', []));
+  const [vods, setVods] = useState(getSessionStorageData('playlistVods', []));
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,7 +32,7 @@ const Playlist = () => {
   const [userMenuVisible, setUserMenuVisible] = useState(false);
   const [playlistVisible, setPlaylistVisible] = useState(false);
 
-  const user_id = localStorage.getItem('selectedUserId');
+  const user_id = sessionStorage.getItem('selectedUserId');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -42,7 +40,7 @@ const Playlist = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/like/${user_id}`);
       const vodsData = response.data || [];
       setVods(vodsData);
-      setLocalStorageData('playlistVods', vodsData);
+      setSessionStorageData('playlistVods', vodsData);
     } catch (error) {
       console.error('Failed to fetch playlist:', error);
     } finally {
@@ -95,7 +93,7 @@ const Playlist = () => {
       if (response.data.response === "FINISH UPDATE REVIEW") {
         const updatedVods = vods.filter(vod => vod.VOD_ID !== vodId);
         setVods(updatedVods);
-        setLocalStorageData('playlistVods', updatedVods);
+        setSessionStorageData('playlistVods', updatedVods);
       }
     } catch (error) {
       console.error('Failed to delete the VOD from playlist:', error);

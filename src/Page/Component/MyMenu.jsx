@@ -9,8 +9,28 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
+  // Helper function to get data from session storage
+  const getSessionStorageData = (key, defaultValue) => {
+    const value = sessionStorage.getItem(key);
+    try {
+      return value ? JSON.parse(value) : defaultValue;
+    } catch (error) {
+      console.error(`Error parsing session storage data for ${key}:`, error);
+      return defaultValue;
+    }
+  };
+
+  // Helper function to set data in session storage
+  const setSessionStorageData = (key, data) => {
+    try {
+      sessionStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Error setting session storage data for ${key}:`, error);
+    }
+  };
+
   useEffect(() => {
-    const storedUsers = JSON.parse(localStorage.getItem('user_list')) || [];
+    const storedUsers = getSessionStorageData('user_list', []);
     setUserList(storedUsers);
   }, []);
 
@@ -37,9 +57,9 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
     if (user) {
       const { LIKE_STATUS } = user;
 
-      localStorage.setItem('selectedUserId', user_id);
-      localStorage.setItem('selectedUserName', user_name);
-      localStorage.setItem('likeStatus', JSON.stringify(LIKE_STATUS));
+      setSessionStorageData('selectedUserId', user_id);
+      setSessionStorageData('selectedUserName', user_name);
+      setSessionStorageData('likeStatus', JSON.stringify(LIKE_STATUS));
 
       handleUserChange({
         userId: user_id,

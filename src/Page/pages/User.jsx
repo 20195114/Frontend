@@ -3,33 +3,33 @@ import axios from "axios";
 import "../CSS/User.css";
 import { IoLogoOctocat } from "react-icons/io5";
 
-// Helper function to get data from local storage
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+// Helper function to get data from session storage
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing local storage data for ${key}:`, error);
+    console.error(`Error parsing session storage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// Helper function to set data in local storage
-const setLocalStorageData = (key, data) => {
+// Helper function to set data in session storage
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting local storage data for ${key}:`, error);
+    console.error(`Error setting session storage data for ${key}:`, error);
   }
 };
 
 function User() {
   const [user, setUser] = useState(() => {
-    return getLocalStorageData('userInfo', { USER_NAME: "", GENDER: "", AGE: "" });
+    return getSessionStorageData('userInfo', { USER_NAME: "", GENDER: "", AGE: "" });
   });
   const [editMode, setEditMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const userId = localStorage.getItem('selectedUserId'); // Get user ID from local storage
+  const userId = sessionStorage.getItem('selectedUserId'); // Get user ID from session storage
 
   const nameInputRef = useRef(null);
   const ageInputRef = useRef(null);
@@ -42,11 +42,10 @@ function User() {
 
     const fetchUserData = async () => {
       try {
-        // Correcting the URL to avoid the invalid ':1' suffix
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/user/${userId}`);
         if (response.status === 200) {
           setUser(response.data);
-          setLocalStorageData('userInfo', response.data); // Save user data to local storage
+          setSessionStorageData('userInfo', response.data); // Save user data to session storage
         } else {
           setErrorMessage('사용자 데이터를 가져오는 데 실패했습니다.');
         }
@@ -59,7 +58,7 @@ function User() {
   }, [userId]);
 
   const handleUserInfoUpdate = async () => {
-    const SETTOP_NUM = localStorage.getItem('settop_num');
+    const SETTOP_NUM = sessionStorage.getItem('settop_num');
 
     const updatedUserInfo = {
       SETTOP_NUM: SETTOP_NUM || '', // Ensure the value is not undefined
@@ -70,7 +69,6 @@ function User() {
     console.log(updatedUserInfo)
 
     try {
-      // Correcting the URL to avoid the invalid ':1' suffix
       const response = await axios.put(`${process.env.REACT_APP_CUD_ADDRESS}/user/${userId}`, updatedUserInfo, {
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +78,7 @@ function User() {
         setEditMode(false);
         setUser(response.data);
         setErrorMessage('');
-        setLocalStorageData('userInfo', response.data); // Update local storage
+        setSessionStorageData('userInfo', response.data); // Update session storage
       } else {
         setErrorMessage('회원정보 수정에 실패했습니다.');
       }
@@ -93,9 +91,9 @@ function User() {
     try {
       const response = await axios.delete(`${process.env.REACT_APP_CUD_ADDRESS}/user/${userId}`);
       if (response.status === 200) {
-        // Clear user data from local storage
-        localStorage.removeItem('selectedUserId');
-        localStorage.removeItem('userInfo');
+        // Clear user data from session storage
+        sessionStorage.removeItem('selectedUserId');
+        sessionStorage.removeItem('userInfo');
         setUser({ USER_NAME: "", GENDER: "", AGE: "" });
         setErrorMessage('');
         alert('사용자 정보가 삭제되었습니다.');

@@ -5,33 +5,33 @@ import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
 
-// Helper function to get data from localStorage
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+// Helper function to get data from sessionStorage
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing localStorage data for ${key}:`, error);
+    console.error(`Error parsing sessionStorage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-// Helper function to set data in localStorage
-const setLocalStorageData = (key, data) => {
+// Helper function to set data in sessionStorage
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting localStorage data for ${key}:`, error);
+    console.error(`Error setting sessionStorage data for ${key}:`, error);
   }
 };
 
 const Series = () => {
   const [state, setState] = useState({
-    actionFantasy: getLocalStorageData('actionFantasy', []),
-    familyComedy: getLocalStorageData('familyComedy', []),
-    drama: getLocalStorageData('drama', []),
-    reality: getLocalStorageData('reality', []),
-    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false, // 추가된 상태
+    actionFantasy: getSessionStorageData('actionFantasy', []),
+    familyComedy: getSessionStorageData('familyComedy', []),
+    drama: getSessionStorageData('drama', []),
+    reality: getSessionStorageData('reality', []),
+    likeStatus: JSON.parse(sessionStorage.getItem('likeStatus')) || false, // 추가된 상태
   });
 
   const [loading, setLoading] = useState({
@@ -57,7 +57,7 @@ const Series = () => {
       const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}${url}`);
       const data = Array.isArray(response.data) ? response.data : [];
       setState((prevState) => ({ ...prevState, [key]: data }));
-      setLocalStorageData(key, data);
+      setSessionStorageData(key, data);
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
       setState((prevState) => ({ ...prevState, [key]: [] }));

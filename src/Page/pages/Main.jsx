@@ -7,37 +7,36 @@ import YouTubeTrends from '../Component/YouTubeTrends';
 import PopularVods from '../Component/PopularVods';
 import RatingBasedVods from '../Component/RatingBasedVods';
 import Spotify from '../Component/Spotify';
-// Like 컴포넌트를 임포트에서 제거했습니다.
 import '../CSS/Main.css';
 
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing local storage data for ${key}:`, error);
+    console.error(`Error parsing session storage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-const setLocalStorageData = (key, data) => {
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting local storage data for ${key}:`, error);
+    console.error(`Error setting session storage data for ${key}:`, error);
   }
 };
 
 const Main = () => {
   const [state, setState] = useState({
-    myWatchedVods: getLocalStorageData('myWatchedVods', []),
-    youtubeTrendsVods: getLocalStorageData('youtubeTrendsVods', []),
-    popularVods: getLocalStorageData('popularVods', []),
-    ratingBasedVods: getLocalStorageData('ratingBasedVods', []),
-    spotifyVods: getLocalStorageData('spotifyVods', []),
+    myWatchedVods: getSessionStorageData('myWatchedVods', []),
+    youtubeTrendsVods: getSessionStorageData('youtubeTrendsVods', []),
+    popularVods: getSessionStorageData('popularVods', []),
+    ratingBasedVods: getSessionStorageData('ratingBasedVods', []),
+    spotifyVods: getSessionStorageData('spotifyVods', []),
     isSpotifyLinked: false,
-    user_name: localStorage.getItem('selectedUserName') || 'User Name',
-    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false,
+    user_name: sessionStorage.getItem('selectedUserName') || 'User Name',
+    likeStatus: JSON.parse(sessionStorage.getItem('likeStatus')) || false,
   });
 
   const [searchResults, setSearchResults] = useState([]);
@@ -54,7 +53,7 @@ const Main = () => {
     spotifyVods: false,
   });
   // likeVisible과 setLikeVisible을 제거했습니다.
-  
+
   const searchInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -70,7 +69,7 @@ const Main = () => {
           spotifyVods: data.response,
           isSpotifyLinked: true,
         }));
-        setLocalStorageData('spotifyVods', data.response);
+        setSessionStorageData('spotifyVods', data.response);
       } else if (data.status && data.response === false) {
         // Spotify needs to be linked
         const authResponse = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/mainpage/spotify/${user_id}`);
@@ -89,7 +88,7 @@ const Main = () => {
                 spotifyVods: updatedData.response,
                 isSpotifyLinked: true,
               }));
-              setLocalStorageData('spotifyVods', updatedData.response);
+              setSessionStorageData('spotifyVods', updatedData.response);
             } else {
               console.error('Spotify authorization failed or not completed.');
             }
@@ -109,7 +108,7 @@ const Main = () => {
 
       if (key !== 'spotifyVods') {
         setState((prevState) => ({ ...prevState, [key]: data }));
-        setLocalStorageData(key, data);
+        setSessionStorageData(key, data);
       }
     } catch (error) {
       console.error(`Error fetching ${key}:`, error);
@@ -130,9 +129,9 @@ const Main = () => {
   );
 
   useEffect(() => {
-    const user_name = localStorage.getItem('selectedUserName');
-    const user_id = localStorage.getItem('selectedUserId');
-    const storedUsers = getLocalStorageData('user_list', []);
+    const user_name = sessionStorage.getItem('selectedUserName');
+    const user_id = sessionStorage.getItem('selectedUserId');
+    const storedUsers = getSessionStorageData('user_list', []);
     setUsers(storedUsers);
 
     if (user_id) {
@@ -144,7 +143,7 @@ const Main = () => {
   }, [loadUserData]);
 
   const handlePosterClick = (vod_id) => {
-    const user_id = localStorage.getItem('selectedUserId');
+    const user_id = sessionStorage.getItem('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -152,7 +151,7 @@ const Main = () => {
     setSearchActive(false);
     setSearchQuery('');
     setSearchResults([]);
-    const user_id = localStorage.getItem('selectedUserId');
+    const user_id = sessionStorage.getItem('selectedUserId');
     navigate(`/MovieDetailPage`, { state: { vod_id, user_id } });
   };
 
@@ -160,7 +159,7 @@ const Main = () => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
       try {
         const response = await axios.post(`${process.env.REACT_APP_CUD_ADDRESS}/search-vods`, { query: searchQuery });
-        const user_id = localStorage.getItem('selectedUserId');
+        const user_id = sessionStorage.getItem('selectedUserId');
         navigate('/SearchBar', { state: { searchResults: response.data, user_id } });
       } catch (error) {
         console.error('Error searching VODs:', error);
@@ -179,9 +178,9 @@ const Main = () => {
   const handleUserChange = (user) => {
     const { userId, userName, likeStatus } = user;
 
-    localStorage.setItem('selectedUserId', userId);
-    localStorage.setItem('selectedUserName', userName);
-    localStorage.setItem('likeStatus', JSON.stringify(likeStatus));
+    sessionStorage.setItem('selectedUserId', userId);
+    sessionStorage.setItem('selectedUserName', userName);
+    sessionStorage.setItem('likeStatus', JSON.stringify(likeStatus));
 
     setState((prevState) => ({
       ...prevState,

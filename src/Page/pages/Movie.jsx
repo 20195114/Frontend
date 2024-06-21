@@ -5,21 +5,21 @@ import Header from '../Component/Header';
 import VODCategory from '../Component/VODCategory';
 import '../CSS/Movie.css';
 
-const getLocalStorageData = (key, defaultValue) => {
-  const value = localStorage.getItem(key);
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
   try {
     return value ? JSON.parse(value) : defaultValue;
   } catch (error) {
-    console.error(`Error parsing localStorage data for ${key}:`, error);
+    console.error(`Error parsing sessionStorage data for ${key}:`, error);
     return defaultValue;
   }
 };
 
-const setLocalStorageData = (key, data) => {
+const setSessionStorageData = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(data));
+    sessionStorage.setItem(key, JSON.stringify(data));
   } catch (error) {
-    console.error(`Error setting localStorage data for ${key}:`, error);
+    console.error(`Error setting sessionStorage data for ${key}:`, error);
   }
 };
 
@@ -27,19 +27,19 @@ const Movie = () => {
   const navigate = useNavigate();
 
   const [state, setState] = useState({
-    myWatchedVods: getLocalStorageData('myWatchedVods', []),
-    likeStatus: JSON.parse(localStorage.getItem('likeStatus')) || false,
+    myWatchedVods: getSessionStorageData('myWatchedVods', []),
+    likeStatus: JSON.parse(sessionStorage.getItem('likeStatus')) || false,
   });
 
   const [vodsByCategory, setVodsByCategory] = useState({
-    SF: getLocalStorageData('SF', []),
-    Education: getLocalStorageData('Education', []),
-    Family: getLocalStorageData('Family', []),
-    Horror: getLocalStorageData('Horror', []),
-    Drama: getLocalStorageData('Drama', []),
-    Romance: getLocalStorageData('Romance', []),
-    Action: getLocalStorageData('Action', []),
-    Animation: getLocalStorageData('Animation', [])
+    SF: getSessionStorageData('SF', []),
+    Education: getSessionStorageData('Education', []),
+    Family: getSessionStorageData('Family', []),
+    Horror: getSessionStorageData('Horror', []),
+    Drama: getSessionStorageData('Drama', []),
+    Romance: getSessionStorageData('Romance', []),
+    Action: getSessionStorageData('Action', []),
+    Animation: getSessionStorageData('Animation', []),
   });
 
   const [searchActive, setSearchActive] = useState(false);
@@ -58,7 +58,7 @@ const Movie = () => {
         ...prevState,
         [category]: vods
       }));
-      setLocalStorageData(category, vods);
+      setSessionStorageData(category, vods);
     } catch (error) {
       console.error(`Failed to fetch VODs for ${category}:`, error);
     }
@@ -121,8 +121,8 @@ const Movie = () => {
         playlistVisible={playlistVisible}
         handleCategoryClick={(e) => navigate(`/${e.target.textContent}`)}
         goToMainPage={goToMainPage}
-        likeVisible={likeVisible} // 추가된 프로퍼티
-        setLikeVisible={setLikeVisible} // 추가된 프로퍼티
+        likeVisible={likeVisible} 
+        setLikeVisible={setLikeVisible} 
       />
 
       <div className='vod-container'>

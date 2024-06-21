@@ -1,12 +1,16 @@
 import React from 'react';
-import '../CSS/Main.css'; // Ensure the path to your CSS file is correct
+import '../CSS/Main.css'; // CSS 파일 경로를 확인하세요
 
 const PopularVods = ({ vods, handlePosterClick }) => {
-  const displayVods = (vods) => {
+  const renderVods = () => {
+    if (vods.length === 0) {
+      return <p>Loading...</p>;
+    }
+
     return (
       <div className="vod-slider">
-        {vods.map((vod, index) => (
-          <div key={index} className="vod-item" onClick={() => handlePosterClick(vod.VOD_ID)}>
+        {vods.map((vod) => (
+          <div key={vod.VOD_ID} className="vod-item" onClick={() => handlePosterClick(vod.VOD_ID)}>
             <img src={vod.POSTER || '../URL/defaultPoster.png'} alt={vod.TITLE} />
             <p>{vod.TITLE}</p>
           </div>
@@ -19,7 +23,7 @@ const PopularVods = ({ vods, handlePosterClick }) => {
     <div className="popular-vods-container">
       <h2>인기 컨텐츠</h2>
       <div className="vod-container">
-        {vods.length > 0 ? displayVods(vods) : <p>Loading...</p>}
+        {renderVods()}
       </div>
     </div>
   );

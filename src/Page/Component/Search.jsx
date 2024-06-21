@@ -19,18 +19,22 @@ const Search = ({
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
+  const fetchSearchResults = async (keyword) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
+      setSearchResults(response.data || []);
+    } catch (error) {
+      console.error('검색 결과를 가져오는 중 오류 발생:', error);
+      setSearchResults([]);
+    }
+  };
+
   const handleSearchInputChange = async (event) => {
     const keyword = event.target.value;
     setSearchQuery(keyword);
 
     if (keyword.length > 0) {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(keyword)}`);
-        setSearchResults(response.data || []);
-      } catch (error) {
-        console.error('검색 결과를 가져오는 중 오류 발생:', error);
-        setSearchResults([]);
-      }
+      fetchSearchResults(keyword);
     } else {
       setSearchResults([]);
     }
@@ -38,15 +42,17 @@ const Search = ({
 
   const handleSearchSubmit = async (event) => {
     if (event.key === 'Enter' && searchQuery.trim() !== '') {
+      fetchSearchResults(searchQuery.trim());
+
       try {
         const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/search/${encodeURIComponent(searchQuery.trim())}`);
         const results = response.data || [];
-        
-        // Store results and query in localStorage
-        localStorage.setItem('searchResults', JSON.stringify(results));
-        localStorage.setItem('searchQuery', searchQuery.trim());
-        
-        // 이동 경로를 수정합니다.
+
+        // Store results and query in sessionStorage
+        sessionStorage.setItem('searchResults', JSON.stringify(results));
+        sessionStorage.setItem('searchQuery', searchQuery.trim());
+
+        // Navigate to the search results page
         navigate('/SearchBar', { state: { searchResults: results } });
       } catch (error) {
         console.error('VOD 검색 중 오류:', error);
@@ -95,8 +101,8 @@ const Search = ({
       <IoClose className="close-icon" onClick={handleCloseIconClick} />
       {isVisible && searchResults.length > 0 && (
         <div className="search-results">
-          {searchResults.slice(0, 10).map((result, index) => (
-            <p key={index} onClick={() => handleSearchResultClick(result.VOD_ID)}>
+          {searchResults.slice(0, 10).map((result) => (
+            <p key={result.VOD_ID} onClick={() => handleSearchResultClick(result.VOD_ID)}>
               {result.TITLE}
             </p>
           ))}

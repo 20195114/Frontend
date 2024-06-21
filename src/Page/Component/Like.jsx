@@ -4,9 +4,19 @@ import '../CSS/Like.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const getSessionStorageData = (key, defaultValue) => {
+  const value = sessionStorage.getItem(key);
+  try {
+    return value ? JSON.parse(value) : defaultValue;
+  } catch (error) {
+    console.error(`Error parsing session storage data for ${key}:`, error);
+    return defaultValue;
+  }
+};
+
 const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, togglePlaylistVisibility }) => {
   const [likedVods, setLikedVods] = useState([]);
-  const userId = localStorage.getItem("selectedUserId");
+  const userId = getSessionStorageData("selectedUserId", null);
   const likeRef = useRef(null);
   const navigate = useNavigate();
 
@@ -18,7 +28,7 @@ const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, to
       }
 
       if (!state.likeStatus) {
-        console.log('찜 목록을 불러오지 않습니다.'); // likeStatus가 false일 때 동작 확인
+        console.log('찜 목록을 불러오지 않습니다.');
         return;
       }
 
@@ -59,7 +69,11 @@ const Like = ({ isVisible, setIsVisible, closeOthers, state, playlistVisible, to
       {isVisible && state.likeStatus && (
         <div className="playlist-box active">
           {likedVods.slice(0, 3).map((vod, index) => (
-            <div key={index} className="playlist-item" onClick={() => navigate(`/MovieDetailPage`, { state: { vod_id: vod.VOD_ID } })}>
+            <div 
+              key={vod.VOD_ID} 
+              className="playlist-item" 
+              onClick={() => navigate(`/MovieDetailPage`, { state: { vod_id: vod.VOD_ID } })}
+            >
               <img src={vod.POSTER || 'default-poster.jpg'} alt={vod.TITLE} />
               <p>{vod.TITLE}</p>
             </div>

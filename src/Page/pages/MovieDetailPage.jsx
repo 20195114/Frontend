@@ -12,26 +12,26 @@ Modal.setAppElement('#root');
 const MovieDetailPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const vodId = location.state?.vod_id || localStorage.getItem('vodId');
-  const userId = localStorage.getItem('selectedUserId');
+  const vodId = location.state?.vod_id || sessionStorage.getItem('vodId');
+  const userId = sessionStorage.getItem('selectedUserId');
 
   const [movie, setMovie] = useState(() => {
-    const savedMovie = localStorage.getItem('movieDetail');
+    const savedMovie = sessionStorage.getItem('movieDetail');
     return savedMovie ? JSON.parse(savedMovie) : null;
   });
-  const [castData, setCastData] = useState(() => JSON.parse(localStorage.getItem('castData') || '[]'));
-  const [recommendList, setRecommendList] = useState(() => JSON.parse(localStorage.getItem('recommendList') || '[]'));
-  const [reviews, setReviews] = useState(() => JSON.parse(localStorage.getItem('reviews') || '[]'));
+  const [castData, setCastData] = useState(() => JSON.parse(sessionStorage.getItem('castData') || '[]'));
+  const [recommendList, setRecommendList] = useState(() => JSON.parse(sessionStorage.getItem('recommendList') || '[]'));
+  const [reviews, setReviews] = useState(() => JSON.parse(sessionStorage.getItem('reviews') || '[]'));
   const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(0);
 
-  const [seasonList, setSeasonList] = useState(() => JSON.parse(localStorage.getItem('seasonList') || '[]'));
+  const [seasonList, setSeasonList] = useState(() => JSON.parse(sessionStorage.getItem('seasonList') || '[]'));
   const [selectedSeasonId, setSelectedSeasonId] = useState(null);
   const [selectedSeasonName, setSelectedSeasonName] = useState('');
-  const [episodeList, setEpisodeList] = useState(() => JSON.parse(localStorage.getItem('episodeList') || '[]'));
+  const [episodeList, setEpisodeList] = useState(() => JSON.parse(sessionStorage.getItem('episodeList') || '[]'));
 
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,7 +69,7 @@ const MovieDetailPage = () => {
       const response = await axios.get(endpoint);
       const episodeData = response.data;
       setEpisodeList(episodeData);
-      localStorage.setItem('episodeList', JSON.stringify(episodeData));
+      sessionStorage.setItem('episodeList', JSON.stringify(episodeData));
     } catch (error) {
       console.error('에피소드 데이터를 가져오는 중 오류 발생:', error);
       alert('에피소드 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
@@ -90,7 +90,7 @@ const MovieDetailPage = () => {
       const response = await axios.get(endpoint);
       const seasonData = response.data;
       setSeasonList(seasonData);
-      localStorage.setItem('seasonList', JSON.stringify(seasonData));
+      sessionStorage.setItem('seasonList', JSON.stringify(seasonData));
 
       if (seasonData.length > 0) {
         const { K_SEASON_ID, SEASON_ID, SEASON_NUM } = seasonData[0];
@@ -125,19 +125,19 @@ const MovieDetailPage = () => {
       };
 
       setMovie(movieDetails);
-      localStorage.setItem('movieDetail', JSON.stringify(movieDetails));
-      localStorage.setItem('vodId', vodId);
+      sessionStorage.setItem('movieDetail', JSON.stringify(movieDetails));
+      sessionStorage.setItem('vodId', vodId);
 
       const castDetails = movieData.ACTOR || (movieData.CAST || '').split(',').map(name => ({ ACTOR_NAME: name }));
       setCastData(castDetails);
-      localStorage.setItem('castData', JSON.stringify(castDetails));
+      sessionStorage.setItem('castData', JSON.stringify(castDetails));
 
       setRecommendList(movieData.recommend_list || []);
-      localStorage.setItem('recommendList', JSON.stringify(movieData.recommend_list || []));
+      sessionStorage.setItem('recommendList', JSON.stringify(movieData.recommend_list || []));
 
       setIsInPlaylist(movieData.like_status);
       setReviews(movieData.review || []);
-      localStorage.setItem('reviews', JSON.stringify(movieData.review || []));
+      sessionStorage.setItem('reviews', JSON.stringify(movieData.review || []));
 
       if (movieData.SERIES_ID || movieData.K_SERIES_ID) {
         const seriesId = movieData.SERIES_ID || movieData.K_SERIES_ID;
@@ -213,7 +213,7 @@ const MovieDetailPage = () => {
       if (response.status === 200 && response.data.response === "FINISH INSERT REVIEW") {
         const updatedResponse = await axios.get(`${baseAPI}/detailpage/vod_detail/${vodId}/${userId}`);
         setReviews(updatedResponse.data.review || []);
-        localStorage.setItem('reviews', JSON.stringify(updatedResponse.data.review || []));
+        sessionStorage.setItem('reviews', JSON.stringify(updatedResponse.data.review || []));
         closeReviewModal();
       } else {
         alert('리뷰 저장에 실패했습니다.');
