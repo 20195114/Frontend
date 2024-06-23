@@ -153,13 +153,10 @@ const MovieDetailPage = () => {
   }, [vodId, userId, fetchSeasonList, baseAPI]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (vodId) {
       fetchMovieData();
-    }, 1000); // 1초마다 데이터 요청
-
-    // 컴포넌트가 언마운트될 때 타이머를 정리
-    return () => clearInterval(interval);
-  }, [fetchMovieData]);
+    }
+  }, [vodId, fetchMovieData]);
 
   // 추가된 부분: vodId 변경 시 페이지 상단으로 스크롤
   useEffect(() => {
@@ -186,6 +183,7 @@ const MovieDetailPage = () => {
       alert('플레이리스트 상태를 업데이트하는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
     }
   };
+
 
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -455,9 +453,11 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
     if (!seasonId) return;
 
     setIsDropdownOpen(false);
-    setSelectedSeasonName(`시즌 ${seasonNum}`);
-    const contentType = seasonList.some(season => season.K_SEASON_ID) ? 'kids' : 'series';
-    await onSeasonClick(seasonId, contentType);
+    setSelectedSeasonName(`시즌 ${seasonNum}`);{
+      
+      const contentType = seasonList.some(season => season.K_SEASON_ID) ? 'kids' : 'series';
+      await onSeasonClick(seasonId, contentType);
+    }
   };
 
   return (
