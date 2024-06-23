@@ -153,10 +153,13 @@ const MovieDetailPage = () => {
   }, [vodId, userId, fetchSeasonList, baseAPI]);
 
   useEffect(() => {
-    if (vodId) {
+    const interval = setInterval(() => {
       fetchMovieData();
-    }
-  }, [vodId, fetchMovieData]);
+    }, 1000); // 1초마다 데이터 요청
+
+    // 컴포넌트가 언마운트될 때 타이머를 정리
+    return () => clearInterval(interval);
+  }, [fetchMovieData]);
 
   // 추가된 부분: vodId 변경 시 페이지 상단으로 스크롤
   useEffect(() => {
@@ -169,7 +172,7 @@ const MovieDetailPage = () => {
     try {
       const baseURL = process.env.REACT_APP_CUD_ADDRESS;
       const url = `${baseURL}/like/${userId}?VOD_ID=${vodId}`;
-      console.log(isInPlaylist)
+      console.log(isInPlaylist);
       if (isInPlaylist) {
         await axios.delete(url);
       } else {
@@ -452,11 +455,9 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
     if (!seasonId) return;
 
     setIsDropdownOpen(false);
-    setSelectedSeasonName(`시즌 ${seasonNum}`);{
-      
-      const contentType = seasonList.some(season => season.K_SEASON_ID) ? 'kids' : 'series';
-      await onSeasonClick(seasonId, contentType);
-    }
+    setSelectedSeasonName(`시즌 ${seasonNum}`);
+    const contentType = seasonList.some(season => season.K_SEASON_ID) ? 'kids' : 'series';
+    await onSeasonClick(seasonId, contentType);
   };
 
   return (
