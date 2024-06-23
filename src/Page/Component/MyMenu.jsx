@@ -2,37 +2,48 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import { IoLogoOctocat } from "react-icons/io5";
+import axios from 'axios';
 import '../CSS/MyMenu.css';
 
 const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
   const [userList, setUserList] = useState([]);
+  const [msg, setMsg] = useState('');
   const navigate = useNavigate();
   const menuRef = useRef(null);
 
   // Helper function to get data from session storage
   const getSessionStorageData = (key, defaultValue) => {
     const value = sessionStorage.getItem(key);
-    try {
-      return value ? JSON.parse(value) : defaultValue;
-    } catch (error) {
-      console.error(`Error parsing session storage data for ${key}:`, error);
-      return defaultValue;
-    }
+    return value ? value : defaultValue;
   };
 
-  // Helper function to set data in session storage
-  const setSessionStorageData = (key, data) => {
-    try {
-      sessionStorage.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error(`Error setting session storage data for ${key}:`, error);
+  // Fetch user list from the server using settop number from session storage
+  const fetchUsers = async () => {
+    const settopNum = getSessionStorageData('settop_num', null);
+    if (settopNum) {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_EC2_ADDRESS}/login/${settopNum}`);
+        if (response.status === 200) {
+          setUserList(response.data);
+        } else {
+          console.error('Unexpected response status:', response.status);
+          setMsg('사용자 데이터를 가져오는 중 오류 발생');
+        }
+      } catch (error) {
+        console.error('Error fetching user list:', error);
+        setMsg('사용자 데이터를 가져오는 중 오류 발생');
+      }
+    } else {
+      console.error('Settop number not found in session storage');
+      setMsg('셋탑 번호를 찾을 수 없습니다.');
     }
   };
 
   useEffect(() => {
-    const storedUsers = getSessionStorageData('user_list', []);
-    setUserList(storedUsers);
-  }, []);
+    if (isVisible) {
+      fetchUsers(); // Fetch user list whenever the menu becomes visible
+    }
+  }, [isVisible]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -49,6 +60,11 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
   const handleIconClick = () => {
     closeOthers();
     setIsVisible((prev) => !prev);
+
+    // Fetch user list from the server when menu is toggled to visible
+    if (!isVisible) {
+      fetchUsers();
+    }
   };
 
   const handleUserClick = (user_id, user_name) => {
@@ -57,9 +73,9 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
     if (user) {
       const { LIKE_STATUS } = user;
 
-      setSessionStorageData('selectedUserId', user_id);
-      setSessionStorageData('selectedUserName', user_name);
-      setSessionStorageData('likeStatus', JSON.stringify(LIKE_STATUS));
+      sessionStorage.setItem('selectedUserId', user_id);
+      sessionStorage.setItem('selectedUserName', user_name);
+      sessionStorage.setItem('likeStatus', JSON.stringify(LIKE_STATUS));
 
       handleUserChange({
         userId: user_id,
@@ -81,12 +97,16 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
       />
       {isVisible && (
         <div className="user-menu active">
-          {userList.map(user => (
-            <div key={user.USER_ID} className="user-menu-item" onClick={() => handleUserClick(user.USER_ID, user.USER_NAME)}>
-              <IoLogoOctocat className="user-icon-small" />
-              <p>{user.USER_NAME}</p>
-            </div>
-          ))}
+          {userList.length > 0 ? (
+            userList.map(user => (
+              <div key={user.USER_ID} className="user-menu-item" onClick={() => handleUserClick(user.USER_ID, user.USER_NAME)}>
+                <IoLogoOctocat className="user-icon-small" />
+                <p>{user.USER_NAME}</p>
+              </div>
+            ))
+          ) : (
+            <p className="no-users-msg">{msg ? msg : '사용자 목록이 없습니다.'}</p>
+          )}
           <div className="user-menu-item" onClick={() => navigate('/User')}>
             <div style={{ fontSize: '20px' }}>마이페이지</div>
           </div>
