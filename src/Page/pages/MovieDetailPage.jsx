@@ -506,26 +506,30 @@ const SeasonContainer = ({ seasonList, selectedSeasonId, selectedSeasonName, set
 
 const ReviewModal = ({ isOpen, onClose, movie, reviewText, setReviewText, reviewRating, setReviewRating, onSave }) => (
   <Modal isOpen={isOpen} onRequestClose={onClose} className="modal" overlayClassName="modal-overlay">
-    <div className="modal-content">
-      <img src={movie.posterURL} alt={movie.title} className="modal-poster" loading="lazy" />
-      <textarea
-        value={reviewText}
-        onChange={(e) => setReviewText(e.target.value)}
-        placeholder="리뷰를 작성해 주세요..."
-        className="modal-textarea"
-      />
-      <div className="modal-rating">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <FaRegStar
-            key={star}
-            className={`modal-star ${star <= reviewRating ? 'selected' : ''}`}
-            onClick={() => setReviewRating(star)}
-          />
-        ))}
+    <div className="modal-content-horizontal">
+      <div className="top-container">
+        <img src={movie.posterURL} alt={movie.title} className="modal-poster" loading="lazy" />
+        <textarea
+          value={reviewText}
+          onChange={(e) => setReviewText(e.target.value)}
+          placeholder="리뷰를 작성해 주세요..."
+          className="modal-textarea"
+        />
       </div>
-      <div className="modal-buttons">
-        <button onClick={onClose} className="modal-button cancel">나중에</button>
-        <button onClick={onSave} className="modal-button save">저장</button>
+      <div className="bottom-container">
+        <div className="modal-rating">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <FaRegStar
+              key={star}
+              className={`modal-star ${star <= reviewRating ? 'selected' : ''}`}
+              onClick={() => setReviewRating(star)}
+            />
+          ))}
+        </div>
+        <div className="buttons-container">
+          <button onClick={onClose} className="modal-button cancel">나중에</button>
+          <button onClick={onSave} className="modal-button save">저장</button>
+        </div>
       </div>
     </div>
   </Modal>
