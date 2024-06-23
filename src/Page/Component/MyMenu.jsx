@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser } from "react-icons/fa";
 import { IoLogoOctocat } from "react-icons/io5";
@@ -18,7 +18,7 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
   };
 
   // Fetch user list from the server using settop number from session storage
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     const settopNum = getSessionStorageData('settop_num', null);
     if (settopNum) {
       try {
@@ -37,13 +37,13 @@ const MyMenu = ({ isVisible, setIsVisible, closeOthers, handleUserChange }) => {
       console.error('Settop number not found in session storage');
       setMsg('셋탑 번호를 찾을 수 없습니다.');
     }
-  };
+  }, []); // 빈 배열을 사용하여 fetchUsers가 한 번만 생성되도록 함
 
   useEffect(() => {
     if (isVisible) {
       fetchUsers(); // Fetch user list whenever the menu becomes visible
     }
-  }, [isVisible]);
+  }, [isVisible, fetchUsers]); // fetchUsers를 의존성 배열에 추가
 
   useEffect(() => {
     const handleClickOutside = (event) => {
